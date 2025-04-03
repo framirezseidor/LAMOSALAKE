@@ -91,8 +91,8 @@ BEGIN
             YEAR(BUDAT1) AS ANIO,
             MONTH(BUDAT1) AS MES,
             TO_CHAR(BUDAT1,'YYYMM') AS ANIOMES, 
-            CENTRO_ID,
-            ALMACEN_ID,
+            WERKS AS CENTRO_ID,
+            LGORT AS ALMACEN_ID,
             CONCAT(WERKS,'_',LGORT) AS ALMACENCENTRO_ID,
             --CASE 
               --  WHEN LGORT= 'PTUS' THEN 'ZUS' 
@@ -107,20 +107,20 @@ BEGIN
                 WHEN ZIOMARPL = '003' THEN 'ZFI'
                 ELSE ''
             END AS GRUPOCLIENTES2_ID, -- logica pendiente 
-            FECHA_CONTABILIZACION ,
-            CLASEMOVIMIENTO_ID,
-            DOCMATERIAL ,
-            DOCMATERIAL_POS,
-            CLASEORDFAB_ID,
-            ORDENFABRICACION ,
+            BUDAT1 AS FECHA_CONTABILIZACION ,
+            BWART AS CLASEMOVIMIENTO_ID,
+            MBLNR AS DOCMATERIAL ,
+            ZEILE AS DOCMATERIAL_POS,
+            AUART AS CLASEORDFAB_ID,
+            AUFNR AS ORDENFABRICACION ,
             CASE 
                 WHEN RUECK = '0000000000' THEN 'B'
                 ELSE 'A'
             END AS NOTIFICACION,
-            NOTIFICACION_CONTADOR_LLAVE ,
-            NOTIFICACION_OPERACION ,
-            NOTIFICACION_CONTADOR,
-            PERFIL_CONTROL_FABRICACION,
+            NOTIF_CONTADOR AS NOTIFICACION_CONTADOR_LLAVE ,
+            RUECK AS NOTIFICACION_OPERACION ,
+            RMZHL AS NOTIFICACION_CONTADOR,
+            SFCPF AS PERFIL_CONTROL_FABRICACION,
             CONCAT(WERKS,'_',SFCPF) AS PERFILCF_CENTRO_ID ,
             CASE 
                 WHEN ATWRT= '001' THEN MATNR
@@ -129,16 +129,16 @@ BEGIN
                 ELSE MATNR
             END MATERIAL_ID,
             CONCAT(WERKS,'_',MATNR) AS PERFILCF_CENTRO_ID ,
-            LOTE ,
-            MATERIAL_NOTIF ,
-            CALIDAD_NOTIF,
+            CHARG AS LOTE ,
+            MATNR AS MATERIAL_NOTIF ,
+            ATWRT AS CALIDAD_NOTIF,
             CASE 
                 WHEN ATWRT= '001' THEN MATNR
                 WHEN ATWRT3 = '001' THEN PLNBZ2
                 WHEN ATWRT2 = '001' THEN MATNRZ
                 ELSE MATNR
             END AS MARCAPLANEACION_ID, --logica pendiente
-            IND_PRODUCCION_TOTAL_M2 ,
+            MENGE AS IND_PRODUCCION_TOTAL_M2 ,
             CASE 
                 WHEN ATWRT = '001' THEN MENGE
                 ELSE 0
@@ -147,7 +147,7 @@ BEGIN
                 WHEN ATWRT <> '001' THEN MENGE
                 ELSE 0
             END AS IND_PRODUCCION_2A_M2 ,
-            UNI_EST,
+            MEINS AS UNI_EST,
             SISORIGEN_ID,
             MANDANTE,
             CURRENT_TIMESTAMP AS FECHA_CARGA,
@@ -157,10 +157,7 @@ BEGIN
                 WHEN PRCTR = 'SC02090001' THEN 'R232'
                 WHEN PRCTR = 'SC03090001' THEN 'R233'
                 ELSE WERKS
-            END AS CEBECENTRO_ID ,
-            SOCIEDADCO_ID ,
-            SOCIEDAD_ID ,
-            CENTROBENEFICIO_ID
+            END AS CEBECENTRO_ID 
         FROM LAMOSALAKE_DEV.RAW.SQ1_MOF_ZBWPP_CALDISENO;
 
         -- Conteo de filas insertadas
