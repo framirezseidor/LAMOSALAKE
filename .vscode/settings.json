@@ -1,0 +1,22 @@
+{
+    "sqltools.connections": [
+        {
+            "authenticator": "SNOWFLAKE",
+            "ocspOptions": {
+                "ocspFailOpen": true
+            },
+            "snowflakeOptions": {
+                "clientSessionKeepAlive": true,
+                "clientSessionKeepAliveHeartbeatFrequency": 3600
+            },
+            "previewLimit": 50,
+            "driver": "Snowflake",
+            "name": "LAMOSA_VIRGINIA",
+            "account": "OY43211-LAMOSA_VIRGINIA",
+            "username": "FIDEL_RAMIREZ",
+            "password": "d29<S7lc6c@egc",
+            "database": "LAMOSALAKE_DEV",
+            "warehouse": "LAMOSALAKE_DEV_WH"
+        }
+    ]
+}
