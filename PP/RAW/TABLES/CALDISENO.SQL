@@ -1,3 +1,4 @@
+--Codigo de prueba
 create or replace TABLE LAMOSALAKE_DEV.RAW.SQ1_MOF_ZBWPP_CALDISENO (
 	AUFNR VARCHAR(12),
 	RUECK VARCHAR(10),
