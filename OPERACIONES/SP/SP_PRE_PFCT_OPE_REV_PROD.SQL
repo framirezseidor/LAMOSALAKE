@@ -76,21 +76,18 @@ BEGIN
             IND_PRODUCCION_1A_M2 ,
             IND_PRODUCCION_2A_M2 ,
             UNI_EST,
-            SISORIGEN_ID,
+            ID_SISORIGEN,
             MANDANTE,
             FECHA_CARGA,
             ZONA_HORARIA ,
-            CEBECENTRO_ID ,
-            SOCIEDADCO_ID ,
-            SOCIEDAD_ID ,
-            CENTROBENEFICIO_ID
+            CEBECENTRO_ID
         )
         SELECT
             -- Transformaciones desde RAW
             -- Ejemplo: COL1, COL2, CAST(COL3 AS DATE), ...
             YEAR(BUDAT1) AS ANIO,
             MONTH(BUDAT1) AS MES,
-            TO_CHAR(BUDAT1,'YYYMM') AS ANIOMES, 
+            TO_CHAR(BUDAT1,'YYYYMM') AS ANIOMES, 
             WERKS AS CENTRO_ID,
             LGORT AS ALMACEN_ID,
             CONCAT(WERKS,'_',LGORT) AS ALMACENCENTRO_ID,
@@ -100,13 +97,39 @@ BEGIN
               --  WHEN MARCAPLANEACION_ID = '002' THEN 'ZPO'
               --  WHEN MARCAPLANEACION_ID = '003' THEN 'ZFI'
             --END AS GRUPOCLIENTES2_ID,
+            --CASE 
+              --  WHEN LGORT= 'PTUS' THEN 'ZUS'  --WHEN ZCSTORLOC = 'PTUS' THEN 'ZUS'
+              --  WHEN ZIOMARPL = '001' THEN 'ZLA'
+              --  WHEN ZIOMARPL = '002' THEN 'ZPO'
+              --  WHEN ZIOMARPL = '003' THEN 'ZFI'
+              --  ELSE ''
+            --END AS GRUPOCLIENTES2_ID, -- logica pendiente 
             CASE 
-                WHEN ZCSTORLOC = 'PTUS' THEN 'ZUS'
-                WHEN ZIOMARPL = '001' THEN 'ZLA'
-                WHEN ZIOMARPL = '002' THEN 'ZPO'
-                WHEN ZIOMARPL = '003' THEN 'ZFI'
+                WHEN LGORT = 'PTUS' THEN 'ZUS' -- ZCSTORLOC es almacen
+                WHEN 
+                    CASE 
+                        WHEN ATWRT = '001' THEN MATNR
+                        WHEN ATWRT3 = '001' THEN PLNBEZ2
+                        WHEN ATWRT2 = '001' THEN MATNRZ
+                        ELSE MATNR
+                    END = '001' THEN 'ZLA'
+                WHEN 
+                    CASE 
+                        WHEN ATWRT = '001' THEN MATNR
+                        WHEN ATWRT3 = '001' THEN PLNBEZ2
+                        WHEN ATWRT2 = '001' THEN MATNRZ
+                        ELSE MATNR
+                    END = '002' THEN 'ZPO'
+                WHEN 
+                    CASE 
+                        WHEN ATWRT = '001' THEN MATNR
+                        WHEN ATWRT3 = '001' THEN PLNBEZ2
+                        WHEN ATWRT2 = '001' THEN MATNRZ
+                        ELSE MATNR
+                    END = '003' THEN 'ZFI'
                 ELSE ''
-            END AS GRUPOCLIENTES2_ID, -- logica pendiente 
+            END AS GRUPOCLIENTES2_ID ,
+
             BUDAT1 AS FECHA_CONTABILIZACION ,
             BWART AS CLASEMOVIMIENTO_ID,
             MBLNR AS DOCMATERIAL ,
@@ -124,7 +147,7 @@ BEGIN
             CONCAT(WERKS,'_',SFCPF) AS PERFILCF_CENTRO_ID ,
             CASE 
                 WHEN ATWRT= '001' THEN MATNR
-                WHEN ATWRT3 = '001' THEN PLNBZ2
+                WHEN ATWRT3 = '001' THEN PLNBEZ2
                 WHEN ATWRT2 = '001' THEN MATNRZ
                 ELSE MATNR
             END MATERIAL_ID,
@@ -134,7 +157,7 @@ BEGIN
             ATWRT AS CALIDAD_NOTIF,
             CASE 
                 WHEN ATWRT= '001' THEN MATNR
-                WHEN ATWRT3 = '001' THEN PLNBZ2
+                WHEN ATWRT3 = '001' THEN PLNBEZ2
                 WHEN ATWRT2 = '001' THEN MATNRZ
                 ELSE MATNR
             END AS MARCAPLANEACION_ID, --logica pendiente
@@ -148,7 +171,7 @@ BEGIN
                 ELSE 0
             END AS IND_PRODUCCION_2A_M2 ,
             MEINS AS UNI_EST,
-            SISORIGEN_ID,
+            ID_SISORIGEN,
             MANDANTE,
             CURRENT_TIMESTAMP AS FECHA_CARGA,
             RIGHT(CURRENT_TIMESTAMP,5) AS ZONA_HORARIA ,
@@ -157,7 +180,7 @@ BEGIN
                 WHEN PRCTR = 'SC02090001' THEN 'R232'
                 WHEN PRCTR = 'SC03090001' THEN 'R233'
                 ELSE WERKS
-            END AS CEBECENTRO_ID 
+            END AS CEBECENTRO_ID
         FROM LAMOSALAKE_DEV.RAW.SQ1_MOF_ZBWPP_CALDISENO;
 
         -- Conteo de filas insertadas
