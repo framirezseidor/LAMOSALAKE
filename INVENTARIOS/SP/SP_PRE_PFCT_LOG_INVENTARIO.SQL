@@ -81,7 +81,7 @@ BEGIN
             MON_LOC, 
             IND_COSTO_INV_USD, 
             MON_USD, 
-            ID_SISORIGEN, 
+            SISORIGEN_ID, 
             MANDANTE, 
             FECHA_CARGA, 
             ZONA_HORARIA 
@@ -162,7 +162,7 @@ BEGIN
         Z.ID_SISORIGEN,-- ID_SISORIGEN, 
         Z.MANDANTE,-- MANDANTE, 
         CURRENT_TIMESTAMP,-- FECHA_CARGA, 
-        RIGHT(CURRENT_TIMESTAMP,5);-- ZONA_HORARIA  
+        RIGHT(CURRENT_TIMESTAMP,5); -- ZONA_HORARIA  
 
         -- Conteo de filas insertadas
         SELECT COUNT(*) INTO :ROWS_INSERTED FROM LAMOSALAKE_DEV.PRE.PFCT_LOG_INVENTARIO;
