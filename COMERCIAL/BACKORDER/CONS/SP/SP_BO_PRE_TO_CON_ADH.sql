@@ -99,7 +99,7 @@ BEGIN
             UNI_EST,
             IND_BO_IMPORTE_DOC,
             MON_DOC,
-            ID_SISORIGEN,
+            SISORIGEN_ID,
             MANDANTE,
             FECHA_CARGA,
             ZONA_HORARIA
@@ -161,7 +161,7 @@ BEGIN
             UNI_EST,
             IND_BO_MONEDA_DOCUMENTO,
             MON_DOC,
-            ID_SISORIGEN,
+            SISORIGEN_ID,
             MANDANTE,
             FECHA_CARGA,
             ZONA_HORARIA

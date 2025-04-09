@@ -100,7 +100,7 @@ BEGIN
             UNI_EST,
             IND_BO_MONEDA_DOCUMENTO,
             MON_DOC,
-            ID_SISORIGEN,
+            SISORIGEN_ID,
             MANDANTE,
             FECHA_CARGA,
             ZONA_HORARIA
@@ -226,7 +226,7 @@ BEGIN
             VALOR_NETO / KWMENG * CANT_PEND                         AS IND_BO_MONEDA_DOCUMENTO,
             --------------------------------------------------------------
             MONEDA_DOC AS MON_DOC,
-            ID_SISORIGEN,
+            SISORIGEN_ID,
             MANDANTE,
             FECHA_CARGA,
             ZONA_HORARIA
