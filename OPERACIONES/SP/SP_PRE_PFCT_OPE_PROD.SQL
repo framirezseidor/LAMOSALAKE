@@ -77,7 +77,7 @@ BEGIN
             IND_PRODUCCION_1A_M2 ,
             IND_PRODUCCION_2A_M2 ,
             UNI_EST,
-            ID_SISORIGEN,
+            SISORIGEN_ID,
             MANDANTE,
             FECHA_CARGA,
             ZONA_HORARIA ,
@@ -172,7 +172,7 @@ BEGIN
                 ELSE 0
             END AS IND_PRODUCCION_2A_M2 ,
             MEINS AS UNI_EST,
-            ID_SISORIGEN,
+            SISORIGEN_ID,
             MANDANTE,
             CURRENT_TIMESTAMP AS FECHA_CARGA,
             RIGHT(CURRENT_TIMESTAMP,5) AS ZONA_HORARIA ,
@@ -199,8 +199,8 @@ BEGIN
     ---------------------------------------------------------------------------------
     SELECT COALESCE(:TEXTO, 'EJECUCION CORRECTA') INTO :TEXTO;
 
-    INSERT INTO LOGS.HISTORICAL_EJECUCIONES;
-    VALUES ('SP_PRE_PFCT_OPE_PROD','PRE.PFCT_OPE_PROD', :F_INICIO, :F:FIN, :T_EJECUCION, :ROWS_INSERTED, :TEXTO );
+    INSERT INTO LOGS.HISTORIAL_EJECUCIONES
+    VALUES ('SP_PRE_PFCT_OPE_PROD','PRE.PFCT_OPE_PROD', :F_INICIO, :F_FIN, :T_EJECUCION, :ROWS_INSERTED, :TEXTO );
 
     ---------------------------------------------------------------------------------
     -- STEP 4: FINALIZACIÓN
