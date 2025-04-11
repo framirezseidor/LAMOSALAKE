@@ -28,7 +28,13 @@ BEGIN
     BEGIN
         SELECT CURRENT_TIMESTAMP() INTO :F_INICIO;
 
-        DELETE FROM LAMOSALAKE_DEV.CON.FCT_LOG_ADH_INV_LIBREVTA_FOTO;
+        DELETE FROM LAMOSALAKE_DEV.CON.FCT_LOG_ADH_INV_LIBREVTA_FOTO
+        --restricción que valida que solo borre la fecha que se encuentra en la tabla inventario_act
+        WHERE FECHA_FOTO_INVENTARIO IN (SELECT DISTINCT FECHA_FOTO_INVENTARIO FROM LAMOSALAKE_DEV.CON.FCT_LOG_ADH_INVENTARIO_ACT)
+        --restricción que valida que la fecha solo sea de fin de mes
+        AND   FECHA_FOTO_INVENTARIO=TO_NUMBER(REPLACE(LAST_DAY(TO_DATE(TO_VARCHAR(FECHA_FOTO_INVENTARIO),'YYYYMMDD')),'-',''))
+        --restricción que valida que el delete solo se realice si estamos el primer día del mes
+        AND   CURRENT_DATE= DATEADD(DAY,+1,LAST_DAY(DATEADD(MONTH,-1,CURRENT_DATE)));
 
         SELECT CURRENT_TIMESTAMP() INTO :F_FIN;
         SELECT DATEDIFF(millisecond, :F_INICIO, :F_FIN) INTO :T_EJECUCION;
@@ -111,7 +117,11 @@ BEGIN
             MANDANTE,
             FECHA_CARGA,
             ZONA_HORARIA
-        FROM LAMOSALAKE_DEV.CON.FCT_LOG_ADH_INVENTARIO_ACT WHERE CENTRO_ID LIKE 'A%' ;
+        FROM LAMOSALAKE_DEV.CON.FCT_LOG_ADH_INVENTARIO_ACT WHERE CENTRO_ID LIKE 'A%'
+        --restricción que valida que la fecha solo sea de fin de mes
+        AND FECHA_FOTO_INVENTARIO=TO_NUMBER(REPLACE(LAST_DAY(TO_DATE(TO_VARCHAR(FECHA_FOTO_INVENTARIO),'YYYYMMDD')),'-',''))
+        --restricción que valida que la inserción solo se realice si estamos el primer día del mes
+        AND CURRENT_DATE= DATEADD(DAY,+1,LAST_DAY(DATEADD(MONTH,-1,CURRENT_DATE))); ;
 
         -- Conteo de filas insertadas
         SELECT COUNT(*) INTO :ROWS_INSERTED FROM LAMOSALAKE_DEV.CON.FCT_LOG_ADH_INV_LIBREVTA_FOTO;

@@ -25,7 +25,7 @@ BEGIN
     -- STEP 1: LIMPIEZA DE DATOS EN LA TABLA PRE
     ---------------------------------------------------------------------------------
     BEGIN
-        --SELECT CURRENT_TIMESTAMP() INTO :F_INICIO;
+        SELECT CURRENT_TIMESTAMP() INTO :F_INICIO;
 
         DELETE FROM LAMOSALAKE_DEV.PRE.PFCT_LOG_INVENTARIO;
 
