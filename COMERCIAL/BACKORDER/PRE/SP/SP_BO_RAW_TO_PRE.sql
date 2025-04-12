@@ -19,6 +19,7 @@ DECLARE
     F_FIN           TIMESTAMP_NTZ(9);
     T_EJECUCION     NUMBER(38,0);
     ROWS_INSERTED   NUMBER(38,0);
+    TEXTO           VARCHAR(200);
 
 BEGIN
 
@@ -34,7 +35,7 @@ BEGIN
         SELECT DATEDIFF(millisecond, :F_INICIO, :F_FIN) INTO :T_EJECUCION;
     EXCEPTION
         WHEN statement_error THEN
-            RETURN 'Error en DELETE: ' || :sqlerrm;
+            SELECT ('Error en DELETE: ' || :sqlerrm) INTO :TEXTO;
     END;
 
     ---------------------------------------------------------------------------------
@@ -228,8 +229,8 @@ BEGIN
             MONEDA_DOC AS MON_DOC,
             SISORIGEN_ID,
             MANDANTE,
-            FECHA_CARGA,
-            ZONA_HORARIA
+            CURRENT_TIMESTAMP() AS FECHA_CARGA,
+            TO_CHAR(CURRENT_TIMESTAMP(), 'TZH:TZM') AS ZONA_HORARIA
         FROM LAMOSALAKE_DEV.RAW.SQ1_MOF_ZBWSD_PEDIDOS_BACKORDER;
 
         SELECT COUNT(*) INTO :ROWS_INSERTED FROM LAMOSALAKE_DEV.PRE.PFCT_COM_BACKORDER;
@@ -238,13 +239,21 @@ BEGIN
         SELECT DATEDIFF(millisecond, :F_INICIO, :F_FIN) INTO :T_EJECUCION;
     EXCEPTION
         WHEN statement_error THEN
-            RETURN 'Error en INSERT: ' || :sqlerrm;
+            SELECT ('Error en INSERT: ' || :sqlerrm) INTO :TEXTO;
     END;
 
     ---------------------------------------------------------------------------------
-    -- STEP 3: FINALIZACIÓN
+    -- STEP 3: LOG
+    ---------------------------------------------------------------------------------
+        SELECT COALESCE(:TEXTO,'EJECUCION CORRECTA') INTO :TEXTO;
+
+        INSERT INTO LOGS.HISTORIAL_EJECUCIONES 
+        VALUES('SP_PRE_PFCT_COM_BACKORDER','PFCT_COM_BACKORDER', :F_INICIO, :F_FIN,:T_EJECUCION ,:ROWS_INSERTED, :TEXTO );
+    
+    ---------------------------------------------------------------------------------
+    -- STEP 4: FINALIZACIÓN
     ---------------------------------------------------------------------------------
     RETURN CONCAT('Complete - Filas insertadas: ', ROWS_INSERTED);
-
+    
 END;
 $$;
