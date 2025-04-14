@@ -19,6 +19,7 @@ DECLARE
     F_FIN           TIMESTAMP_NTZ(9);
     T_EJECUCION     NUMBER(38,0);
     ROWS_INSERTED   NUMBER(38,0);
+    TEXTO           VARCHAR(200);
 
 BEGIN
 
@@ -34,7 +35,7 @@ BEGIN
         SELECT DATEDIFF(millisecond, :F_INICIO, :F_FIN) INTO :T_EJECUCION;
     EXCEPTION
         WHEN statement_error THEN
-            RETURN 'Error en DELETE: ' || :sqlerrm;
+            SELECT ('Error en DELETE: ' || :sqlerrm) INTO :TEXTO;
     END;
 
     ---------------------------------------------------------------------------------
@@ -76,7 +77,7 @@ BEGIN
             IND_PRODUCCION_1A_M2 ,
             IND_PRODUCCION_2A_M2 ,
             UNI_EST,
-            ID_SISORIGEN,
+            SISORIGEN_ID,
             MANDANTE,
             FECHA_CARGA,
             ZONA_HORARIA ,
@@ -171,7 +172,7 @@ BEGIN
                 ELSE 0
             END AS IND_PRODUCCION_2A_M2 ,
             MEINS AS UNI_EST,
-            ID_SISORIGEN,
+            SISORIGEN_ID,
             MANDANTE,
             CURRENT_TIMESTAMP AS FECHA_CARGA,
             RIGHT(CURRENT_TIMESTAMP,5) AS ZONA_HORARIA ,
@@ -190,11 +191,19 @@ BEGIN
         SELECT DATEDIFF(millisecond, :F_INICIO, :F_FIN) INTO :T_EJECUCION;
     EXCEPTION
         WHEN statement_error THEN
-            RETURN 'Error en INSERT: ' || :sqlerrm;
+            SELECT ('Error en DELETE: ' || :sqlerrm) INTO :TEXTO;
     END;
 
     ---------------------------------------------------------------------------------
-    -- STEP 3: FINALIZACIÓN
+    -- STEP 3: LOG
+    ---------------------------------------------------------------------------------
+    SELECT COALESCE(:TEXTO, 'EJECUCION CORRECTA') INTO :TEXTO;
+
+    INSERT INTO LOGS.HISTORIAL_EJECUCIONES
+    VALUES ('SP_PRE_PFCT_OPE_PROD','PRE.PFCT_OPE_PROD', :F_INICIO, :F_FIN, :T_EJECUCION, :ROWS_INSERTED, :TEXTO );
+
+    ---------------------------------------------------------------------------------
+    -- STEP 4: FINALIZACIÓN
     ---------------------------------------------------------------------------------
     RETURN CONCAT('Complete - Filas insertadas: ', ROWS_INSERTED);
 
