@@ -1,4 +1,4 @@
-CREATE OR REPLACE PROCEDURE LAMOSALAKE_DEV.CON.SP_CON_FCT_REV_BACKORDER()
+CREATE OR REPLACE PROCEDURE CON.SP_CON_FCT_REV_BACKORDER()
 RETURNS VARCHAR(16777216)
 LANGUAGE SQL
 EXECUTE AS OWNER
@@ -19,6 +19,7 @@ DECLARE
     F_FIN           TIMESTAMP_NTZ(9);
     T_EJECUCION     NUMBER(38,0);
     ROWS_INSERTED   NUMBER(38,0);
+    TEXTO           VARCHAR(200);
 
 BEGIN
 
@@ -28,13 +29,13 @@ BEGIN
     BEGIN
         SELECT CURRENT_TIMESTAMP() INTO :F_INICIO;
 
-        DELETE FROM LAMOSALAKE_DEV.CON.FCT_COM_REV_BACKORDER_ACT;
+        DELETE FROM CON.FCT_COM_REV_BACKORDER_ACT;
 
         SELECT CURRENT_TIMESTAMP() INTO :F_FIN;
         SELECT DATEDIFF(millisecond, :F_INICIO, :F_FIN) INTO :T_EJECUCION;
     EXCEPTION
         WHEN statement_error THEN
-            RETURN 'Error en DELETE: ' || :sqlerrm;
+            SELECT ('Error en DELETE: ' || :sqlerrm) INTO :TEXTO;
     END;
 
     ---------------------------------------------------------------------------------
@@ -43,7 +44,7 @@ BEGIN
     BEGIN
         SELECT CURRENT_TIMESTAMP() INTO :F_INICIO;
 
-        INSERT INTO LAMOSALAKE_DEV.CON.FCT_COM_REV_BACKORDER_ACT (
+        INSERT INTO CON.FCT_COM_REV_BACKORDER_ACT (
             ANIO,
             MES,
             ANIOMES,
@@ -165,20 +166,28 @@ BEGIN
             MANDANTE,
             CURRENT_TIMESTAMP() AS FECHA_CARGA,
             TO_CHAR(CURRENT_TIMESTAMP(), 'TZH:TZM') AS ZONA_HORARIA
-        FROM LAMOSALAKE_DEV.PRE.PFCT_COM_BACKORDER
+        FROM PRE.PFCT_COM_BACKORDER
         WHERE ORGVENTAS_ID LIKE 'R%';
 
-        SELECT COUNT(*) INTO :ROWS_INSERTED FROM LAMOSALAKE_DEV.CON.FCT_COM_REV_BACKORDER_ACT;
+        SELECT COUNT(*) INTO :ROWS_INSERTED FROM CON.FCT_COM_REV_BACKORDER_ACT;
 
         SELECT CURRENT_TIMESTAMP() INTO :F_FIN;
         SELECT DATEDIFF(millisecond, :F_INICIO, :F_FIN) INTO :T_EJECUCION;
     EXCEPTION
         WHEN statement_error THEN
-            RETURN 'Error en INSERT: ' || :sqlerrm;
+            SELECT ('Error en INSERT: ' || :sqlerrm) INTO :TEXTO;
     END;
 
     ---------------------------------------------------------------------------------
-    -- STEP 3: FINALIZACIÓN
+    -- STEP 3: LOG
+    ---------------------------------------------------------------------------------
+        SELECT COALESCE(:TEXTO,'EJECUCION CORRECTA') INTO :TEXTO;
+
+        INSERT INTO LOGS.HISTORIAL_EJECUCIONES 
+        VALUES('SP_CON_FCT_REV_BACKORDER','FCT_COM_REV_BACKORDER_ACT', :F_INICIO, :F_FIN,:T_EJECUCION ,:ROWS_INSERTED, :TEXTO );
+    
+    ---------------------------------------------------------------------------------
+    -- STEP 4: FINALIZACIÓN
     ---------------------------------------------------------------------------------
     RETURN CONCAT('Complete - Filas insertadas: ', ROWS_INSERTED);
 
