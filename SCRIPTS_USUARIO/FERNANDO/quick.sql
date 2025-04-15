@@ -31,4 +31,5 @@ SELECT * FROM LAMOSALAKE_DEV.CON.FCT_COM_ADH_BACKORDER_ACT;
 
 SELECT * FROM LOGS.HISTORIAL_EJECUCIONES;
 
-
+select * from lamosalake_dev.raw.parametros_extraccion
+where extractor = 'ZBWSD_PEDIDOS_BACKORDER';
