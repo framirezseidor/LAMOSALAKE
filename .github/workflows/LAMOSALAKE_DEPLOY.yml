@@ -1,0 +1,28 @@
+name: Lamosa lake deploy
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu - latest
+    
+    env:
+      ORIGIN_PREFIX: "SQ1_"
+      PROD_PREFIX: "PRD1_"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Reemplazar prefijo para producción
+        run: |
+          echo "Reemplazando prefijo en los archivos SQL"
+          find . -type -name '*.sql' -print0 |xargs -0 sed -i -E "s/\b${ORIGIN_PREFIX}/${PROD_PREFIX}/g"
+      
+
+
+        
+        
