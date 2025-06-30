@@ -6,7 +6,7 @@ on:
       - development
 
 jobs:
-  deploy:
+  preparacion:
     runs-on: ubuntu - latest
     
     env:
@@ -20,9 +20,9 @@ jobs:
       - name: Reemplazar prefijo para producción
         run: |
           echo "Reemplazando prefijo en los archivos SQL"
-         # find . -type -name '*.sql' -print0 |xargs -0 sed -i -E "s/\b${ORIGIN_PREFIX}/${PROD_PREFIX}/g"
+          find . -type -name '*.sql' -print0 |xargs -0 sed -i -E "s/\b${ORIGIN_PREFIX}/${PROD_PREFIX}/g"
       
-
+       
 
         
         
