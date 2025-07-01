@@ -7,7 +7,7 @@ on:
  
 jobs:
   preparacion:
-    runs-on: ubuntu - latest
+    runs-on: ubuntu-latest
     
     env:
       ORIGIN_PREFIX: "SQ1_"
