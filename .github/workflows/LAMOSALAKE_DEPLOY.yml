@@ -3,7 +3,7 @@ name: Lamosa lake deploy
 on:
   push:
     branches:
-      - main
+      - development
  
 jobs:
   preparacion:
