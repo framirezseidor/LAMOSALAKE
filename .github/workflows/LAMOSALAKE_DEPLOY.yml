@@ -20,7 +20,7 @@ jobs:
       - name: Reemplazar prefijo para producción
         run: |
           echo "Reemplazando prefijo en los archivos SQL"
-          find "./lamosalake/comercial/"" -type f -name "*.sql" -print0 |xargs -0 sed -i -E "s/\b${ORIGIN_PREFIX}/${PROD_PREFIX}/g"
+          find "./lamosalake/comercial/" -type f -name "*.sql" -print0 |xargs -0 sed -i -E "s/\b${ORIGIN_PREFIX}/${PROD_PREFIX}/g"
       
        
 
