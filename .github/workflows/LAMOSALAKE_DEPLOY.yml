@@ -11,7 +11,7 @@ jobs:
     
     env:
       ORIGIN_PREFIX: "SQ1_"
-      PROD_PREFIX: "PRD1_"
+      PROD_PREFIX: "SP1_"
 
     steps:
       - name: Checkout code
