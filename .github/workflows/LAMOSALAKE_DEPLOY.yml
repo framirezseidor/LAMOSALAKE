@@ -44,11 +44,15 @@ jobs:
       - name: Verify Snowflake config file
         run: ls -la .snowflake && cat .snowflake/config.toml
 
-      - name: Install snowflake-cli
-        uses: Snowflake-Labs/snowflake-cli-action@v1.5
-        with:
-          cli-version: "latest"
-          default-config-file-path: ".snowflake/config.toml"
+#      - name: Install snowflake-cli
+#        uses: Snowflake-Labs/snowflake-cli-action@v1.5
+#        with:
+#          cli-version: "latest"
+#          default-config-file-path: ".snowflake/config.toml"
+
+      - name: Install snowcli
+        run: |
+          pip install snowflake-cli-labs          
      
       - name: Check Version and Verify Connection
         run: |
@@ -70,7 +74,7 @@ jobs:
           for f in lamosalake/comercial/*.sql; do
             echo "→ $f"
             # Usa un bloque -q para movernos al DB/SCHEMA deseados antes de cargar el archivo
-            snowsql -q "USE DATABASE $SNOWSQL_DATABASE; USE SCHEMA $SNOWSQL_SCHEMA;" -f "$f"
+            snow sql -q "USE DATABASE $SNOWSQL_DATABASE; USE SCHEMA $SNOWSQL_SCHEMA;" -f "$f"
           done
 
       
