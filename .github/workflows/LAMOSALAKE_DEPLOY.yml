@@ -57,11 +57,11 @@ jobs:
         run: |
           pip install snowflake-cli-labs          
      
-      - name: Check Version and Verify Connection
-        run: |
-              snow --version
-              snow connection test
-              echo "Using branch $GITHUB_REF_NAME"
+#      - name: Check Version and Verify Connection
+#        run: |
+#              snow --version
+#              snow connection test
+#              echo "Using branch $GITHUB_REF_NAME"
               
               
       - name: Reemplazar prefijo para producción
