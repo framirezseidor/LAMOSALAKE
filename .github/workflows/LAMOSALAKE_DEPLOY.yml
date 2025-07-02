@@ -1,7 +1,7 @@
 name: Lamosa lake deploy
 
 on:
-  push:
+  pull_request:
     branches:
       - main
  
