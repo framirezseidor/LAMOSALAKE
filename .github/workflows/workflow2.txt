@@ -1,0 +1,61 @@
+name: SQL Syntax Check
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  if_merged:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+ 
+      - name: Set Snowflake Credentials
+        run: |
+          mkdir -p .snowflake
+          cat <<EOF > .snowflake/config.toml
+          default_connection_name = "conectionSnowflake"
+          [connections]
+          [connections.conectionSnowflake]
+          account = "JMOMMDH-UB45802"
+          user = "JPEDREROS"
+          password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
+          database = "LAMOSADATALAKE_PRD"
+          schema = "PUBLIC"
+          warehouse = "COMPUTE_WH"
+ 
+ 
+      - name: Verify Snowflake config file
+        run: ls -la .snowflake && cat .snowflake/config.toml
+ 
+      - name: Install snowflake-cli
+        uses: Snowflake-Labs/snowflake-cli-action@v1.5
+        with:
+          cli-version: "latest"
+          default-config-file-path: ".snowflake/config.toml"
+     
+      - name: Check Version and Verify Connection
+        run: |
+              snow --version
+              snow connection test
+              echo "Using branch $GITHUB_REF_NAME"
+     
+      - name: Fetch repository changes
+        run: snow git fetch DATABASE_GITHUB1.REPOSITORIO_GIT.REPOS_GITHUB_EJE1
+     
+      - name: Deploy scripts RAW E1 to prod environment
+        run: snow git execute "@DATABASE_GITHUB1.REPOSITORIO_GIT.REPOS_GITHUB_EJE1/branches/main/SAP_RAW/E1/Tables/*.sql"
+      
+      - name: Deploy scripts PRE ABASTECIMIENTOS to prod environment
+        run: snow git execute "@DATABASE_GITHUB1.REPOSITORIO_GIT.REPOS_GITHUB_EJE1/branches/main/SAP_PRE/ABASTECIMIENTOS/Tables/*.sql"
+
+      - name: Deploy scripts PRE DATOS MAESTROS to prod environment
+        run: snow git execute "@DATABASE_GITHUB1.REPOSITORIO_GIT.REPOS_GITHUB_EJE1/branches/main/SAP_PRE/DATOS_MAESTROS/Tables/*.sql"
+      
+      - name: Deploy scripts CON DATOS MAESTROS to prod environment
+        run: snow git execute "@DATABASE_GITHUB1.REPOSITORIO_GIT.REPOS_GITHUB_EJE1/branches/main/SAP_CON/DATOS_MAESTROS/Tables/*.sql"
