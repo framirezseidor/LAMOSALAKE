@@ -57,7 +57,7 @@ jobs:
           echo "Cantidad de .sql encontrados: $(find . -type f -iname '*.sql' | wc -l)"
 
       - name: Deploy scripts RAW to prod environment
-        run: snow git execute "/home/runner/work/LAMOSALAKE/LAMOSALAKE/COMERCIAL/VENTAS/RAW/*.sql"
+        run: snow git execute "@LAMOSALAKE/branches/main/LAMOSALAKE/COMERCIAL/VENTAS/RAW/*.sql"
 
       
        
