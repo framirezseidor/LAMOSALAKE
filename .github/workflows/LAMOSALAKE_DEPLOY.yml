@@ -22,7 +22,8 @@ jobs:
           echo "Reemplazando prefijo en los archivos SQL"
           find . -type f -iname '*.sql' -print0 \
           | xargs -0 -r sed -i -E "s/\b${ORIGIN_PREFIX}/${PROD_PREFIX}/g"
-
+          echo "Estoy en: $(pwd)"
+          echo "Cantidad de .sql encontrados: $(find . -type f -iname '*.sql' | wc -l)"
       
        
 
