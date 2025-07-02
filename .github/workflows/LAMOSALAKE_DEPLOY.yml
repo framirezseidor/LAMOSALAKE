@@ -31,6 +31,7 @@ jobs:
           user = "FIDELRAMIREZLOPEZ"
           password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
           database = "LAMOSADATALAKE_PRD"
+          schema = "RAW"          
           warehouse = "COMPUTE_WH"
 
       - name: Verify Snowflake config file
