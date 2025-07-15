@@ -71,10 +71,13 @@ jobs:
           echo "Estoy en: $(pwd)"
           echo "Cantidad de .sql encontrados: $(find . -type f -iname '*.sql' | wc -l)"
 
+      - name: Buscar el archivo SQL
+        run: |
+          find . -iname "FCT_COM_REV_VENTAS.SQL"          
+
       - name: Deploy scripts RAW to prod environment
         run: |
           echo "Ejecutando scripts en Snowflake…"
-          ls -R
           snow sql -q "USE DATABASE $SNOWSQL_DATABASE; USE SCHEMA $SNOWSQL_SCHEMA;" -f "COMERCIAL/FCT_COM_REV_VENTAS.SQL"
           for f in ./*.sql; do
             echo "→ $f"
