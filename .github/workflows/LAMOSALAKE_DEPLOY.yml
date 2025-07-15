@@ -23,6 +23,15 @@ jobs:
       SNOWFLAKE_DATABASE:  "LAMOSALAKE_PRD"
       SNOWFLAKE_SCHEMA:    "RAW"
 
+      run: |
+          snow connection create github_ci \
+            --account "RANAZVP-QFB08200" \
+            --user "FIDELRAMIREZ" \
+            --password "${{ secrets.SNOWFLAKE_PASSWORD }}" \
+            --role "ACCOUNTADMIN" \
+            --warehouse "WAREHOUSEGRAL" \
+            --database "LAMOSALAKE_PRD" \
+            --schema "RAW"
 
     steps:
       - name: Checkout code
@@ -34,7 +43,6 @@ jobs:
           mkdir -p .snowflake
           cat <<EOF > .snowflake/config.toml
           default_connection_name = "snowcon"
-
           [connections]
           [connections.snowcon]
           account = "RANAZVP-QFB08200"
@@ -44,14 +52,7 @@ jobs:
           schema = "RAW"          
           warehouse = "COMPUTE_WH"
           
-          snow connection create github_ci \
-            --account "RANAZVP-QFB08200" \
-            --user "FIDELRAMIREZ" \
-            --password "${{ secrets.SNOWFLAKE_PASSWORD }}" \
-            --role "ACCOUNTADMIN" \
-            --warehouse "WAREHOUSEGRAL" \
-            --database "LAMOSALAKE_PRD" \
-            --schema "RAW"
+
 
 #      - name: Verify Snowflake config file
 #        run: ls -la .snowflake && cat .snowflake/config.toml
