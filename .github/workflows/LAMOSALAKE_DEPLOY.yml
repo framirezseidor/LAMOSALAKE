@@ -33,7 +33,10 @@ jobs:
         run: |
           mkdir -p .snowflake
           cat <<EOF > .snowflake/config.toml
-          [connections.default]
+          default_connection_name = "snowcon"
+
+          [connections]
+          [connections.snowcon]
           account = "RANAZVP-QFB08200"
           user = "FIDELRAMIREZ"
           password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
