@@ -74,8 +74,8 @@ jobs:
       - name: Deploy scripts RAW to prod environment
         run: |
           echo "Ejecutando scripts en Snowflake…"
-          list
-          snow sql -q "USE DATABASE $SNOWSQL_DATABASE; USE SCHEMA $SNOWSQL_SCHEMA;" -f "/home/runner/work/LAMOSALAKE/COMERCIAL/FCT_COM_REV_VENTAS.SQL"
+          ls -R
+          snow sql -q "USE DATABASE $SNOWSQL_DATABASE; USE SCHEMA $SNOWSQL_SCHEMA;" -f "LAMOSALAKE/COMERCIAL/FCT_COM_REV_VENTAS.SQL"
           for f in ./*.sql; do
             echo "→ $f"
             # Usa un bloque -q para movernos al DB/SCHEMA deseados antes de cargar el archivo
