@@ -15,15 +15,15 @@ jobs:
     env:
       ORIGIN_PREFIX: "SQ1_"
       PROD_PREFIX: "SP1_"
-      SNOWSQL_ACCOUNT:  "MGPYXTM-MEB90460"
-      SNOWSQL_USER:      "FIDELRAMIREZLOPEZ"
+      SNOWSQL_ACCOUNT:  "RANAZVP-QFB08200"
+      SNOWSQL_USER:      "FIDELRAMIREZ"
       SNOWSQL_PWD:       ${{ secrets.SNOWFLAKE_PASSWORD }}
 #      SNOWSQL_ROLE:      ${{ secrets.SNOWSQL_ROLE }}
       SNOWSQL_WAREHOUSE: "COMPUTE_WH"
       SNOWSQL_DATABASE:  "LAMOSADATALAKE_PRD"
       SNOWSQL_SCHEMA:    "RAW"      
-      SNOWFLAKE_ACCOUNT:   "MGPYXTM-MEB90460"
-      SNOWFLAKE_USER:      "FIDELRAMIREZLOPEZ"
+      SNOWFLAKE_ACCOUNT:   "RANAZVP-QFB08200"
+      SNOWFLAKE_USER:      "FIDELRAMIREZ"
       SNOWFLAKE_PASSWORD:   ${{ secrets.SNOWFLAKE_PASSWORD }}
 
     steps:
@@ -37,8 +37,8 @@ jobs:
           default_connection_name = "conectionSnowflake"
           [connections]
           [connections.conectionSnowflake]
-          account = "MGPYXTM-MEB90460"
-          user = "FIDELRAMIREZLOPEZ"
+          account = "RANAZVP-QFB08200"
+          user = "FIDELRAMIREZ"
           password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
           database = "LAMOSADATALAKE_PRD"
           schema = "RAW"          
@@ -74,6 +74,7 @@ jobs:
       - name: Deploy scripts RAW to prod environment
         run: |
           echo "Ejecutando scripts en Snowflake…"
+          snow sql --help
           for f in ./*.sql; do
             echo "→ $f"
             # Usa un bloque -q para movernos al DB/SCHEMA deseados antes de cargar el archivo
