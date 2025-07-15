@@ -58,11 +58,11 @@ jobs:
         run: |
           pip install snowflake-cli-labs          
      
-#      - name: Check Version and Verify Connection
-#        run: |
-#              snow --version
-#              snow connection test
-#              echo "Using branch $GITHUB_REF_NAME"
+      - name: Check Version and Verify Connection
+        run: |
+              snow --version
+              snow connection test
+              echo "Using branch $GITHUB_REF_NAME"
               
               
       - name: Reemplazar prefijo para producción
@@ -79,13 +79,8 @@ jobs:
       - name: Deploy scripts RAW to prod environment
         run: |
           echo "Ejecutando scripts en Snowflake…"
-          #snow sql -q "USE DATABASE $SNOWSQL_DATABASE; USE SCHEMA $SNOWSQL_SCHEMA;" -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql"
           snow sql -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql"
-          for f in ./*.sql; do
-            echo "→ $f"
-            # Usa un bloque -q para movernos al DB/SCHEMA deseados antes de cargar el archivo
-            # snow sql -q "USE DATABASE $SNOWSQL_DATABASE; USE SCHEMA $SNOWSQL_SCHEMA;" -f "$f"
-          done
+         
 
       
        
