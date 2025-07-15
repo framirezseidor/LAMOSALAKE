@@ -60,8 +60,9 @@ jobs:
           SNOWFLAKE_WAREHOUSE: "WAREHOUSEGRAL"
           SNOWFLAKE_DATABASE:  "LAMOSALAKE_PRD"
           SNOWFLAKE_SCHEMA:    "RAW"
+
         run: |
-          snow connection create github_ci \
+          snow connection add github_ci \
             --account "$SNOWFLAKE_ACCOUNT" \
             --user "$SNOWFLAKE_USER" \
             --password "$SNOWFLAKE_PASSWORD" \
@@ -69,6 +70,7 @@ jobs:
             --warehouse "$SNOWFLAKE_WAREHOUSE" \
             --database "$SNOWFLAKE_DATABASE" \
             --schema "$SNOWFLAKE_SCHEMA"
+            --default
 
           snow sql -c github_ci -f ./COMERCIAL/FCT_COM_REV_VENTAS.sql          
 
