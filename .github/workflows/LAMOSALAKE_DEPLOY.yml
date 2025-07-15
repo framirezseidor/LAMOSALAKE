@@ -63,13 +63,13 @@ jobs:
 
         run: |
           snow connection add -n github_ci \
-            --account "$SNOWFLAKE_ACCOUNT" \
-            --user "$SNOWFLAKE_USER" \
-            --password "$SNOWFLAKE_PASSWORD" \
-            --role "$SNOWFLAKE_ROLE" \
-            --warehouse "$SNOWFLAKE_WAREHOUSE" \
-            --database "$SNOWFLAKE_DATABASE" \
-            --schema "$SNOWFLAKE_SCHEMA"
+            --account "RANAZVP-QFB08200" \
+            --user ""FIDELRAMIREZ" \
+            --password ${{ secrets.SNOWFLAKE_PASSWORD }} \
+            --role "ACCOUNTADMIN" \
+            --warehouse "WAREHOUSEGRAL" \
+            --database "LAMOSALAKE_PRD" \
+            --schema "CON"
             --default
 
           snow sql -f ./COMERCIAL/FCT_COM_REV_VENTAS.sql          
