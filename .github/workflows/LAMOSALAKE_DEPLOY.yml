@@ -32,7 +32,7 @@ jobs:
 
       - name: Configurar credenciales snowflake
         run: |
-          mkdir -p .snowflake
+          mkdir -p .snowsql
           cat <<EOF > .snowsql/config.toml
           default_connection_name = "conectionSnowflake"
           [connections]
@@ -45,7 +45,7 @@ jobs:
           warehouse = "COMPUTE_WH"
           
       - name: Verify Snowflake config file
-        run: ls -la .snowflake && cat .snowsql/config.toml
+        run: ls -la .snowsql && cat .snowsql/config.toml
 
 
 #      - name: Install snowflake-cli
