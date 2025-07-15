@@ -62,7 +62,7 @@ jobs:
           SNOWFLAKE_SCHEMA:    "RAW"
 
         run: |
-          snow connection add -n github_ci \
+          snow connection add -n "github_ci" \
             --account "RANAZVP-QFB08200" \
             --user ""FIDELRAMIREZ" \
             --password ${{ secrets.SNOWFLAKE_PASSWORD }} \
@@ -79,10 +79,7 @@ jobs:
         run: |
           find . -iname "FCT_COM_REV_VENTAS.SQL"          
 
-      - name: Deploy scripts RAW to prod environment
-        run: |
-          echo "Ejecutando scripts en Snowflake…"
-          snow sql -c github_ci -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql"
+
          
 
       
