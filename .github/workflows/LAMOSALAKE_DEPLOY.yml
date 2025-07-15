@@ -44,8 +44,17 @@ jobs:
           schema = "RAW"          
           warehouse = "COMPUTE_WH"
           
-      - name: Verify Snowflake config file
-        run: ls -la .snowflake && cat .snowflake/config.toml
+          snow connection create github_ci \
+            --account "RANAZVP-QFB08200" \
+            --user "FIDELRAMIREZ" \
+            --password "${{ secrets.SNOWFLAKE_PASSWORD }}" \
+            --role "ACCOUNTADMIN" \
+            --warehouse "WAREHOUSEGRAL" \
+            --database "LAMOSALAKE_PRD" \
+            --schema "RAW"
+
+#      - name: Verify Snowflake config file
+#        run: ls -la .snowflake && cat .snowflake/config.toml
 
 
 #      - name: Install snowflake-cli
@@ -58,11 +67,11 @@ jobs:
         run: |
           pip install snowflake-cli-labs          
      
-      - name: Check Version and Verify Connection
-        run: |
-              snow --version
-              snow connection test
-              echo "Using branch $GITHUB_REF_NAME"
+#      - name: Check Version and Verify Connection
+#        run: |
+#              snow --version
+#              snow connection test
+#              echo "Using branch $GITHUB_REF_NAME"
               
               
       - name: Reemplazar prefijo para producción
@@ -79,7 +88,7 @@ jobs:
       - name: Deploy scripts RAW to prod environment
         run: |
           echo "Ejecutando scripts en Snowflake…"
-          snow sql -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql"
+          snow sql -C github_ci -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql"
          
 
       
