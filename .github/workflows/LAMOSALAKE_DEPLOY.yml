@@ -30,7 +30,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Configurar credenciales
+      - name: Configurar credenciales snowflake
         run: |
           mkdir -p .snowflake
           cat <<EOF > .snowflake/config.toml
@@ -47,9 +47,9 @@ jobs:
       - name: Verify Snowflake config file
         run: ls -la .snowflake && cat .snowflake/config.toml
 
-      - name: Configurar credenciales
+      - name: Configurar credenciales snowsql
         run: |
-          cat <<EOF > .snowflake/connections.toml
+          cat <<EOF > .snowsql/config
           default_connection_name = "conectionSnowflake"
           [connections]
           [connections.conectionSnowflake]
@@ -60,8 +60,8 @@ jobs:
           schema = "RAW"          
           warehouse = "COMPUTE_WH"          
 
-      - name: Verify Snowflake connections file
-        run: ls -la .snowflake && cat .snowflake/connections.toml
+      - name: Verify Snowflake config file snowsql
+        run: ls -la .snowflake && cat .snowsql/config
 
 #      - name: Install snowflake-cli
 #        uses: Snowflake-Labs/snowflake-cli-action@v1.5
