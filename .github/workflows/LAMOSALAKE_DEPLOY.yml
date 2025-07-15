@@ -62,7 +62,7 @@ jobs:
           SNOWFLAKE_SCHEMA:    "RAW"
 
         run: |
-          snow connection add github_ci \
+          snow connection add -n github_ci \
             --account "$SNOWFLAKE_ACCOUNT" \
             --user "$SNOWFLAKE_USER" \
             --password "$SNOWFLAKE_PASSWORD" \
@@ -72,7 +72,7 @@ jobs:
             --schema "$SNOWFLAKE_SCHEMA"
             --default
 
-          snow sql -c github_ci -f ./COMERCIAL/FCT_COM_REV_VENTAS.sql          
+          snow sql -f ./COMERCIAL/FCT_COM_REV_VENTAS.sql          
 
 
       - name: Buscar el archivo SQL
