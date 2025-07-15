@@ -36,13 +36,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+#[connections]     default_connection_name = "conectionSnowflake"
       - name: Configurar credenciales snowflake
         run: |
           mkdir -p .snowflake
           cat <<EOF > .snowflake/config.toml
-          default_connection_name = "conectionSnowflake"
-          [connections]
-          [connections.conectionSnowflake]
+          [connections.default]
           account = "RANAZVP-QFB08200"
           user = "FIDELRAMIREZ"
           password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
