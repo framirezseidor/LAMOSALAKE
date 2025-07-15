@@ -88,7 +88,7 @@ jobs:
       - name: Deploy scripts RAW to prod environment
         run: |
           echo "Ejecutando scripts en Snowflake…"
-          snow sql -C github_ci -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql"
+          snow sql -c github_ci -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql"
          
 
       
