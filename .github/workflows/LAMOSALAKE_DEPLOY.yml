@@ -43,6 +43,12 @@ jobs:
           database = "LAMOSALAKE_PRD"
           schema = "RAW"          
           warehouse = "COMPUTE_WH"
+          
+      - name: Verify Snowflake config file
+        run: ls -la .snowflake && cat .snowflake/config.toml
+
+      - name: Configurar credenciales
+        run: |
           cat <<EOF > .snowflake/connections.toml
           default_connection_name = "conectionSnowflake"
           [connections]
@@ -52,10 +58,10 @@ jobs:
           password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
           database = "LAMOSALAKE_PRD"
           schema = "RAW"          
-          warehouse = "COMPUTE_WH"
+          warehouse = "COMPUTE_WH"          
 
-      - name: Verify Snowflake config file
-        run: ls -la .snowflake && cat .snowflake/config.toml
+      - name: Verify Snowflake connections file
+        run: ls -la .snowflake && cat .snowflake/connections.toml
 
 #      - name: Install snowflake-cli
 #        uses: Snowflake-Labs/snowflake-cli-action@v1.5
