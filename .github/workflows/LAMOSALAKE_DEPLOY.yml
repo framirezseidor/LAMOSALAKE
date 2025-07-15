@@ -20,7 +20,7 @@ jobs:
       SNOWSQL_PWD:       ${{ secrets.SNOWFLAKE_PASSWORD }}
 #      SNOWSQL_ROLE:      ${{ secrets.SNOWSQL_ROLE }}
       SNOWSQL_WAREHOUSE: "COMPUTE_WH"
-      SNOWSQL_DATABASE:  "LAMOSADATALAKE_PRD"
+      SNOWSQL_DATABASE:  "LAMOSALAKE_PRD"
       SNOWSQL_SCHEMA:    "RAW"      
       SNOWFLAKE_ACCOUNT:   "RANAZVP-QFB08200"
       SNOWFLAKE_USER:      "FIDELRAMIREZ"
@@ -40,7 +40,17 @@ jobs:
           account = "RANAZVP-QFB08200"
           user = "FIDELRAMIREZ"
           password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
-          database = "LAMOSADATALAKE_PRD"
+          database = "LAMOSALAKE_PRD"
+          schema = "RAW"          
+          warehouse = "COMPUTE_WH"
+          cat <<EOF > .snowflake/connections.toml
+          default_connection_name = "conectionSnowflake"
+          [connections]
+          [connections.conectionSnowflake]
+          account = "RANAZVP-QFB08200"
+          user = "FIDELRAMIREZ"
+          password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
+          database = "LAMOSALAKE_PRD"
           schema = "RAW"          
           warehouse = "COMPUTE_WH"
 
