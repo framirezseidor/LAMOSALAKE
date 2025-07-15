@@ -33,7 +33,7 @@ jobs:
       - name: Configurar credenciales snowflake
         run: |
           mkdir -p .snowflake
-          cat <<EOF > .snowflake/config.toml
+          cat <<EOF > .snowsql/config.toml
           default_connection_name = "conectionSnowflake"
           [connections]
           [connections.conectionSnowflake]
@@ -45,23 +45,8 @@ jobs:
           warehouse = "COMPUTE_WH"
           
       - name: Verify Snowflake config file
-        run: ls -la .snowflake && cat .snowflake/config.toml
+        run: ls -la .snowflake && cat .snowsql/config.toml
 
-      - name: Configurar credenciales snowsql
-        run: |
-          cat <<EOF > .snowsql/config
-          default_connection_name = "conectionSnowflake"
-          [connections]
-          [connections.conectionSnowflake]
-          account = "RANAZVP-QFB08200"
-          user = "FIDELRAMIREZ"
-          password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
-          database = "LAMOSALAKE_PRD"
-          schema = "RAW"          
-          warehouse = "COMPUTE_WH"          
-
-      - name: Verify Snowflake config file snowsql
-        run: ls -la .snowflake && cat .snowsql/config
 
 #      - name: Install snowflake-cli
 #        uses: Snowflake-Labs/snowflake-cli-action@v1.5
