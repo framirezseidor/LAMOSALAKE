@@ -72,7 +72,7 @@ jobs:
             --schema "CON"
             --default
 
-          snow sql -f ./COMERCIAL/FCT_COM_REV_VENTAS.sql          
+          snow sql -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql"
 
 
       - name: Buscar el archivo SQL
