@@ -52,24 +52,15 @@ jobs:
 
 
       - name: Ejecutar script Snowflake con conexión explícita
-        env:
-          SNOWFLAKE_ACCOUNT:   "RANAZVP-QFB08200"
-          SNOWFLAKE_USER:      "FIDELRAMIREZ"
-          SNOWFLAKE_PASSWORD:  ${{ secrets.SNOWFLAKE_PASSWORD }}
-          SNOWFLAKE_ROLE:      "ACCOUNTADMIN"
-          SNOWFLAKE_WAREHOUSE: "WAREHOUSEGRAL"
-          SNOWFLAKE_DATABASE:  "LAMOSALAKE_PRD"
-          SNOWFLAKE_SCHEMA:    "RAW"
-
         run: |
           snow connection add -n "github_ci" \
-            --account $SNOWFLAKE_ACCOUNT \
-            --user $SNOWFLAKE_USER \
+            --account ${{ secrets.SNOWFLAKE_ACCOUNT }} \
+            --user ${{ secrets.SNOWFLAKE_USER }} \
             --password ${{ secrets.SNOWFLAKE_PASSWORD }} \
-            --role $SNOWFLAKE_ROLE \
-            --warehouse $SNOWFLAKE_WAREHOUSE \
-            --database $SNOWFLAKE_DATABASE \
-            --schema $SNOWFLAKE_SCHEMA
+            --role ${{ secrets.SNOWFLAKE_ROLE }} \
+            --warehouse ${{ secrets.SNOWFLAKE_WAREHOUSE }} \
+            --database ${{ secrets.SNOWFLAKE_DATABASE }} \
+            --schema ${{ secrets.SNOWFLAKE_SCHEMA }}
             --default
 
           snow sql -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql"
