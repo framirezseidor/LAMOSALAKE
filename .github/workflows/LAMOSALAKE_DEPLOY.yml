@@ -42,19 +42,29 @@ jobs:
           echo "Cantidad de .sql encontrados: $(find . -type f -iname '*.sql' | wc -l)"
 
 
-      - name: Ejecutar script Snowflake con conexión explícita
+      - name: Crear conexión y ejecutar script
+        env:
+          SNOWFLAKE_ACCOUNT:   ${{ secrets.SNOWSQL_ACCOUNT }}
+          SNOWFLAKE_USER:      ${{ secrets.SNOWSQL_USER }}
+          SNOWFLAKE_PASSWORD:  ${{ secrets.SNOWSQL_PWD }}
+          SNOWFLAKE_ROLE:      ${{ secrets.SNOWSQL_ROLE }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWSQL_WAREHOUSE }}
+          SNOWFLAKE_DATABASE:  ${{ secrets.SNOWSQL_DATABASE }}
+          SNOWFLAKE_SCHEMA:    ${{ secrets.SNOWSQL_SCHEMA }}
         run: |
+          export SNOWFLAKE_PASSWORD="$SNOWFLAKE_PASSWORD"
+
           snow connection add -n "github_ci" \
-            --account ${{ secrets.SNOWFLAKE_ACCOUNT }} \
-            --user ${{ secrets.SNOWFLAKE_USER }} \
-            --password ${{ secrets.SNOWFLAKE_PASSWORD }} \
-            --role ${{ secrets.SNOWFLAKE_ROLE }} \
-            --warehouse ${{ secrets.SNOWFLAKE_WAREHOUSE }} \
-            --database ${{ secrets.SNOWFLAKE_DATABASE }} \
-            --schema ${{ secrets.SNOWFLAKE_SCHEMA }}
+            --account "$SNOWFLAKE_ACCOUNT" \
+            --user "$SNOWFLAKE_USER" \
+            --role "$SNOWFLAKE_ROLE" \
+            --warehouse "$SNOWFLAKE_WAREHOUSE" \
+            --database "$SNOWFLAKE_DATABASE" \
+            --schema "$SNOWFLAKE_SCHEMA" \
             --default
 
           snow sql -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql"
+
 
 
       - name: Buscar el archivo SQL
