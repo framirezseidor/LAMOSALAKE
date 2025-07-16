@@ -32,7 +32,6 @@ jobs:
 #              echo "Using branch $GITHUB_REF_NAME"
 
 
-
               
       - name: Reemplazar prefijo para producción
         run: |
@@ -52,29 +51,13 @@ jobs:
           SNOWFLAKE_DATABASE:  ${{ secrets.SNOWFLAKE_DATABASE }}
           SNOWFLAKE_SCHEMA:    ${{ secrets.SNOWFLAKE_SCHEMA }}
         run: |
-          export SNOWFLAKE_PASSWORD="$SNOWFLAKE_PASSWORD"
-          snow connection add -n "github_ci" \
+          snow sql \
             --account "$SNOWFLAKE_ACCOUNT" \
             --user "$SNOWFLAKE_USER" \
+            --password "$SNOWFLAKE_PASSWORD" \
             --role "$SNOWFLAKE_ROLE" \
             --warehouse "$SNOWFLAKE_WAREHOUSE" \
             --database "$SNOWFLAKE_DATABASE" \
             --schema "$SNOWFLAKE_SCHEMA" \
-            --default
+            -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql"
 
-          snow sql -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql"
-
-
-
-      - name: Buscar el archivo SQL
-        run: |
-          find . -iname "FCT_COM_REV_VENTAS.SQL"          
-
-
-         
-
-      
-       
-
-        
-        
