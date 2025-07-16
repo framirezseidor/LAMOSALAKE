@@ -21,15 +21,22 @@ jobs:
         uses: actions/checkout@v4
 
 
-      - name: Install snowcli
+#      - name: Install snowcli
+#        run: |
+#          pip install snowflake-cli-labs      
+
+      - name: Instalar snowsql
         run: |
-          pip install snowflake-cli-labs          
+          curl -L -o snowsql-linux_x86_64.bash https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-linux_x86_64.bash
+          bash snowsql-linux_x86_64.bash
+          export PATH=$PATH:$HOME/.snowsql              
      
 #      - name: Check Version and Verify Connection
 #        run: |
 #              snow --version
 #              snow connection test
 #              echo "Using branch $GITHUB_REF_NAME"
+
 
 
               
