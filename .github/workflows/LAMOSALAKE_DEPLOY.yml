@@ -64,7 +64,7 @@ jobs:
         run: |
           snow connection add -n "github_ci" \
             --account "RANAZVP-QFB08200" \
-            --user ""FIDELRAMIREZ" \
+            --user "FIDELRAMIREZ" \
             --password ${{ secrets.SNOWFLAKE_PASSWORD }} \
             --role "ACCOUNTADMIN" \
             --warehouse "WAREHOUSEGRAL" \
