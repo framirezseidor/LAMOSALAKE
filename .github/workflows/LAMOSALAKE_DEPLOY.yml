@@ -52,6 +52,7 @@ jobs:
           SNOWFLAKE_DATABASE:  ${{ secrets.SNOWFLAKE_DATABASE }}
           SNOWFLAKE_SCHEMA:    ${{ secrets.SNOWFLAKE_SCHEMA }}
         run: |
+          export SNOWFLAKE_PASSWORD="$SNOWFLAKE_PASSWORD"
           snow connection add -n "github_ci" \
             --account "$SNOWFLAKE_ACCOUNT" \
             --user "$SNOWFLAKE_USER" \
