@@ -23,12 +23,12 @@ jobs:
           default_connection_name = "conectionSnowflake"
           [connections]
           [connections.conectionSnowflake]
-          account = ${{ secrets.SNOWFLAKE_ACCOUNT }}
-          user = ${{ secrets.SNOWFLAKE_USER }}
-          password = ${{ secrets.SNOWFLAKE_PASSWORD }}
-          database = ${{ secrets.SNOWFLAKE_DATABASE }}
-          schema = ${{ secrets.SNOWFLAKE_SCHEMA }} 
-          warehouse = ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          account = "${{ secrets.SNOWFLAKE_ACCOUNT }}"
+          user = "${{ secrets.SNOWFLAKE_USER }}"
+          password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
+          database = "${{ secrets.SNOWFLAKE_DATABASE }}"
+          schema = "${{ secrets.SNOWFLAKE_SCHEMA }}" 
+          warehouse = "${{ secrets.SNOWFLAKE_WAREHOUSE }}"
  
       - name: Verify Snowflake config file
         run: ls -la .snowflake && cat .snowflake/config.toml
