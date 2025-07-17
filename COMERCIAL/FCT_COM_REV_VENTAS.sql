@@ -1,8 +1,4 @@
--- Valido para ACT y ARCH
-
-USE DATABASE LAMOSALAKE_PRD;
-USE SCHEMA CON;
-
+!set prefijo = 'SQ1'
 create or replace TABLE ${prefijo}_FCT_COM_REV_VENTAS_ACT (
 	ANIO VARCHAR,
 	MES VARCHAR,
