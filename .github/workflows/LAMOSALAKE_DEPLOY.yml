@@ -53,5 +53,5 @@ jobs:
           echo "Estoy en: $(pwd)"
           echo "Cantidad de .sql encontrados: $(find . -type f -iname '*.sql' | wc -l)"
 
-          snow sql -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql"
+          snow sql -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql" -D prefijo=LP1
 
