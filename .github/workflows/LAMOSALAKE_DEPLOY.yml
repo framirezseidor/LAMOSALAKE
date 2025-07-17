@@ -55,5 +55,5 @@ jobs:
 
       - name: Ejecutando script
         run: |
-          snow sql -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql" -D prefijo=LP1
+          snow sql -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql" -D prefijo="LAMOSALAKE_PRD.CON.LP1"
 
