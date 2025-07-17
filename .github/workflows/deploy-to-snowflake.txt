@@ -22,7 +22,7 @@ jobs:
       SNOWSQL_SCHEMA:    ${{ secrets.SNOWFLAKE_SCHEMA }}
 
     steps:
-    - name: 📥 Checkout del repositorio
+    - name: Checkout del repositorio
       uses: actions/checkout@v4
 
     - name: 🧰 Instalar snowsql CLI
