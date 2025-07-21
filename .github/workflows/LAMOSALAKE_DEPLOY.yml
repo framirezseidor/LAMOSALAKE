@@ -55,14 +55,10 @@ jobs:
           echo "Estoy en: $(pwd)"
           echo "Cantidad de .sql encontrados: $(find . -type f -iname '*.sql' | wc -l)"
 
-      - name: Creando tablas raw de FILE_XLS_COM_ADH_VENTAS_PCP
+      - name: Creando tablas raw 
         run: |
           snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_ADH_VENTAS_PCP.SQL"
-
-      - name: Creando tablas raw de FILE_XLS_COM_REV_VENTAS_PCP
-        run: |          
-           snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_REV_VENTAS_PCP.SQL"
-
-      - name: Creando tablas raw de MOF_ZBWSD_CUADERNO_FINANCIERO
-        run: |          
           snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/MOF_ZBWSD_CUADERNO_FINANCIERO.SQL"
+          snow sql -f "./COMERCIAL/PEDIDOS/RAW/TABLAS/MOF_ZBWSD_CAPTURA_DIARIA.SQL"
+#          snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_REV_VENTAS_PCP.SQL"
+
