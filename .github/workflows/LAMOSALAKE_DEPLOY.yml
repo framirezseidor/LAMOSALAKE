@@ -47,21 +47,24 @@ jobs:
              
       - name: Reemplazar prefijo para producción
         env:
-          ORIGIN_PREFIX: "SQ1"
-          PROD_PREFIX: "SP1"
+          ORIGIN_PREFIX: "_XLS_"
+          PROD_PREFIX: "_EXCEL_"
         run: |
           echo "Reemplazando prefijo en los archivos SQL"
           find . -type f -iname '*.sql' -print0 | xargs -0 -r sed -i -E "s/\b${ORIGIN_PREFIX}/${PROD_PREFIX}/g"
           echo "Estoy en: $(pwd)"
           echo "Cantidad de .sql encontrados: $(find . -type f -iname '*.sql' | wc -l)"
 
-      - name: Ejecutando script
+      - name: Creando tablas raw de ventas
         run: |          
           shopt -s globstar
           for i in ./COMERCIAL/VENTAS/RAW/TABLAS/**/*.sql; do
             snow sql -f "$i"
           done
 
+      - name: Creando tablas raw de pedidos
+        run: |          
+          shopt -s globstar
           for i in ./COMERCIAL/PEDIDOS/RAW/TABLAS/**/*.sql; do
             snow sql -f "$i"
           done          
