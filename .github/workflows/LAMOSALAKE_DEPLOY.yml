@@ -59,9 +59,9 @@ jobs:
         run: |
           snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_ADH_VENTAS_PCP.SQL"
 
-#      - name: Creando tablas raw de FILE_XLS_COM_REV_VENTAS_PCP
-#        run: |          
-#          snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_REV_VENTAS_PCP.SQL"
+      - name: Creando tablas raw de FILE_XLS_COM_REV_VENTAS_PCP
+        run: |          
+           snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_REV_VENTAS_PCP.SQL"
 
       - name: Creando tablas raw de MOF_ZBWSD_CUADERNO_FINANCIERO
         run: |          
