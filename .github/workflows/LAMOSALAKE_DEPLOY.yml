@@ -49,7 +49,7 @@ jobs:
       - name: Reemplazar prefijo para producción
         env:
           ORIGIN_PREFIX: "SQ1"
-          PROD_PREFIX: "LAMOSALAKE_PRD.CON.LP1"
+          PROD_PREFIX: "LAMOSALAKE_PRD.CON.SP1"
         run: |
           echo "Reemplazando prefijo en los archivos SQL"
           find . -type f -iname '*.sql' -print0 | xargs -0 -r sed -i -E "s/\b${ORIGIN_PREFIX}/${PROD_PREFIX}/g"
