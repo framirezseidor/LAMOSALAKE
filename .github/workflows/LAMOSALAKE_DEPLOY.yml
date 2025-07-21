@@ -62,6 +62,10 @@ jobs:
             snow sql -f "$i"
           done
 
+          for i in ./COMERCIAL/PEDIDOS/RAW/TABLAS/**/*.sql; do
+            snow sql -f "$i"
+          done          
+
 #          for /R "./COMERCIAL/VENTAS/RAW/TABLAS/" i in "*.sql"; do snow sql -f $i; done
 #          snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/MOF_ZBWSD_CUADERNO_FINANCIERO.SQL" 
 #          snow sql -f "./COMERCIAL/PEDIDOS/RAW/TABLAS/MOF_ZBWSD_CAPTURA_DIARIA.SQL"           
