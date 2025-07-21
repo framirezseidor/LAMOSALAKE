@@ -57,9 +57,10 @@ jobs:
 
       - name: Ejecutando script
         run: |          
-           for i in ./COMERCIAL/VENTAS/RAW/TABLAS/**/*.sql; do
-             snow sql -f "$i"
-           done
+          shopt -s globstar
+          for i in ./COMERCIAL/VENTAS/RAW/TABLAS/**/*.sql; do
+            snow sql -f "$i"
+          done
 
 #          for /R "./COMERCIAL/VENTAS/RAW/TABLAS/" i in "*.sql"; do snow sql -f $i; done
 #          snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/MOF_ZBWSD_CUADERNO_FINANCIERO.SQL" 
