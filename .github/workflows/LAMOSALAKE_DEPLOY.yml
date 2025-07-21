@@ -1,7 +1,6 @@
 name: Lamosa lake deploy
 
 on:
-
   pull_request:
     types:
       - closed
@@ -58,5 +57,3 @@ jobs:
 
       - name: Ejecutando script
         run: |          snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/MOF_ZBWSD_CUADERNO_FINANCIERO.SQL" 
-# run: |          snow sql -f "./COMERCIAL/PEDIDOS/RAW/TABLAS/MOF_ZBWSD_CAPTURA_DIARIA.SQL
-
