@@ -1,4 +1,4 @@
-create or replace TABLE ${{prefijo}}_FCT_COM_REV_VENTAS_ACT (
+create or replace TABLE SQ1_FCT_COM_REV_VENTAS_ACT (
 	ANIO VARCHAR,
 	MES VARCHAR,
 	ANIOMES VARCHAR,
