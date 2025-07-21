@@ -56,4 +56,5 @@ jobs:
           echo "Cantidad de .sql encontrados: $(find . -type f -iname '*.sql' | wc -l)"
 
       - name: Ejecutando script
-        run: |          snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/MOF_ZBWSD_CUADERNO_FINANCIERO.SQL" 
+        run: |          
+          snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/MOF_ZBWSD_CUADERNO_FINANCIERO.SQL" 
