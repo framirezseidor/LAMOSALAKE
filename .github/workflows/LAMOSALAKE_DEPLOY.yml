@@ -49,7 +49,7 @@ jobs:
       - name: Reemplazar prefijo para producción
         env:
           ORIGIN_PREFIX: "SQ1"
-          PROD_PREFIX: "LAMOSALAKE_PRD.CON.SP1"
+          PROD_PREFIX: "SP1"
         run: |
           echo "Reemplazando prefijo en los archivos SQL"
           find . -type f -iname '*.sql' -print0 | xargs -0 -r sed -i -E "s/\b${ORIGIN_PREFIX}/${PROD_PREFIX}/g"
@@ -57,6 +57,5 @@ jobs:
           echo "Cantidad de .sql encontrados: $(find . -type f -iname '*.sql' | wc -l)"
 
       - name: Ejecutando script
-        run: |
-          snow sql -f "./COMERCIAL/FCT_COM_REV_VENTAS.sql" -D prefijo="LAMOSALAKE_PRD.CON.LP1"
+        run: |          snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/MOF_ZBWSD_CUADERNO_FINANCIERO.SQL" 
 
