@@ -69,6 +69,6 @@ jobs:
 
       - name: Creando tablas raw Backorder  
         run: |
-          snow sql -f "./COMERCIAL\BACKORDER\RAW\TABLES\MOF_ZBWSD_PEDIDOS_BACKORDER.SQL"
-          snow sql -f "./COMERCIAL\BACKORDER\RAW\TABLES\CAT_UNIDAD_ESTADISTICA.SQL"
+          snow sql -f "./COMERCIAL/BACKORDER/RAW/TABLES/MOF_ZBWSD_PEDIDOS_BACKORDER.SQL"
+          snow sql -f "./COMERCIAL/BACKORDER/RAW/TABLES/CAT_UNIDAD_ESTADISTICA.SQL"
 
