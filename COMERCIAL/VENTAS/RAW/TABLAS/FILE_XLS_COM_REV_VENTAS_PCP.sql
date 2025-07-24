@@ -27,4 +27,4 @@ create or replace table RAW.FILE_XLS_COM_REV_VENTAS_PCP (
     FECHA_CARGA	TIMESTAMP_TZ,
     ZONA_HORARIA	VARCHAR(4)
 )
-;
+; 
