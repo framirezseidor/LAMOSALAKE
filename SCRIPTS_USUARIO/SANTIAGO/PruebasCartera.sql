@@ -1,0 +1,465 @@
+INSERT INTO CON.FCT_FIN_CARTERAACT
+		SELECT  ANIO,
+                MES,
+                ANIO_MES,
+                SOCIEDAD_ID,
+                ORGVENTAS_ID,
+                CANALDISTRIB_ID,
+                SECTOR_ID,
+                OFICINAVENTAS_ID,
+                DEUDOR_ID,
+                PAIS_ID,
+                SOLICITANTE,
+                SOLICITANTE_ID,
+                DESTINATARIO,
+                DESTINATARIO_ID,
+                CLASEDOCFI_ID,
+                DOCUMENTOFI,
+                CENTROBENEFICIO_ID,
+                CUENTALIBROMAYOR_ID,
+                DOCREFERENCIA,
+                FACTURA,
+                CLASEFACTURA_ID,
+                ASESORFACTURA_ID,
+                ASESORFACTURA_TEXT,
+                AREACTRLCDTO_ID,
+                CLASERIESGO_ID,
+                EQUIPORESPCREDITO_ID,
+                EQUIPORESPCREDITO_TEXT,
+                GRUPOCREDCLIENTE_ID,
+                GRUPCREDCLIENTE_TEXT,
+                FECHACONTAB,
+                FECHA_VENCIMIENTO,
+                FECHA_CLAVE,
+                IND_IMP_CARTERA_TOTAL_MDOC,
+                IND_IMP_VENCIDO_030_MDOC,
+                IND_IMP_VENCIDO_3160_MDOC,
+                IND_IMP_VENCIDO_6190_MDOC,
+                IND_IMP_VENCIDO_MAYOR90_MDOC,
+                IND_IMP_VENCIDO_TOTAL_MDOC,
+                IND_IMP_PORVENCER_030_MDOC,
+                IND_IMP_PORVENCER_3160_MDOC,
+                IND_IMP_PORVENCER_6190_MDOC,
+                IND_IMP_PORVENCER_MAYOR90_MDOC,
+                IND_IMP_PORVENCER_TOTAL_MDOC,
+                IND_IMP_COBRANZA_MDOC,
+                IND_IMP_FACTURAS_MDOC,
+                MON_DOC,
+                IND_IMP_CARTERA_TOTAL_MSOC,
+                IND_IMP_VENCIDO_030_MSOC,
+                IND_IMP_VENCIDO_3160_MSOC,
+                IND_IMP_VENCIDO_6190_MSOC,
+                IND_IMP_VENCIDO_MAYOR90_MSOC,
+                IND_IMP_VENCIDO_TOTAL_MSOC,
+                IND_IMP_PORVENCER_030_MSOC,
+                IND_IMP_PORVENCER_3160_MSOC,
+                IND_IMP_PORVENCER_6190_MSOC,
+                IND_IMP_PORVENCER_MAYOR90_MSOC,
+                IND_IMP_PORVENCER_TOTAL_MSOC,
+                IND_IMP_COBRANZA_MSOC,
+                IND_IMP_FACTURAS_MSOC,
+                MON_SOC,
+                IND_IMP_CARTERA_TOTAL_MUSD,
+                IND_IMP_VENCIDO_030_MUSD,
+                IND_IMP_VENCIDO_3160_MUSD,
+                IND_IMP_VENCIDO_6190_MUSD,
+                IND_IMP_VENCIDO_MAYOR90_MUSD,
+                IND_IMP_VENCIDO_TOTAL_MUSD,
+                IND_IMP_PORVENCER_030_MUSD,
+                IND_IMP_PORVENCER_3160_MUSD,
+                IND_IMP_PORVENCER_6190_MUSD,
+                IND_IMP_PORVENCER_MAYOR90_MUSD,
+                IND_IMP_PORVENCER_TOTAL_MUSD,
+                IND_IMP_COBRANZA_MUSD,
+                IND_IMP_FACTURAS_MUSD,
+                MON_USD,
+                TIPO
+
+        FROM (
+
+            SELECT  ANIO,
+                    MES,
+                    ANIO_MES,
+                    SOCIEDAD_ID,
+                    ORGVENTAS_ID,
+                    CANALDISTRIB_ID,
+                    SECTOR_ID,
+                    OFICINAVENTAS_ID,
+                    DEUDOR_ID,
+                    PAIS_ID,
+                    SOLICITANTE,
+                    SOLICITANTE_ID,
+                    DESTINATARIO,
+                    DESTINATARIO_ID,
+                    CLASEDOCFI_ID,
+                    DOCUMENTOFI,
+                    CENTROBENEFICIO_ID,
+                    CUENTALIBROMAYOR_ID,
+                    DOCREFERENCIA,
+                    FACTURA,
+                    CLASEFACTURA_ID,
+                    ASESORFACTURA_ID,
+                    ASESORFACTURA_TEXT,
+                    AREACTRLCDTO_ID,
+                    CLASERIESGO_ID,
+                    EQUIPORESPCREDITO_ID,
+                    EQUIPORESPCREDITO_TEXT,
+                    GRUPOCREDCLIENTE_ID,
+                    GRUPCREDCLIENTE_TEXT,
+                    FECHA_CONTAB AS FECHACONTAB,
+                    FECHA_VENCIMIENTO,
+                    FECHA_CLAVE,
+                    IND_IMP_CARTERA_TOTAL_MDOC,
+                    IND_IMP_VENCIDO_030_MDOC,
+                    IND_IMP_VENCIDO_3160_MDOC,
+                    IND_IMP_VENCIDO_6190_MDOC,
+                    IND_IMP_VENCIDO_MAYOR90_MDOC,
+                    IND_IMP_VENCIDO_TOTAL_MDOC,
+                    IND_IMP_PORVENCER_030_MDOC,
+                    IND_IMP_PORVENCER_3160_MDOC,
+                    IND_IMP_PORVENCER_6190_MDOC,
+                    IND_IMP_PORVENCER_MAYOR90_MDOC,
+                    IND_IMP_PORVENCER_TOTAL_MDOC,
+                    IND_IMP_COBRANZA_MDOC,
+                    IND_IMP_FACTURAS_MDOC,
+                    MON_DOC,
+                    IND_IMP_CARTERA_TOTAL_MSOC,
+                    IND_IMP_VENCIDO_030_MSOC,
+                    IND_IMP_VENCIDO_3160_MSOC,
+                    IND_IMP_VENCIDO_6190_MSOC,
+                    IND_IMP_VENCIDO_MAYOR90_MSOC,
+                    IND_IMP_VENCIDO_TOTAL_MSOC,
+                    IND_IMP_PORVENCER_030_MSOC,
+                    IND_IMP_PORVENCER_3160_MSOC,
+                    IND_IMP_PORVENCER_6190_MSOC,
+                    IND_IMP_PORVENCER_MAYOR90_MSOC,
+                    IND_IMP_PORVENCER_TOTAL_MSOC,
+                    IND_IMP_COBRANZA_MSOC,
+                    IND_IMP_FACTURAS_MSOC,
+                    MON_SOC,
+                    IND_IMP_CARTERA_TOTAL_MUSD,
+                    IND_IMP_VENCIDO_030_MUSD,
+                    IND_IMP_VENCIDO_3160_MUSD,
+                    IND_IMP_VENCIDO_6190_MUSD,
+                    IND_IMP_VENCIDO_MAYOR90_MUSD,
+                    IND_IMP_VENCIDO_TOTAL_MUSD,
+                    IND_IMP_PORVENCER_030_MUSD,
+                    IND_IMP_PORVENCER_3160_MUSD,
+                    IND_IMP_PORVENCER_6190_MUSD,
+                    IND_IMP_PORVENCER_MAYOR90_MUSD,
+                    IND_IMP_PORVENCER_TOTAL_MUSD,
+                    IND_IMP_COBRANZA_MUSD,
+                    IND_IMP_FACTURAS_MUSD,
+                    MON_USD,
+                    TIPO
+            FROM PRE.PFCT_FIN_CARTERAACT
+            WHERE ANIO_MES = '202505' --:ANIOMES
+        
+            UNION ALL
+
+            SELECT  ANIO,
+                    MES,
+                    ANIO_MES,
+                    SOCIEDAD_ID,
+                    ORGVENTAS_ID,
+                    CANALDISTRIB_ID,
+                    SECTOR_ID,
+                    OFICINAVENTAS_ID,
+                    DEUDOR_ID,
+                    '' AS PAIS_ID,
+                    SOLICITANTE,
+                    SOLICITANTE_ID,
+                    DESTINATARIO,
+                    DESTINATARIO_ID,
+                    CLASEDOCFI_ID,
+                    DOCUMENTOFI,
+                    CENTROBENEFICIO_ID,
+                    CUENTALIBROMAYOR_ID,
+                    DOCREFERENCIA,
+                    FACTURA,
+                    CLASEFACTURA_ID,
+                    ASESORFACTURA_ID,
+                    ASESORFACTURA_TEXT,
+                    AREACTRLCDTO_ID,
+                    CLASERIESGO_ID,
+                    EQUIPORESPCREDITO_ID,
+                    EQUIPORESPCREDITO_TEXT,
+                    GRUPOCREDCLIENTE_ID,
+                    GRUPCREDCLIENTE_TEXT,
+                    FECHACONTAB,
+                    FECHAVENCIMIENTO,
+                    FECHACLAVE,
+                    0 AS IND_IMP_CARTERA_TOTAL_MDOC,
+                    0 AS IND_IMP_VENCIDO_030_MDOC,
+                    0 AS IND_IMP_VENCIDO_3160_MDOC,
+                    0 AS IND_IMP_VENCIDO_6190_MDOC,
+                    0 AS IND_IMP_VENCIDO_MAYOR90_MDOC,
+                    0 AS IND_IMP_VENCIDO_TOTAL_MDOC,
+                    0 AS IND_IMP_PORVENCER_030_MDOC,
+                    0 AS IND_IMP_PORVENCER_3160_MDOC,
+                    0 AS IND_IMP_PORVENCER_6190_MDOC,
+                    0 AS IND_IMP_PORVENCER_MAYOR90_MDOC,
+                    0 AS IND_IMP_PORVENCER_TOTAL_MDOC,
+                    IND_IMP_COBRANZA_MDOC,
+                    0 AS IND_IMP_FACTURAS_MDOC,
+                    MON_DOC,
+                    0 AS IND_IMP_CARTERA_TOTAL_MSOC,
+                    0 AS IND_IMP_VENCIDO_030_MSOC,
+                    0 AS IND_IMP_VENCIDO_3160_MSOC,
+                    0 AS IND_IMP_VENCIDO_6190_MSOC,
+                    0 AS IND_IMP_VENCIDO_MAYOR90_MSOC,
+                    0 AS IND_IMP_VENCIDO_TOTAL_MSOC,
+                    0 AS IND_IMP_PORVENCER_030_MSOC,
+                    0 AS IND_IMP_PORVENCER_3160_MSOC,
+                    0 AS IND_IMP_PORVENCER_6190_MSOC,
+                    0 AS IND_IMP_PORVENCER_MAYOR90_MSOC,
+                    0 AS IND_IMP_PORVENCER_TOTAL_MSOC,
+                    IND_IMP_COBRANZA_MSOC,
+                    0 AS IND_IMP_FACTURAS_MSOC,
+                    MON_SOC,
+                    0 AS IND_IMP_CARTERA_TOTAL_MUSD,
+                    0 AS IND_IMP_VENCIDO_030_MUSD,
+                    0 AS IND_IMP_VENCIDO_3160_MUSD,
+                    0 AS IND_IMP_VENCIDO_6190_MUSD,
+                    0 AS IND_IMP_VENCIDO_MAYOR90_MUSD,
+                    0 AS IND_IMP_VENCIDO_TOTAL_MUSD,
+                    0 AS IND_IMP_PORVENCER_030_MUSD,
+                    0 AS IND_IMP_PORVENCER_3160_MUSD,
+                    0 AS IND_IMP_PORVENCER_6190_MUSD,
+                    0 AS IND_IMP_PORVENCER_MAYOR90_MUSD,
+                    0 AS IND_IMP_PORVENCER_TOTAL_MUSD,
+                    IND_IMP_COBRANZA_MUSD,
+                    0 AS IND_IMP_FACTURAS_MUSD,
+                    MON_USD,
+                    '' AS TIPO
+            FROM CON.FCT_FIN_COBRANZA
+            WHERE ANIO_MES = '202505' --:ANIOMES
+        
+            UNION ALL
+
+            SELECT  ANIO,
+                    MES,
+                    ANIO_MES,
+                    SOCIEDAD_ID,
+                    ORGVENTAS_ID,
+                    CANALDISTRIB_ID,
+                    SECTOR_ID,
+                    OFICINAVENTAS_ID,
+                    DEUDOR_ID,
+                    '' AS PAIS_ID,
+                    SOLICITANTE,
+                    SOLICITANTE_ID,
+                    DESTINATARIO,
+                    DESTINATARIO_ID,
+                    CLASEDOCFI_ID,
+                    DOCUMENTOFI,
+                    CENTROBENEFICIO_ID,
+                    CUENTALIBROMAYOR_ID,
+                    DOCREFERENCIA,
+                    FACTURA,
+                    CLASEFACTURA_ID,
+                    ASESORFACTURA_ID,
+                    ASESORFACTURA_TEXT,
+                    AREACTRLCDTO_ID,
+                    CLASERIESGO_ID,
+                    EQUIPORESPCREDITO_ID,
+                    EQUIPORESPCREDITO_TEXT,
+                    GRUPOCREDCLIENTE_ID,
+                    GRUPCREDCLIENTE_TEXT,
+                    FECHACONTAB,
+                    FECHAVENCIMIENTO,
+                    FECHACLAVE,
+                    0 AS IND_IMP_CARTERA_TOTAL_MDOC,
+                    0 AS IND_IMP_VENCIDO_030_MDOC,
+                    0 AS IND_IMP_VENCIDO_3160_MDOC,
+                    0 AS IND_IMP_VENCIDO_6190_MDOC,
+                    0 AS IND_IMP_VENCIDO_MAYOR90_MDOC,
+                    0 AS IND_IMP_VENCIDO_TOTAL_MDOC,
+                    0 AS IND_IMP_PORVENCER_030_MDOC,
+                    0 AS IND_IMP_PORVENCER_3160_MDOC,
+                    0 AS IND_IMP_PORVENCER_6190_MDOC,
+                    0 AS IND_IMP_PORVENCER_MAYOR90_MDOC,
+                    0 AS IND_IMP_PORVENCER_TOTAL_MDOC,
+                    0 AS IND_IMP_COBRANZA_MDOC,
+                    IND_IMP_FACTURAS_MDOC,
+                    MON_DOC,
+                    0 AS IND_IMP_CARTERA_TOTAL_MSOC,
+                    0 AS IND_IMP_VENCIDO_030_MSOC,
+                    0 AS IND_IMP_VENCIDO_3160_MSOC,
+                    0 AS IND_IMP_VENCIDO_6190_MSOC,
+                    0 AS IND_IMP_VENCIDO_MAYOR90_MSOC,
+                    0 AS IND_IMP_VENCIDO_TOTAL_MSOC,
+                    0 AS IND_IMP_PORVENCER_030_MSOC,
+                    0 AS IND_IMP_PORVENCER_3160_MSOC,
+                    0 AS IND_IMP_PORVENCER_6190_MSOC,
+                    0 AS IND_IMP_PORVENCER_MAYOR90_MSOC,
+                    0 AS IND_IMP_PORVENCER_TOTAL_MSOC,
+                    0 AS IND_IMP_COBRANZA_MSOC,
+                    IND_IMP_FACTURAS_MSOC,
+                    MON_SOC,
+                    0 AS IND_IMP_CARTERA_TOTAL_MUSD,
+                    0 AS IND_IMP_VENCIDO_030_MUSD,
+                    0 AS IND_IMP_VENCIDO_3160_MUSD,
+                    0 AS IND_IMP_VENCIDO_6190_MUSD,
+                    0 AS IND_IMP_VENCIDO_MAYOR90_MUSD,
+                    0 AS IND_IMP_VENCIDO_TOTAL_MUSD,
+                    0 AS IND_IMP_PORVENCER_030_MUSD,
+                    0 AS IND_IMP_PORVENCER_3160_MUSD,
+                    0 AS IND_IMP_PORVENCER_6190_MUSD,
+                    0 AS IND_IMP_PORVENCER_MAYOR90_MUSD,
+                    0 AS IND_IMP_PORVENCER_TOTAL_MUSD,
+                    0 AS IND_IMP_COBRANZA_MUSD,
+                    IND_IMP_FACTURAS_MUSD,
+                    MON_USD,
+                    '' AS TIPO
+            FROM CON.FCT_FIN_FACTURADO
+            WHERE ANIO_MES = '202505' --:ANIOMES
+        );
+
+SELECT *
+FROM CON.FCT_FIN_FACTURADO
+WHERE ANIO_MES = '202505' --:ANIOMES
+AND (CLASERIESGO_ID = '0010105291' OR SOLICITANTE_ID = '0010105291' OR DOCUMENTOFI = '0010105291' OR GRUPOCREDCLIENTE_ID = '0010105291');
+
+
+
+SELECT  SUM(IND_IMP_CARTERA_TOTAL_MDOC) AS CARTERA_TOTAL_MDOC,
+        SUM(IND_IMP_VENCIDO_TOTAL_MDOC) AS VENCIDO_TOTAL_MDOC,
+        SUM(IND_IMP_PORVENCER_TOTAL_MDOC) AS PORVENCER_TOTAL_MDOC,
+        SUM(IND_IMP_COBRANZA_MDOC) AS COBRANZA_MDOC,
+        SUM(IND_IMP_FACTURAS_MDOC) AS FACTURAS_MDOC,
+        SUM(IND_IMP_CARTERA_TOTAL_MSOC) AS CARTERA_TOTAL_MSOC,
+        SUM(IND_IMP_VENCIDO_TOTAL_MSOC) AS VENCIDO_TOTAL_MSOC,
+        SUM(IND_IMP_PORVENCER_TOTAL_MSOC) AS PORVENCER_TOTAL_MSOC,
+        SUM(IND_IMP_COBRANZA_MSOC) AS COBRANZA_MSOC,
+        SUM(IND_IMP_FACTURAS_MSOC) AS FACTURAS_MSOC,
+        SUM(IND_IMP_CARTERA_TOTAL_MUSD) AS CARTERA_TOTAL_MUSD,
+        SUM(IND_IMP_VENCIDO_TOTAL_MUSD) AS VENCIDO_TOTAL_MUSD,
+        SUM(IND_IMP_PORVENCER_TOTAL_MUSD) AS PORVENCER_TOTAL_MUSD,
+        SUM(IND_IMP_COBRANZA_MUSD) AS COBRANZA_MUSD,
+        SUM(IND_IMP_FACTURAS_MUSD) AS FACTURAS_MUSD
+FROM CON.FCT_FIN_CARTERAHIST;
+
+SELECT  SUM(IND_IMP_CARTERA_TOTAL_MDOC) AS CARTERA_TOTAL_MDOC,
+        SUM(IND_IMP_VENCIDO_TOTAL_MDOC) AS VENCIDO_TOTAL_MDOC,
+        SUM(IND_IMP_PORVENCER_TOTAL_MDOC) AS PORVENCER_TOTAL_MDOC,
+        SUM(IND_IMP_COBRANZA_MDOC) AS COBRANZA_MDOC,
+        SUM(IND_IMP_FACTURAS_MDOC) AS FACTURAS_MDOC,
+        SUM(IND_IMP_CARTERA_TOTAL_MSOC) AS CARTERA_TOTAL_MSOC,
+        SUM(IND_IMP_VENCIDO_TOTAL_MSOC) AS VENCIDO_TOTAL_MSOC,
+        SUM(IND_IMP_PORVENCER_TOTAL_MSOC) AS PORVENCER_TOTAL_MSOC,
+        SUM(IND_IMP_COBRANZA_MSOC) AS COBRANZA_MSOC,
+        SUM(IND_IMP_FACTURAS_MSOC) AS FACTURAS_MSOC,
+        SUM(IND_IMP_CARTERA_TOTAL_MUSD) AS CARTERA_TOTAL_MUSD,
+        SUM(IND_IMP_VENCIDO_TOTAL_MUSD) AS VENCIDO_TOTAL_MUSD,
+        SUM(IND_IMP_PORVENCER_TOTAL_MUSD) AS PORVENCER_TOTAL_MUSD,
+        SUM(IND_IMP_COBRANZA_MUSD) AS COBRANZA_MUSD,
+        SUM(IND_IMP_FACTURAS_MUSD) AS FACTURAS_MUSD
+FROM MIRRORING.FCT_FIN_ADH_CARTERA;
+SELECT  SUM(IND_IMP_CARTERA_TOTAL_MDOC) AS CARTERA_TOTAL_MDOC,
+        SUM(IND_IMP_VENCIDO_TOTAL_MDOC) AS VENCIDO_TOTAL_MDOC,
+        SUM(IND_IMP_PORVENCER_TOTAL_MDOC) AS PORVENCER_TOTAL_MDOC,
+        SUM(IND_IMP_COBRANZA_MDOC) AS COBRANZA_MDOC,
+        SUM(IND_IMP_FACTURAS_MDOC) AS FACTURAS_MDOC,
+        SUM(IND_IMP_CARTERA_TOTAL_MSOC) AS CARTERA_TOTAL_MSOC,
+        SUM(IND_IMP_VENCIDO_TOTAL_MSOC) AS VENCIDO_TOTAL_MSOC,
+        SUM(IND_IMP_PORVENCER_TOTAL_MSOC) AS PORVENCER_TOTAL_MSOC,
+        SUM(IND_IMP_COBRANZA_MSOC) AS COBRANZA_MSOC,
+        SUM(IND_IMP_FACTURAS_MSOC) AS FACTURAS_MSOC,
+        SUM(IND_IMP_CARTERA_TOTAL_MUSD) AS CARTERA_TOTAL_MUSD,
+        SUM(IND_IMP_VENCIDO_TOTAL_MUSD) AS VENCIDO_TOTAL_MUSD,
+        SUM(IND_IMP_PORVENCER_TOTAL_MUSD) AS PORVENCER_TOTAL_MUSD,
+        SUM(IND_IMP_COBRANZA_MUSD) AS COBRANZA_MUSD,
+        SUM(IND_IMP_FACTURAS_MUSD) AS FACTURAS_MUSD
+FROM MIRRORING.FCT_FIN_REV_CARTERA;
+SELECT  SUM(IND_IMP_CARTERA_TOTAL_MDOC) AS CARTERA_TOTAL_MDOC,
+        SUM(IND_IMP_VENCIDO_TOTAL_MDOC) AS VENCIDO_TOTAL_MDOC,
+        SUM(IND_IMP_PORVENCER_TOTAL_MDOC) AS PORVENCER_TOTAL_MDOC,
+        SUM(IND_IMP_COBRANZA_MDOC) AS COBRANZA_MDOC,
+        SUM(IND_IMP_FACTURAS_MDOC) AS FACTURAS_MDOC,
+        SUM(IND_IMP_CARTERA_TOTAL_MSOC) AS CARTERA_TOTAL_MSOC,
+        SUM(IND_IMP_VENCIDO_TOTAL_MSOC) AS VENCIDO_TOTAL_MSOC,
+        SUM(IND_IMP_PORVENCER_TOTAL_MSOC) AS PORVENCER_TOTAL_MSOC,
+        SUM(IND_IMP_COBRANZA_MSOC) AS COBRANZA_MSOC,
+        SUM(IND_IMP_FACTURAS_MSOC) AS FACTURAS_MSOC,
+        SUM(IND_IMP_CARTERA_TOTAL_MUSD) AS CARTERA_TOTAL_MUSD,
+        SUM(IND_IMP_VENCIDO_TOTAL_MUSD) AS VENCIDO_TOTAL_MUSD,
+        SUM(IND_IMP_PORVENCER_TOTAL_MUSD) AS PORVENCER_TOTAL_MUSD,
+        SUM(IND_IMP_COBRANZA_MUSD) AS COBRANZA_MUSD,
+        SUM(IND_IMP_FACTURAS_MUSD) AS FACTURAS_MUSD
+FROM MIRRORING.VW_FCT_FIN_REV_CARTERA;
+
+CALL CON.SP_CON_FACT_CARTERAACT('202505');
+CALL CON.SP_CON_FACT_CARTERAHIST('202505');
+
+SELECT COUNT(*)
+FROM MIRRORING.FCT_FIN_ADH_CARTERA;
+
+
+
+
+SELECT SUM(IND_IMP_COBRANZA_MDOC), SUM(IND_IMP_FACTURAS_MDOC) FROM CON.FCT_FIN_CARTERAHIST;
+
+
+
+
+
+
+SELECT *
+FROM MIRRORING.TR_FCT_FIN_ADH_CARTERA;
+
+SELECT *
+FROM CON.FCT_FIN_CARTERAHIST_HIST;
+
+
+
+
+SELECT * 
+from "LAMOSALAKE_DEV"."RAW"."PARAMETROS_EXTRACCION" 
+where "LAMOSALAKE_DEV"."RAW"."PARAMETROS_EXTRACCION"."EXTRACTOR" = 'ZBWFI_REP_ANTSALDET' 
+	and "LAMOSALAKE_DEV"."RAW"."PARAMETROS_EXTRACCION"."NEGOCIO" in ('ADH_MEX', 'ADH_GUATEMALA') 
+	and "LAMOSALAKE_DEV"."RAW"."PARAMETROS_EXTRACCION"."PARAMETRO" = 'BUDAT';
+
+INSERT INTO "LAMOSALAKE_DEV"."RAW"."PARAMETROS_EXTRACCION"
+VALUES ('1','ZBWFI_REP_ANTSALDET','ADH_MEX','BUDAT','20250723','20250723'),
+('1','ZBWFI_REP_ANTSALDET','ADH_GUATEMALA','BUDAT','20250723','20250723');
+
+
+
+SELECT COUNT(*)
+FROM (
+    SELECT *
+    FROM CON.FCT_FIN_CARTERAACT
+    
+    UNION ALL
+
+    SELECT *
+    FROM CON.FCT_FIN_CARTERAHIST
+)
+WHERE FECHACLAVE = '2025-07-23'
+AND SOCIEDAD_ID BETWEEN 'A101' AND 'A201';
+
+
+SELECT COUNT(*)
+FROM CON.FCT_FIN_CARTERAACT
+WHERE FECHACLAVE = '2025-07-23'
+AND SOCIEDAD_ID BETWEEN 'A101' AND 'A201';
+
+SELECT COUNT(*)
+FROM CON.VW_FCT_FIN_ADH_CARTERA
+WHERE FECHACLAVE = '2025-07-23'
+AND SOCIEDAD_ID BETWEEN 'A101' AND 'A201';
+
+
+
+
+SELECT COUNT(*)
+FROM MIRRORING.VW_FCT_FIN_ADH_CARTERA
+WHERE FECHACLAVE = '2025-07-23'
+AND SOCIEDAD_ID BETWEEN 'A101' AND 'A201';
+
+
+SELECT COUNT(*)
+FROM MIRRORING.FCT_FIN_ADH_CARTERA
+WHERE FECHACLAVE = '2025-07-23'
+AND SOCIEDAD_ID BETWEEN 'A101' AND 'A201';
