@@ -83,7 +83,7 @@ BEGIN
     ---------------------------------------------------------------------------------
     -- STEP 4: CLONNING
     ---------------------------------------------------------------------------------
-        CREATE OR REPLACE TABLE MIRRORING.DIM_CLI_RAMO
+        CREATE OR ALTER TABLE MIRRORING.DIM_CLI_RAMO
         CLONE CON.DIM_CLI_RAMO;
  
         CREATE OR REPLACE STREAM MIRRORING.STREAM_DIM_CLI_RAMO ON TABLE MIRRORING.DIM_CLI_RAMO;

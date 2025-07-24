@@ -84,7 +84,7 @@ BEGIN
     ---------------------------------------------------------------------------------
     -- STEP 4: CLONNING
     ---------------------------------------------------------------------------------
-        CREATE OR REPLACE TABLE MIRRORING.DIM_DOC_PUESTOTRABAJO
+        CREATE OR ALTER TABLE MIRRORING.DIM_DOC_PUESTOTRABAJO
         CLONE CON.DIM_DOC_PUESTOTRABAJO;
  
         CREATE OR REPLACE STREAM MIRRORING.STREAM_DIM_DOC_PUESTOTRABAJO ON TABLE MIRRORING.DIM_DOC_PUESTOTRABAJO;

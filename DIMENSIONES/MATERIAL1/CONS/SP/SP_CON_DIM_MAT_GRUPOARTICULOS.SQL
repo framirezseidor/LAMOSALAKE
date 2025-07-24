@@ -84,7 +84,7 @@ BEGIN
     ---------------------------------------------------------------------------------
     -- STEP 4: CLONNING
     ---------------------------------------------------------------------------------
-        CREATE OR REPLACE TABLE MIRRORING.DIM_MAT_GRUPOARTICULOS
+        CREATE OR ALTER TABLE MIRRORING.DIM_MAT_GRUPOARTICULOS
         CLONE CON.DIM_MAT_GRUPOARTICULOS;
  
         CREATE OR REPLACE STREAM MIRRORING.STREAM_DIM_MAT_GRUPOARTICULOS ON TABLE MIRRORING.DIM_MAT_GRUPOARTICULOS;

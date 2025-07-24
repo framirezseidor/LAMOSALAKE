@@ -1,5 +1,5 @@
 name: Lamosa lake deploy
-
+ 
 on:
   pull_request:
     types:
@@ -58,7 +58,7 @@ jobs:
       - name: Creando tablas raw ventas
         run: |
           snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_ADH_VENTAS_PCP.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_REV_VENTAS_PCP.SQL"
+#          snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_REV_VENTAS_PCP.SQL"
           snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/MOF_ZBWSD_CUADERNO_FINANCIERO.SQL"          
 
       - name: Creando funciones raw ventas

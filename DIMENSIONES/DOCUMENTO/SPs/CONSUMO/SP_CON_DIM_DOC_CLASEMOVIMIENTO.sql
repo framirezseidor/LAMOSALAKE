@@ -84,7 +84,7 @@ BEGIN
     ---------------------------------------------------------------------------------
     -- STEP 4: CLONNING
     ---------------------------------------------------------------------------------
-        CREATE OR REPLACE TABLE MIRRORING.DIM_DOC_CLASEMOVIMIENTO
+        CREATE OR ALTER TABLE MIRRORING.DIM_DOC_CLASEMOVIMIENTO
         CLONE CON.DIM_DOC_CLASEMOVIMIENTO;
  
         CREATE OR REPLACE STREAM MIRRORING.STREAM_DIM_DOC_CLASEMOVIMIENTO ON TABLE MIRRORING.DIM_DOC_CLASEMOVIMIENTO;
