@@ -20,8 +20,8 @@ for archivo in os.listdir(ruta):
             continue  # si no encontró la dimensión, salta ese archivo
 
         # Crear las nuevas líneas a agregar
-        create_original = f'\nCREATE OR ALTER TABLE "PRE.P{dimension}" (\n\n);\n'
-        create_prefijada = f'\nCREATE OR ALTER TABLE "CON.{dimension}" (\n\n);\n'
+        create_original = f'\nCREATE OR REPLACE TABLE "PRE.P{dimension}" (\n\n);\n'
+        create_prefijada = f'\nCREATE OR REPLACE TABLE "CON.{dimension}" (\n\n);\n'
 
         # Reescribir archivo con todo
         with open(archivo_path, "w", encoding="utf-8") as f:

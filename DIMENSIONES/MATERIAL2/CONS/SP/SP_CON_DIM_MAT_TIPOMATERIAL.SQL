@@ -84,7 +84,7 @@ BEGIN
     ---------------------------------------------------------------------------------
     -- STEP 4: CLONNING
     ---------------------------------------------------------------------------------
-        CREATE OR ALTER TABLE MIRRORING.DIM_MAT_TIPOMATERIAL
+        CREATE OR REPLACE TABLE MIRRORING.DIM_MAT_TIPOMATERIAL
         CLONE CON.DIM_MAT_TIPOMATERIAL;
  
         CREATE OR REPLACE STREAM MIRRORING.STREAM_DIM_MAT_TIPOMATERIAL ON TABLE MIRRORING.DIM_MAT_TIPOMATERIAL;
