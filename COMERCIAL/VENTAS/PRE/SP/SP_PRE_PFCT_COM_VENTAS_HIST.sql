@@ -402,7 +402,7 @@
     $$;
 
 
---  call PRE.SP_PRE_PFCT_COM_VENTAS_HIST();   
+ call PRE.SP_PRE_PFCT_COM_VENTAS_HIST();   
 
 
 --  SELECT *
@@ -416,3 +416,6 @@
 
 -- select * from con.fct_log_adh_inventario_foto limit 10;
 -- select distinct "[ZIOSDEST].[2ZIOSDEST] Clave" from RAW.BW4_VENTAS_HIST_NEW V;
+
+select * from PRE.PFCT_COM_ADH_VENTAS_HIST
+where ASESOR_COMERCIAL_FACTURA_CLAVE = '10100024';

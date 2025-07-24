@@ -356,7 +356,7 @@
     $$;
 
 
---  call CON.SP_CON_FCT_COM_VENTAS_HIST();   
+ call CON.SP_CON_FCT_COM_VENTAS_HIST();   
 
 
 -- create or replace stream MIRRORING.STREAM_FCT_COM_ADH_VENTAS_HIST on view  
