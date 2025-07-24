@@ -62,7 +62,8 @@ jobs:
 
       - name: Creando VISTAS generales 
         run: |
-          snow sql -f "./GENERAL/VISTAS/V_1_VW_PARAMETROS_EXTRACCION.sql"
+          snow sql -f "./GENERAL/TABLAS/V_1_VW_PARAMETROS_EXTRACCION.sql"
+
       - name: Creando tablas raw ventas
         run: |
           snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_ADH_VENTAS_PCP.SQL"        
