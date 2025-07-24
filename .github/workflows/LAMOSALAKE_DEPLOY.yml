@@ -56,7 +56,13 @@ jobs:
           echo "Cantidad de .sql encontrados: $(find . -type f -iname '*.sql' | wc -l)"
 
 
+      - name: Creando tablas generales 
+        run: |
+          snow sql -f "./GENERAL/TABLAS/V_1_PARAMETROS_EXTRACCION.SQL"
 
+      - name: Creando VISTAS generales 
+        run: |
+          snow sql -f "./GENERAL/VISTAS/VW_PARAMETROS_EXTRACCION.sql"
       - name: Creando tablas raw ventas
         run: |
           snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_ADH_VENTAS_PCP.SQL"        
