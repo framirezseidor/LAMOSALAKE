@@ -55,6 +55,27 @@ jobs:
           echo "Estoy en: $(pwd)"
           echo "Cantidad de .sql encontrados: $(find . -type f -iname '*.sql' | wc -l)"
 
+
+      - name: Creando tablas generales 
+        run: |
+          snow sql -f "./GENERAL/TABLAS/PARAMETROS_EXTRACCION.SQL"
+
+      - name: Creando VISTAS generales 
+        run: |
+          snow sql -f "./GENERAL/VISTAS/VW_PARAMETROS_EXTRACCION.SQL"
+
+# AQUI VA LA INSERCIÓN DE LOS PARÁMETROS DE EXTRACCION, LOS NEGOCIOS DEBEN LLAMARSE IGUAL
+# LO QUE DEBE CAMBIAR ES EL CONTENIDO DE LOS PARÁMETROS
+      - name: Creando VISTAS generales 
+        run: |
+          snow sql -f "./GENERAL/SCRIPTS/PARAMETROS_EXTRACCION.SQL"
+
+
+      - name: Creando tabla de logs
+        run: |
+          snow sql -f "./LOGS/TABLAS/HISTORIAL_EJECUCIONES.SQL"
+
+
       - name: Creando tablas raw ventas
         run: |
           snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_ADH_VENTAS_PCP.SQL"
