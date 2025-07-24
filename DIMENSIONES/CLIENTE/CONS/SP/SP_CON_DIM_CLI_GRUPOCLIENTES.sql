@@ -83,7 +83,7 @@ BEGIN
     ---------------------------------------------------------------------------------
     -- STEP 4: CLONNING
     ---------------------------------------------------------------------------------
-        CREATE OR ALTER TABLE MIRRORING.DIM_CLI_GRUPOCLIENTES
+        CREATE OR REPLACE TABLE MIRRORING.DIM_CLI_GRUPOCLIENTES
         CLONE CON.DIM_CLI_GRUPOCLIENTES;
  
         CREATE OR REPLACE STREAM MIRRORING.STREAM_DIM_CLI_GRUPOCLIENTES ON TABLE MIRRORING.DIM_CLI_GRUPOCLIENTES;

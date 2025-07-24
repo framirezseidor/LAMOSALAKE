@@ -100,7 +100,7 @@ BEGIN
     ---------------------------------------------------------------------------------
     -- STEP 4: CLONNING
     ---------------------------------------------------------------------------------
-        CREATE OR ALTER TABLE MIRRORING.DIM_DOC_ORDENFABRICACION
+        CREATE OR REPLACE TABLE MIRRORING.DIM_DOC_ORDENFABRICACION
         CLONE CON.DIM_DOC_ORDENFABRICACION;
  
         CREATE OR REPLACE STREAM MIRRORING.STREAM_DIM_DOC_ORDENFABRICACION ON TABLE MIRRORING.DIM_DOC_ORDENFABRICACION;
