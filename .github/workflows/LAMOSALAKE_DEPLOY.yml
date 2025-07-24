@@ -61,6 +61,9 @@ jobs:
         run: |
           snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_ADH_VENTAS_PCP.SQL"
           snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/MOF_ZBWSD_CUADERNO_FINANCIERO.SQL"          
+
+      - name: Creando tablas raw ventas 1
+        run: |
           snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_REV_VENTAS_PCP_ALT.SQL"
 
       - name: Creando funciones raw ventas
