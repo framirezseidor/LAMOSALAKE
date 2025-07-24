@@ -347,7 +347,7 @@ BEGIN
 
     ---------------------------------------------------------------------------------
 
-    CREATE OR REPLACE TABLE MIRRORING.DIM_MAT_ADH_PP CLONE MIRRORING.DIM_MAT_MATERIAL_ADH;
+    CREATE OR ALTER TABLE MIRRORING.DIM_MAT_ADH_PP CLONE MIRRORING.DIM_MAT_MATERIAL_ADH;
     create or replace stream LAMOSALAKE_DEV.MIRRORING.STREAM_DIM_MAT_ADH_PP ON table  MIRRORING.DIM_MAT_ADH_PP;
     ---------------------------------------------------------------------------------
     -- STEP 6: FINALIZACIÓN

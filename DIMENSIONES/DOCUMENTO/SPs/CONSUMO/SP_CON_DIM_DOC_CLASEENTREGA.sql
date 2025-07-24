@@ -83,7 +83,7 @@ BEGIN
     ---------------------------------------------------------------------------------
     -- STEP 4: CLONNING
     ---------------------------------------------------------------------------------
-        CREATE OR REPLACE TABLE MIRRORING.DIM_DOC_CLASEENTREGA
+        CREATE OR ALTER TABLE MIRRORING.DIM_DOC_CLASEENTREGA
         CLONE CON.DIM_DOC_CLASEENTREGA;
  
         CREATE OR REPLACE STREAM MIRRORING.STREAM_DIM_DOC_CLASEENTREGA ON TABLE MIRRORING.DIM_DOC_CLASEENTREGA;

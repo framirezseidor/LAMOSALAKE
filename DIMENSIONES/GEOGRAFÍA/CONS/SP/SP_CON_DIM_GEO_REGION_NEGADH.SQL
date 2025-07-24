@@ -83,7 +83,7 @@ BEGIN
     ---------------------------------------------------------------------------------
     -- STEP 4: CLONNING
     ---------------------------------------------------------------------------------
-        CREATE OR REPLACE TABLE MIRRORING.DIM_GEO_REGION_NEGADH
+        CREATE OR ALTER TABLE MIRRORING.DIM_GEO_REGION_NEGADH
         CLONE CON.DIM_GEO_REGION_NEGADH;
  
         CREATE OR REPLACE STREAM MIRRORING.STREAM_DIM_GEO_REGION_NEGADH ON TABLE MIRRORING.DIM_GEO_REGION_NEGADH;

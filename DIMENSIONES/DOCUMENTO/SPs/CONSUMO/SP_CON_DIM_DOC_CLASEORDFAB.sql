@@ -83,7 +83,7 @@ BEGIN
     ---------------------------------------------------------------------------------
     -- STEP 4: CLONNING
     ---------------------------------------------------------------------------------
-        CREATE OR REPLACE TABLE MIRRORING.DIM_DOC_CLASEORDFAB
+        CREATE OR ALTER TABLE MIRRORING.DIM_DOC_CLASEORDFAB
         CLONE CON.DIM_DOC_CLASEORDFAB;
  
         CREATE OR REPLACE STREAM MIRRORING.STREAM_DIM_DOC_CLASEORDFAB ON TABLE MIRRORING.DIM_DOC_CLASEORDFAB;

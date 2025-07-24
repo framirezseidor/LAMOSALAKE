@@ -83,7 +83,7 @@ BEGIN
     ---------------------------------------------------------------------------------
     -- STEP 4: FINALIZACIÓN
     ---------------------------------------------------------------------------------
-    CREATE OR REPLACE TABLE MIRRORING.DIM_ORG_NEGOCIOGRUPO
+    CREATE OR ALTER TABLE MIRRORING.DIM_ORG_NEGOCIOGRUPO
     CLONE CON.DIM_ORG_NEGOCIOGRUPO;
 
     CREATE OR REPLACE STREAM MIRRORING.STREAM_DIM_ORG_NEGOCIOGRUPO ON TABLE MIRRORING.DIM_ORG_NEGOCIOGRUPO;

@@ -83,7 +83,7 @@ BEGIN
     ---------------------------------------------------------------------------------
     -- STEP 4: CLONNING
     ---------------------------------------------------------------------------------
-        CREATE OR REPLACE TABLE MIRRORING.DIM_CLI_CLASIFICACIONCLIENTE
+        CREATE OR ALTER TABLE MIRRORING.DIM_CLI_CLASIFICACIONCLIENTE
         CLONE CON.DIM_CLI_CLASIFICACIONCLIENTE;
  
         CREATE OR REPLACE STREAM MIRRORING.STREAM_DIM_CLI_CLASIFICACIONCLIENTE ON TABLE MIRRORING.DIM_CLI_CLASIFICACIONCLIENTE;
