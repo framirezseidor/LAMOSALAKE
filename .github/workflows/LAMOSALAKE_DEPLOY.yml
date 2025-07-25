@@ -58,11 +58,11 @@ jobs:
 
       - name: Creando tablas generales 
         run: |
-          snow sql -f "./GENERAL/TABLAS/V_1_PARAMETROS_EXTRACCION.SQL"
+          snow sql -f "./GENERAL/TABLAS/PARAMETROS_EXTRACCION.SQL"
 
       - name: Creando VISTAS generales 
         run: |
-          snow sql -f "./GENERAL/VISTAS/V_1_VW_PARAMETROS_EXTRACCION.SQL"
+          snow sql -f "./GENERAL/VISTAS/VW_PARAMETROS_EXTRACCION.SQL"
 
       - name: Creando tablas raw ventas
         run: |
