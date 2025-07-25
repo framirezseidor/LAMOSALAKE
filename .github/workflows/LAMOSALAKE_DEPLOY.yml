@@ -80,9 +80,9 @@ jobs:
       - name: Creando tablas pre ventas
         run: |
           snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/V_1_PFCT_COM_ADH_VENTAS_PCP.SQL"          
-          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/PFCT_COM_REV_VENTAS_PCP.SQL"     
-          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/PFCT_COM_VENTAS.SQL" 
-          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/PFCT_COM_ADH_VENTAS_PCP_HIST.SQL"                   
+          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/V_1_PFCT_COM_REV_VENTAS_PCP.SQL"     
+          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/V_1_PFCT_COM_VENTAS.SQL" 
+          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/V_1_PFCT_COM_ADH_VENTAS_PCP_HIST.SQL"                   
 
 
       - name: Creando stored procedures pre ventas
