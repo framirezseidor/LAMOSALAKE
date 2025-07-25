@@ -84,7 +84,7 @@ jobs:
           snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/V_1_PFCT_COM_VENTAS.SQL" 
           snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/V_1_PFCT_COM_ADH_VENTAS_PCP_HIST.SQL"                   
 
-
+ 
       - name: Creando stored procedures pre ventas
         run: |
           snow sql -f "./COMERCIAL/VENTAS/PRE/SP/V_1_SP_PRE_PFCT_COM_ADH_VENTAS_PCP.SQL"
