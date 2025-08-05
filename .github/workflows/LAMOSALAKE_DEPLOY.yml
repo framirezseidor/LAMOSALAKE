@@ -91,21 +91,3 @@ jobs:
           snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_PRE_PFCT_COM_VENTAS_HIST.SQL"    
           snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_PRE_PFCT_COM_VENTAS.SQL"
 
-
-      - name: Creando tablas CON ventas
-        run: |
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/FCT_COM_ADH_VENTAS_ACT.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/FCT_COM_ADH_VENTAS_PCP.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/FCT_COM_REV_VENTAS_ACT.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/FCT_COM_REV_VENTAS_PCP.SQL"
-
-#         snow sql -f "./COMERCIAL/VENTAS/PRE/SP/.SQL"
-      - name: Creando stored procedures CON ventas
-        run: |
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_CON_FCT_COM_ADH_VENTAS_ACT.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_CON_FCT_COM_ADH_VENTAS_PCP.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_CON_FCT_COM_REV_VENTAS_ACT.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_CON_FCT_COM_REV_VENTAS_PCP.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_CON_FCT_COM_VENTAS_HIST.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_RAW_BORRADO_PRERAW.SQL"
- 
