@@ -103,15 +103,11 @@ jobs:
         run: |
           snow sql -f "./COMERCIAL/PEDIDOS/CON/TABLAS/VW_FCT_COM_ADH_PEDIDOS.sql"
           snow sql -f "./COMERCIAL/PEDIDOS/CON/TABLAS/VW_FCT_COM_REV_PEDIDOS.sql"
-     
-
-
 
       - name: Creando funciones RAW VENTAS
         run: |
           snow sql -f "./COMERCIAL/VENTAS/RAW/FUNCIONES/FN_OBTENER_FECHA_INICIO.SQL"
           snow sql -f "./COMERCIAL/VENTAS/RAW/FUNCIONES/FN_PARAMETRO.SQL"
-
 
       - name: Creando stored procedures pre ventas
         run: |
