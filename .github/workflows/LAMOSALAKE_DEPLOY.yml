@@ -77,29 +77,29 @@ jobs:
           snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/V_1_PFCT_COM_VENTAS.SQL" 
           snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/V_1_PFCT_COM_ADH_VENTAS_PCP_HIST.SQL"                   
 
-       - name: Creando tablas CONSUMO VENTAS
+      - name: Creando tablas CONSUMO VENTAS
         run: |
           snow sql -f "./COMERCIAL/VENTAS/CON/TABLAS/FCT_COM_ADH_VENTAS_ACT.SQL"
           snow sql -f "./COMERCIAL/VENTAS/CON/TABLAS/FCT_COM_ADH_VENTAS_PCP.SQL"
           snow sql -f "./COMERCIAL/VENTAS/CON/TABLAS/FCT_COM_REV_VENTAS_ACT.SQL"
           snow sql -f "./COMERCIAL/VENTAS/CON/TABLAS/FCT_COM_REV_VENTAS_PCP.SQL"          
 
-       - name: Creando tablas RAW PEDIDOS
+      - name: Creando tablas RAW PEDIDOS
         run: |
           snow sql -f "./COMERCIAL/PEDIDOS/RAW/TABLAS/MOF_ZBWSD_CAPTURA_DIARIA.SQL"
 
-       - name: Creando tablas PRE PEDIDOS
+      - name: Creando tablas PRE PEDIDOS
         run: |
           snow sql -f "./COMERCIAL/PEDIDOS/PRE/TABLAS/PFCT_COM_PEDIDOS_ACT.SQL"
 
-       - name: Creando tablas CONSUMO PEDIDOS
+      - name: Creando tablas CONSUMO PEDIDOS
         run: |
           snow sql -f "./COMERCIAL/PEDIDOS/CON/TABLAS/FCT_COM_ADH_PEDIDOS_ACT.sql"
           snow sql -f "./COMERCIAL/PEDIDOS/CON/TABLAS/FCT_COM_ADH_PEDIDOS_ARCH.sql"
           snow sql -f "./COMERCIAL/PEDIDOS/CON/TABLAS/FCT_COM_REV_PEDIDOS_ACT.sql"
           snow sql -f "./COMERCIAL/PEDIDOS/CON/TABLAS/FCT_COM_REV_PEDIDOS_ARCH.sql"          
 
-       - name: Creando VISTAS CONSUMO PEDIDOS
+      - name: Creando VISTAS CONSUMO PEDIDOS
         run: |
           snow sql -f "./COMERCIAL/PEDIDOS/CON/TABLAS/VW_FCT_COM_ADH_PEDIDOS.sql"
           snow sql -f "./COMERCIAL/PEDIDOS/CON/TABLAS/VW_FCT_COM_REV_PEDIDOS.sql"
