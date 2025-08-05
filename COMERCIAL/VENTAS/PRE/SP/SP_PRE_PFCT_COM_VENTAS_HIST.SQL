@@ -401,21 +401,3 @@
     END;
     $$;
 
-
- call PRE.SP_PRE_PFCT_COM_VENTAS_HIST();   
-
-
---  SELECT *
---  FROM PRE.PFCT_COM_ADH_VENTAS_HIST LIMIT 10;
-
---  SELECT ANIOMES FROM CON.FCT_COM_ADH_VENTAS_ACT LIMIT 10;
-
-
--- select dsitinct materialbaseunit from raw.sq1_mof_zmm_inventario limit 10;
-
-
--- select * from con.fct_log_adh_inventario_foto limit 10;
--- select distinct "[ZIOSDEST].[2ZIOSDEST] Clave" from RAW.BW4_VENTAS_HIST_NEW V;
-
-select * from PRE.PFCT_COM_ADH_VENTAS_HIST
-where ASESOR_COMERCIAL_FACTURA_CLAVE = '10100024';
