@@ -79,10 +79,10 @@ jobs:
 
       - name: Creando tablas CONSUMO VENTAS
         run: |
-          snow sql -f "./COMERCIAL/VENTAS/CONSUMO/TABLAS/FCT_COM_ADH_VENTAS_ACT.sql"
-          snow sql -f "./COMERCIAL/VENTAS/CONSUMO/TABLAS/FCT_COM_ADH_VENTAS_PCP.sql"
-          snow sql -f "./COMERCIAL/VENTAS/CONSUMO/TABLAS/FCT_COM_REV_VENTAS_ACT.sql"
-          snow sql -f "./COMERCIAL/VENTAS/CONSUMO/TABLAS/FCT_COM_REV_VENTAS_PCP.sql"          
+          snow sql -f "./COMERCIAL/VENTAS/GOLD/TABLAS/FCT_COM_ADH_VENTAS_ACT.sql"
+          snow sql -f "./COMERCIAL/VENTAS/GOLD/TABLAS/FCT_COM_ADH_VENTAS_PCP.sql"
+          snow sql -f "./COMERCIAL/VENTAS/GOLD/TABLAS/FCT_COM_REV_VENTAS_ACT.sql"
+          snow sql -f "./COMERCIAL/VENTAS/GOLD/TABLAS/FCT_COM_REV_VENTAS_PCP.sql"          
 
       - name: Creando tablas RAW PEDIDOS
         run: |
