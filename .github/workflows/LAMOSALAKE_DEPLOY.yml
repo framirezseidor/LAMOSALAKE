@@ -84,35 +84,5 @@ jobs:
           snow sql -f "./COMERCIAL/VENTAS/CONSUMO/TABLAS/FCT_COM_REV_VENTAS_ACT.SQL"
           snow sql -f "./COMERCIAL/VENTAS/CONSUMO/TABLAS/FCT_COM_REV_VENTAS_PCP.SQL"          
 
-      - name: Creando tablas RAW PEDIDOS
-        run: |
-          snow sql -f "./COMERCIAL/PEDIDOS/RAW/TABLAS/MOF_ZBWSD_CAPTURA_DIARIA.SQL"
 
-      - name: Creando tablas PRE PEDIDOS
-        run: |
-          snow sql -f "./COMERCIAL/PEDIDOS/PRE/TABLAS/PFCT_COM_PEDIDOS_ACT.SQL"
-
-      - name: Creando tablas CONSUMO PEDIDOS
-        run: |
-          snow sql -f "./COMERCIAL/PEDIDOS/CON/TABLAS/FCT_COM_ADH_PEDIDOS_ACT.sql"
-          snow sql -f "./COMERCIAL/PEDIDOS/CON/TABLAS/FCT_COM_ADH_PEDIDOS_ARCH.sql"
-          snow sql -f "./COMERCIAL/PEDIDOS/CON/TABLAS/FCT_COM_REV_PEDIDOS_ACT.sql"
-          snow sql -f "./COMERCIAL/PEDIDOS/CON/TABLAS/FCT_COM_REV_PEDIDOS_ARCH.sql"          
-
-      - name: Creando VISTAS CONSUMO PEDIDOS
-        run: |
-          snow sql -f "./COMERCIAL/PEDIDOS/CON/TABLAS/VW_FCT_COM_ADH_PEDIDOS.sql"
-          snow sql -f "./COMERCIAL/PEDIDOS/CON/TABLAS/VW_FCT_COM_REV_PEDIDOS.sql"
-
-      - name: Creando funciones RAW VENTAS
-        run: |
-          snow sql -f "./COMERCIAL/VENTAS/RAW/FUNCIONES/FN_OBTENER_FECHA_INICIO.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/RAW/FUNCIONES/FN_PARAMETRO.SQL"
-
-      - name: Creando stored procedures pre ventas
-        run: |
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_PRE_PFCT_COM_ADH_VENTAS_PCP.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_PRE_PFCT_COM_REV_VENTAS_PCP.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_PRE_PFCT_COM_VENTAS_HIST.SQL"    
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_PRE_PFCT_COM_VENTAS.SQL" 
 
