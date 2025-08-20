@@ -265,7 +265,7 @@
                 "[ZCPARZS] C.Tienda Recibo", 
                 "[ZCPARZS].[2ZCPARZS] Clave", 
                 "[ZCSEGMENT] OB.Segmento", 
-                "[ZCSEGMENT].[2ZCSEGMENT] Clave", 
+                LEFT("[ZCSEGMENT].[2ZCSEGMENT] Clave", 2) AS SEGMENTO_CLAVE, 
                 "[ZCUEN] O.UEN", 
                 "[ZCUEN].[2ZCUEN] Clave", 
                 "[ZCVBPZ2] D.Asesor Pedido", 
@@ -401,3 +401,31 @@
     END;
     $$;
 
+
+ call PRE.SP_PRE_PFCT_COM_VENTAS_HIST();   
+
+
+--  SELECT *
+--  FROM PRE.PFCT_COM_ADH_VENTAS_HIST LIMIT 10;
+
+--  SELECT ANIOMES FROM CON.FCT_COM_ADH_VENTAS_ACT LIMIT 10;
+
+
+-- select dsitinct materialbaseunit from raw.sq1_mof_zmm_inventario limit 10;
+
+
+-- select * from con.fct_log_adh_inventario_foto limit 10;
+-- select distinct "[ZIOSDEST].[2ZIOSDEST] Clave" from RAW.BW4_VENTAS_HIST_NEW V;
+
+select * from PRE.PFCT_COM_ADH_VENTAS_HIST
+where ASESOR_COMERCIAL_FACTURA_CLAVE = '10100024';
+
+
+
+SELECT distinct "[0CALMONTH].[20CALMONTH] Clave"
+FROM RAW.BW4_VENTAS_HIST_150725 V
+WHERE RIGHT("[0CALMONTH].[20CALMONTH] Clave", 4) IN ('2024', '2025');
+
+
+
+select count(*) from mirroring.fct_com_adh_comercial;

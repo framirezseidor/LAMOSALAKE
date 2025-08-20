@@ -9,7 +9,7 @@ AS $$
  Versión:            1.0
  Fecha de creación:  2025-05-21
  Creador:            Juan Santiago Pedreros
- Descripción:        SP que transforma datos desde la capa PRE a CON para la tabla FCT_FIN_CARTERAACT
+ Descripción:        SP que transforma datos desde la capa RAW a PRE para la tabla PFCT_FIN_GASTOSPRESUPUESTO
 ---------------------------------------------------------------------------------
 */
 
@@ -66,10 +66,10 @@ BEGIN
             '' AS "CENTRO_ID",
             KOKRS AS "SOCIEDADCO_ID",
             '' AS "PLANCUENTAS_ID",
-            CONCAT(KOKRS,'_',KOSTL) AS "CENTROCOSTO_ID",
-            KOSTL AS "CENTROCOSTO",
-            CONCAT(KOKRS,'_',KSTAR) AS "CUENTA_ID",
-            KSTAR AS "CUENTA",
+            CONCAT(KOKRS,'_',LTRIM(CCA_1.KOSTL, '0')) AS "CENTROCOSTO_ID",
+            LTRIM(CCA_1.KOSTL, '0') AS "CENTROCOSTO",
+            CONCAT(KOKRS,'_',LTRIM(KSTAR, '0')) AS "CUENTA_ID",
+            LTRIM(KSTAR, '0') AS "CUENTA",
             '' AS "CUENTAMAYOR_ID",
             SUBSTR(FISCPER, 0, 4) AS "ANIO",
             SUBSTR(FISCPER, 6, 2) AS "MES",
@@ -81,7 +81,7 @@ BEGIN
             'ZTPOGASTO' AS "TIPOGASTO_ID",
             CURTYPE AS "TIPO_MONEDA",
 
-            IFF(LTRIM(CUENTA.SUBDIVISION_ID,'0') = '8', '08', IFF(LTRIM(CUENTA.SUBDIVISION_ID,'0') = '25', '09', TIPOGASTO_ID)) AS "GASTOER_ID",
+            IFF(CUENTA.SUBDIVISION_ID = 'Z08', '8', IFF(CUENTA.SUBDIVISION_ID = 'Z25', '9', TIPOGASTO_ID)) AS "GASTOER_ID",
             --'' AS "GASTOER_ID",
             
             IFF(WAERS IN ('COP','CLP'),
@@ -130,7 +130,7 @@ BEGIN
         FROM RAW.SQ1_EXT_0CO_OM_CCA_1 AS CCA_1
         
         LEFT JOIN PRE.PDIM_FIN_CENTROCOSTO AS CECO
-        ON CECO.CENTROCOSTO_ID = CCA_1.KOSTL AND CCA_1.KOKRS = CECO.SOCIEDADCO_ID
+        ON LTRIM(CECO.CENTROCOSTO_ID, '0') = LTRIM(CCA_1.KOSTL, '0') AND CCA_1.KOKRS = CECO.SOCIEDADCO_ID
         AND (CECO.FECHA_DESDE IS NULL OR CECO.FECHA_HASTA IS NULL OR CURRENT_DATE BETWEEN CECO.FECHA_DESDE AND CECO.FECHA_HASTA) --Fecha de validez del CECO
 
         LEFT JOIN PRE.PDIM_FIN_CUENTA AS CUENTA

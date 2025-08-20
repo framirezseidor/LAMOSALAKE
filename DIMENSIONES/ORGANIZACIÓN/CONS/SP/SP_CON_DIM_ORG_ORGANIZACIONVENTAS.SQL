@@ -133,6 +133,38 @@ BEGIN
             ON OV.NEGOCIOGRUPO_ID = NG.NEGOCIOGRUPO_ID
         ;
 
+/* INSERCION DE A104 PORQUE YA NO EXISTE, SE FORZA PARA QUE SEA LEA LA CARGA DEL HISTORICO */
+      INSERT INTO MIRRORING.DIM_ORG_ORGANIZACIONVENTAS
+        (
+            ORGVENTAS_ID,
+            SOCIEDAD_ID,
+            PAIS_ID,
+            NEGOCIOGRUPO_ID,
+            ORGVENTAS_TEXT,
+             ORGVENTAS_ID_TEXT,
+            SOCIEDAD_TEXT,
+            PAIS_TEXT,
+            NEGOCIOGRUPO_TEXT,
+            SISORIGEN_ID,
+            MANDANTE,
+            FECHA_CARGA,
+            ZONA_HORARIA
+        )
+       SELECT
+            'A104' AS ORGVENTAS_ID,
+            'A104' AS SOCIEDAD_ID,
+            'MX' AS PAIS_ID,
+            'A000' AS NEGOCIOGRUPO_ID,
+            'Solutek' AS ORGVENTAS_TEXT,
+            'A104 - Solutek' AS ORGVENTAS_ID_TEXT,
+            'Solutek' AS SOCIEDAD_TEXT ,
+            'México' AS PAIS_TEXT ,
+            'ADHESIVOS' AS NEGOCIOGRUPO_TEXT,
+            'FILE' AS SISORIGEN_ID,
+            '-' AS MANDANTE,
+            TO_DATE(LEFT(SYSDATE(),10)) FECHA_CARGA,
+            '-600' ZONA_HORARIA;
+
 
     ---------------------------------------------------------------------------------
     -- STEP 5: FINALIZACIÓN

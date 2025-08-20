@@ -50,11 +50,5 @@ SELECT
 FROM CTE_FECHAS;
 
 
-
--- select * from mirroring.DIM_CAL_ADH_COMERCIAL order by FECHA limit 10;
-
-
--- select distinct uni_est from con.fct_com_adh_backorder_act
-
 CREATE OR REPLACE STREAM mirroring.STREAM_DIM_CAL_ADH_COMERCIAL 
 ON TABLE mirroring.DIM_CAL_ADH_COMERCIAL

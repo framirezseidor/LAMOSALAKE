@@ -133,5 +133,7 @@ BEGIN
     ---------------------------------------------------------------------------------
     RETURN CONCAT('Complete - Filas insertadas: ', ROWS_INSERTED);
 
+    CALL MIRRORING.SP_ACTUALIZAR_CALENDARIO('FCT_FIN_GASTOSCONTROLPRES', 'DIM_CAL_GASTOSCONTROLPRES', 'FECHA_CONTABILIZACION');
+
 END;
 $$;

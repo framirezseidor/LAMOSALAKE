@@ -61,6 +61,18 @@ BEGIN
             CURRENT_TIMESTAMP,-- FECHA_CARGA, 
             RIGHT(CURRENT_TIMESTAMP,5)-- ZONA_HORARIA  
         FROM PRE.PDIM_ORG_CANALDISTRIBUCION Z;
+
+        INSERT INTO CON.DIM_ORG_CANALDISTRIBUCION
+        (
+            CANALDISTRIB_ID,
+            CANALDISTRIB_TEXT,
+            SISORIGEN_ID,
+            MANDANTE,
+            FECHA_CARGA,
+            ZONA_HORARIA
+        )
+        VALUES
+        ('','','','',CURRENT_TIMESTAMP(),'');
         
         -- Conteo de filas insertadas
         SELECT COUNT(*) INTO :ROWS_INSERTED FROM CON.DIM_ORG_CANALDISTRIBUCION;

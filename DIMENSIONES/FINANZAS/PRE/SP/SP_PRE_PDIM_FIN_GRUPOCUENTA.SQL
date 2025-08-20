@@ -57,7 +57,7 @@ BEGIN
         )
         SELECT
             -- Transformaciones desde RAW
-            SETNAME AS CUENTA_GRUPO_ID	,
+            SETNAME AS CUENTA_GRUPO_ID,
             SUBCLASS AS SUBCLASE_ID	,
             VALFROM AS CUENTA_INICIO,
             VALTO AS CUENTA_FIN,

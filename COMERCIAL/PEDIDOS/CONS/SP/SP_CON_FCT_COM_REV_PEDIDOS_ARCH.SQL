@@ -2,7 +2,8 @@ CREATE OR REPLACE PROCEDURE CON.SP_CON_FCT_COM_REV_PEDIDOS_ARCH()
 RETURNS VARCHAR(16777216)
 LANGUAGE SQL
 EXECUTE AS OWNER
-AS '
+AS 
+$$
 /*
 ---------------------------------------------------------------------------------
  Versión:            1.0
@@ -39,18 +40,18 @@ BEGIN
             AND p.DOCUMENTO_POS = a.DOCUMENTO_POS
         )
         AND a.FECHA_DOCUMENTO BETWEEN (
-            SELECT TO_DATE(R_INICIO, ''YYYYMMDD'')
+            SELECT TO_DATE(R_INICIO, 'YYYYMMDD')
             FROM RAW.PARAMETROS_EXTRACCION
-            WHERE NEGOCIO = ''REVMEXICO''
-            AND EXTRACTOR = ''ZBWSD_CAPTURA_DIARIA''
-            AND PARAMETRO = ''FECHA_DOCUMENTO''
+            WHERE NEGOCIO = 'REVMEXICO'
+            AND EXTRACTOR = 'ZBWSD_CAPTURA_DIARIA'
+            AND PARAMETRO = 'FECHA_DOCUMENTO'
         )
         AND (
-            SELECT TO_DATE(R_FIN, ''YYYYMMDD'')
+            SELECT TO_DATE(R_FIN, 'YYYYMMDD')
             FROM RAW.PARAMETROS_EXTRACCION
-            WHERE NEGOCIO = ''REVMEXICO''
-            AND EXTRACTOR = ''ZBWSD_CAPTURA_DIARIA''
-            AND PARAMETRO = ''FECHA_DOCUMENTO''
+            WHERE NEGOCIO = 'REVMEXICO'
+            AND EXTRACTOR = 'ZBWSD_CAPTURA_DIARIA'
+            AND PARAMETRO = 'FECHA_DOCUMENTO'
         );
 
     ---------------------------------------------------------------------------------
@@ -58,7 +59,17 @@ BEGIN
     ---------------------------------------------------------------------------------
 
         MERGE INTO CON.FCT_COM_REV_PEDIDOS_ARCH F
-        USING PRE.PFCT_COM_PEDIDOS_ACT P
+        USING 
+        ( 
+            SELECT * FROM PRE.PFCT_COM_PEDIDOS_ACT
+            WHERE MATERIAL_ID IN (  SELECT 
+                                        MATERIAL_ID 
+                                    FROM 
+                                        MIRRORING.DIM_MAT_MATERIAL_ADH
+                                    WHERE 
+                                        TIPOMATERIAL_ID IN ('ZHAW','FERT')
+                                )
+         ) P
         ON  F.ORGVENTAS_ID = P.ORGVENTAS_ID AND
             F.CANALDISTRIB_ID = P.CANALDISTRIB_ID AND
             F.SECTOR_ID = P.DIVISION AND
@@ -234,22 +245,22 @@ BEGIN
         SELECT DATEDIFF(millisecond, :F_INICIO, :F_FIN) INTO :T_EJECUCION;
     EXCEPTION
         WHEN statement_error THEN
-            SELECT (''Error en INSERT: '' || :sqlerrm) INTO :TEXTO;
+            SELECT ('Error en INSERT: ' || :sqlerrm) INTO :TEXTO;
     END;
 
 
     ---------------------------------------------------------------------------------
     -- STEP 3: LOG
     ---------------------------------------------------------------------------------
-        SELECT COALESCE(:TEXTO,''EJECUCION CORRECTA'') INTO :TEXTO;
+        SELECT COALESCE(:TEXTO,'EJECUCION CORRECTA') INTO :TEXTO;
 
         INSERT INTO LOGS.HISTORIAL_EJECUCIONES 
-        VALUES(''CON.SP_CON_FCT_COM_REV_PEDIDOS_ARCH'',''CON.FCT_COM_REV_PEDIDOS_ARCH'', :F_INICIO, :F_FIN,:T_EJECUCION ,:ROWS_INSERTED, :TEXTO );
+        VALUES('CON.SP_CON_FCT_COM_REV_PEDIDOS_ARCH','CON.FCT_COM_REV_PEDIDOS_ARCH', :F_INICIO, :F_FIN,:T_EJECUCION ,:ROWS_INSERTED, :TEXTO );
 
     ---------------------------------------------------------------------------------
     -- STEP 4: FINALIZACIÓN
     ---------------------------------------------------------------------------------
-    RETURN CONCAT(''Complete - Filas insertadas: '', ROWS_INSERTED);
+    RETURN CONCAT('Complete - Filas insertadas: ', ROWS_INSERTED);
 
 END;
-';
+$$;

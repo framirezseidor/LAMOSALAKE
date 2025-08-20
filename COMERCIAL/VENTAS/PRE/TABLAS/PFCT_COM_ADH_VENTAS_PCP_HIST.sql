@@ -1,0 +1,96 @@
+create or replace table PRE.PFCT_COM_ADH_VENTAS_PCP_HIST (
+    ANIO	VARCHAR(4),
+    MES	VARCHAR(2),
+    ANIOMES	VARCHAR(6),
+    SOCIEDAD_ID	VARCHAR(4),
+    ORGVENTAS_ID	VARCHAR(4),
+    CANALDISTRIB_ID	VARCHAR(2),
+    SECTOR_ID	VARCHAR(2),
+    CENTRO_ID	VARCHAR(4),
+	OFICINAVENTAS_ID VARCHAR(4),    
+    UENADHESIVOS_ID	VARCHAR(4),
+    PAIS_ID	VARCHAR(3),
+    REGION_ID	VARCHAR(10),
+    ASESORFACTURA_ID	VARCHAR(10),
+    CLIENTE_ID	VARCHAR(15),
+    SOLICITANTE_ID	VARCHAR(30),
+    DESTINATARIO_ID	VARCHAR(30),
+    MATERIAL_ID	VARCHAR(40),
+    MATERIALVENTAS_ID	VARCHAR(50),
+    MATERIALCENTRO_ID	VARCHAR(50),
+    IND_VENTA_PCP_TON	NUMBER(18,3),
+    UNI_EST	VARCHAR(5),
+    IND_VENTA_PCP_LOC	NUMBER(18,3),
+    MON_LOC	VARCHAR(5),
+    IND_VENTA_PCP_USD	NUMBER(18,3),
+    MON_USD	VARCHAR(5),
+    SISORIGEN_ID	VARCHAR(4),
+    MANDANTE	VARCHAR(4),
+    FECHA_CARGA	TIMESTAMP_TZ,
+    ZONA_HORARIA	VARCHAR(6)
+)
+;
+
+-- select count(*) from PRE.PFCT_COM_ADH_VENTAS_PCP_HIST
+-- where ANIO = '2025';
+-- union all
+-- select count(*) from PRE.PFCT_COM_ADH_VENTAS_PCP;
+
+-- 14190103
+
+
+-- select aniomes, vta_ind_venta_pcp_loc, vta_ind_venta_pcp_usd , vta_ind_venta_pcp_ton from MIRRORING.VW_FCT_COM_ADH_VENTAS_PCP
+-- where aniomes = '202301'
+-- group by aniomes, vta_ind_venta_pcp_loc, vta_ind_venta_pcp_usd , vta_ind_venta_pcp_ton
+-- order by aniomes
+-- ;
+
+-- SELECT * FROM PRE.PFCT_COM_ADH_VENTAS_PCP_HIST;
+-- SELECT * FROM CON.FCT_COM_ADH_VENTAS_PCP;
+
+-- select * from mirroring.fct_com_adh_comercial
+-- where modelo = 'VENTASPCP';
+
+
+-- INSERT INTO mirroring.seg_role_dimension (ROLE_NM, DIMENSION_NM, VALOR)
+-- VALUES
+--     ('ADH_COMERCIAL2', 'CENTRO_ID', 'A111'),
+--     ('ADH_COMERCIAL2', 'CENTRO_ID', 'A112'),
+--     ('ADH_COMERCIAL2', 'SOCIEDAD_ID', 'A101'),
+--     ('ADH_COMERCIAL2', 'SOCIEDAD_ID', 'A102'),
+--     ('ADH_COMERCIAL2', 'ORGVENTAS_ID', 'A102'),
+--     ('ADH_COMERCIAL2', 'ORGVENTAS_ID', 'A201'),
+--     ('ADH_COMERCIAL2', 'CANALDISTRIB_ID', 'NA'),
+--     ('ADH_COMERCIAL2', 'CANALDISTRIB_ID', 'EX'),
+--     ('ADH_COMERCIAL2', 'OFICINAVENTAS_ID', 'ACA1'),
+--     ('ADH_COMERCIAL2', 'OFICINAVENTAS_ID', 'ACH1'),
+--     ('ADH_COMERCIAL2', 'UENADHESIVOS_ID', 'AMX1'),
+--     ('ADH_COMERCIAL2', 'UENADHESIVOS_ID', 'AGD3'),
+--     ('ADH_COMERCIAL2', 'GRUPOVENDEDORES_ID', '002'),
+--     ('ADH_COMERCIAL2', 'GRUPOVENDEDORES_ID', '001'),
+--     ('ADH_COMERCIAL2', 'GRUPOCLIENTES2_ID', 'ZPO'),
+--     ('ADH_COMERCIAL2', 'GRUPOCLIENTES2_ID', 'ZLA'),
+--     ('ADH_COMERCIAL2', 'ASESORPEDIDO_ID', 'ALL');
+
+-- INSERT INTO mirroring.seg_role_dimension (ROLE_NM, DIMENSION_NM, VALOR)
+-- VALUES
+--     ('ADH_COMERCIAL11', 'CENTRO_ID', 'A111'),
+--     ('ADH_COMERCIAL11', 'SOCIEDAD_ID', 'ALL'),
+--     ('ADH_COMERCIAL11', 'ORGVENTAS_ID', 'ALL'),
+--     ('ADH_COMERCIAL11', 'CANALDISTRIB_ID', 'ALL'),
+--     ('ADH_COMERCIAL11', 'OFICINAVENTAS_ID', 'ALL'),
+--     ('ADH_COMERCIAL11', 'UENADHESIVOS_ID', 'ALL'),
+--     ('ADH_COMERCIAL11', 'GRUPOVENDEDORES_ID', 'ALL'),
+--     ('ADH_COMERCIAL11', 'GRUPOCLIENTES2_ID', 'ALL'),
+--     ('ADH_COMERCIAL11', 'ASESORPEDIDO_ID', 'ALL'),
+--     ('ADH_COMERCIAL11', 'COORDINADORDEST_ID', 'ALL'),
+--     ('ADH_COMERCIAL11', 'ASESORDEST_ID', 'ALL')
+--     ;
+
+-- INSERT INTO mirroring.seg_usuario_dimension (USER_MAIL, DIM, VALOR)
+-- VALUES
+--     ('test.pbi@grupolamosa.com', 'SOCIEDAD_ID', 'A101') ;
+
+-- INSERT INTO mirroring.seg_role_dimension (ROLE_NM, DIMENSION_NM, VALOR)
+-- VALUES
+--     ('ADH_COMERCIAL9', 'SOCIEDAD_ID', 'A101');

@@ -4,7 +4,6 @@ SELECT * FROM MIRRORING.SEG_USUARIO_DIMENSION;
 
 
 
-
 ------------------------------------------------------------------
 ------------------------------------------------------------------
 
@@ -16,7 +15,9 @@ WHERE USER_MAIL = 'test.pbi@grupolamosa.com';
 DELETE FROM MIRRORING.SEG_USUARIO_ROLE
 WHERE USER_MAIL = 'test.pbi@grupolamosa.com';        -- BORRAR ROLES ASIGNADOS A MI USUARIO
 
-
+SELECT *
+FROM MIRRORING.SEG_USUARIO_ROLE         -- ROLES ASIGNADOS A MI USUARIO
+WHERE USER_MAIL = 'adolfo.castro@lamosa.com';
 
 ------------------------------------------------------------------
 ------------------------------------------------------------------
@@ -141,7 +142,7 @@ WHERE ROLE_NM = 'CARTERA_ADH_ROLE';      -- ELIMINAR DIMENSIONES Y VALORES ASIGN
 
 
 
--- ADH
+-- REV
 -- Un rol asignado con la dimensión y un valor inexistente
 
 SELECT *
@@ -213,6 +214,9 @@ DELETE FROM MIRRORING.SEG_ROLE_DIMENSION
 WHERE ROLE_NM = 'CARTERA_REV_ROLE';      -- ELIMINAR DIMENSIONES Y VALORES ASIGNADOS A ROLE
 
 
+
+------------------------------------------------------------------
+------------------------------------------------------------------
 
 -- ADH
 -- Validar acceso con dimensión asignada a usario con valor 'ALL'

@@ -152,5 +152,5 @@ END;
 $$;
  
 
-call PRE.SP_PRE_PDIM_CLI_DESTINATARIO(); --10193
+
 

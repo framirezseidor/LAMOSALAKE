@@ -86,12 +86,12 @@ BEGIN
                 WHEN CLASE_DOCUMENTO IN ( 'ZS1' , 'ZS2') THEN FKART
                 ELSE CLASE_DOCUMENTO 
             END AS CLASEDOC_CONSOLIDADO  ,
-            VBELN  AS DOCUMENTO  ,
+            LTRIM(VBELN, '0')  AS DOCUMENTO  ,
             POSNR  AS DOCUMENTO_POS  ,
             PSTYV  AS TIPOPOSICION_ID ,
             AUGRU  AS MOTIVOPEDIDO_ID ,
             INCO1  AS INCOTERMS_ID  ,
-            ASESOR_COM AS ASESORPEDIDO_ID ,
+            LTRIM(ASESOR_COM, '0') AS ASESORPEDIDO_ID ,
             CONSTRUCTORA AS CONSTRUCTORA_ID ,
             CASE
                 WHEN PLAN_OBRA = '' THEN 'NA'
@@ -107,7 +107,7 @@ BEGIN
             END AS TIPO_OBRA_ID,
             CONVENIO  AS CONVENIO_OBRA  ,
             PLAN_OBRA  AS PLAN_OBRA  ,
-            SEGMENTO  AS SEGMENTO_OBRA_ID  ,
+            LEFT(SEGMENTO, 2)  AS SEGMENTO_OBRA_ID  ,
             KUNNR_ZP  AS PROMOTOR_ID ,
             'NUEVO' AS NIO_OBRA, 
             CASE
@@ -124,11 +124,11 @@ BEGIN
                     END
             END AS TIPOTRANSPORTE_ID  ,
             KUNAG  AS CLIENTE_ID ,
-            CONCAT( VKORG , '_' , '00', '_' , VTWEG , '_' , KUNAG ) AS SOLICITANTE_ID ,
-            CONCAT( VKORG , '_' , '00' , '_' , VTWEG , '_' , KUNNR) AS DESTINATARIO_ID ,
-            MATNR  AS MATERIAL_ID ,
-            CONCAT( VKORG , '_' , VTWEG , '_' , MATNR )  AS MATERIALVENTAS_ID  ,
-            CONCAT( WERKS , '_' , MATNR ) AS MATERIALCENTRO_ID  ,
+            CONCAT( VKORG , '_' , VTWEG, '_' , '00' , '_' , LTRIM(KUNAG, '0' ) ) AS SOLICITANTE_ID ,
+            CONCAT( VKORG , '_' , VTWEG , '_' , '00' , '_' , LTRIM(KUNNR, '0') ) AS DESTINATARIO_ID ,
+            LTRIM(MATNR, '0')  AS MATERIAL_ID ,
+            CONCAT( VKORG , '_' , VTWEG , '_' , LTRIM(MATNR, '0') )  AS MATERIALVENTAS_ID  ,
+            CONCAT( WERKS , '_' , LTRIM(MATNR, '0') ) AS MATERIALCENTRO_ID  ,
             CHARG  AS LOTE  ,
             CASE
                 WHEN CENTRO_LOTE = '' THEN WERKS
@@ -202,5 +202,3 @@ BEGIN
 
 END;
 $$;
-
-select * from RAW.CAT_UNIDAD_ESTADISTICA U;

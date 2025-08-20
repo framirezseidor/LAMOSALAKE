@@ -114,3 +114,6 @@ BEGIN
 
 END;
 $$;
+
+
+-- call CON.SP_CON_DIM_DOC_CONDICIONEXP();

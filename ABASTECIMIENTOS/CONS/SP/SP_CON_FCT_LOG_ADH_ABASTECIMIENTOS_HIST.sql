@@ -574,6 +574,8 @@ BEGIN
  
         CREATE OR REPLACE STREAM MIRRORING.STREAM_FCT_LOG_ADH_ABASTECIMIENTOS ON TABLE MIRRORING.FCT_LOG_ADH_ABASTECIMIENTOS;
 
+        CALL CON.SP_CON_DIM_CAL_ADH_ABASTECIMIENTOS();
+
     ---------------------------------------------------------------------------------
     -- STEP 4: LOG
     ---------------------------------------------------------------------------------

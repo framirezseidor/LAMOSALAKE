@@ -79,15 +79,16 @@ BEGIN
                 MEASURE AS PROGRAMAPRES,
                 CONCAT(FIKRS,'_',FIPEX)	AS POSICIONPRES_ID,
                 FIPEX	AS POSICIONPRES,
-                CONCAT(KOKRS,'_',FISTL)	AS CENTROCOSTO_ID,
-                FISTL	AS CENTROCOSTO,
-                CONCAT(KOKRS,'_',FIPEX)	AS CUENTA_ID,
-                FIPEX	AS CUENTA,
+                CONCAT(KOKRS,'_',LTRIM(FISTL, '0'))	AS CENTROCOSTO_ID,
+                LTRIM(FISTL, '0')	AS CENTROCOSTO,
+                CONCAT(KOKRS,'_',LTRIM(FIPEX, '0'))	AS CUENTA_ID,
+                LTRIM(FIPEX, '0')	AS CUENTA,
                 LIFNR	AS ACREEDOR_ID,
                 ''	AS DEUDOR_ID, --KUNNR
-                --IFF(LTRIM(COSTE.SUBDIVISION_ID,'0') = '8', '08', IFF(LTRIM(COSTE.SUBDIVISION_ID,'0') = '25', '09', CECO.TIPOGASTO_ID)) AS GASTOER_ID,
+                --IFF(CUENTA.SUBDIVISION_ID = 'Z08', '8', IFF(CUENTA.SUBDIVISION_ID = 'Z25', '9', 'ZTPOGASTO')) AS GASTOER_ID,
                 '' AS GASTOER_ID,
-                BUDAT AS FECHA_CONTABILIZACION,
+                TO_DATE(CONCAT(ANIO, '-', MES, '-01')) AS FECHA_CONTABILIZACION,
+                -- BUDAT AS FECHA_CONTABILIZACION,
                 FAREA AS AREAFUNCIONAL_ID,
                 VRGNG AS OPDETALLE_ID,
                 GRANT_NBR AS SUBVENCION_ID,
@@ -114,11 +115,18 @@ BEGIN
                     ) AS IND_PRESUPUESTO_ASIGNABLE,
                 
                 IFF(MON_ENTCP IN ('CLP','COP'),
-                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
                         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
                         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                     ) AS IND_PRESUPUESTO_ASIGNADO,
+
+                -- IFF(MON_ENTCP IN ('CLP','COP'),
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                --     ) AS IND_PRESUPUESTO_ASIGNADO,
 
                 IFF(MON_ENTCP IN ('CLP','COP'),
                         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X'
@@ -168,6 +176,10 @@ BEGIN
                 EXT31.ZONA_HORARIA,
                 EXT31.TIPO
         FROM RAW.SQ1_EXT_0PU_IS_PS_31 AS EXT31
+
+        LEFT JOIN PRE.PDIM_FIN_CUENTA AS CUENTA
+		ON CONCAT(KOKRS,'_',LTRIM(EXT31.FIPEX, '0')) = CUENTA.CUENTA_ID
+
         WHERE FIKRS BETWEEN 'FMAR' AND 'FMPE'
         AND CONCAT(SUBSTR(ZHLDT,0,4),SUBSTR(ZHLDT,6,2)) BETWEEN :FECHA_INICIO AND :FECHA_FIN --AND EXT31.TIPO='FULL'
 
@@ -192,15 +204,16 @@ BEGIN
                 MEASURE AS PROGRAMAPRES,
                 CONCAT(FIKRS,'_',FIPEX)	AS POSICIONPRES_ID,
                 FIPEX	AS POSICIONPRES,
-                CONCAT(KOKRS,'_',FISTL)	AS CENTROCOSTO_ID,
-                FISTL	AS CENTROCOSTO,
-                CONCAT(KOKRS,'_',FIPEX)	AS CUENTA_ID,
-                FIPEX	AS CUENTA,
+                CONCAT(KOKRS,'_',LTRIM(FISTL, '0'))	AS CENTROCOSTO_ID,
+                LTRIM(FISTL, '0')	AS CENTROCOSTO,
+                CONCAT(KOKRS,'_',LTRIM(FIPEX, '0'))	AS CUENTA_ID,
+                LTRIM(FIPEX, '0')	AS CUENTA,
                 LIFNR AS ACREEDOR_ID,
                 KUNNR AS DEUDOR_ID,
                 --IFF(LTRIM(COSTE.SUBDIVISION_ID,'0') = '8', '08', IFF(LTRIM(COSTE.SUBDIVISION_ID,'0') = '25', '09', CECO.TIPOGASTO_ID)) AS GASTOER_ID,
                 '' AS GASTOER_ID,
-                BUDAT AS FECHA_CONTABILIZACION,
+                TO_DATE(CONCAT(ANIO, '-', MES, '-01')) AS FECHA_CONTABILIZACION,
+                -- TO_DATE(CONCAT(SUBSTR(ZHLDT, 0, 4), '-', SUBSTR(ZHLDT, 6, 2), '-01')) AS FECHA_CONTABILIZACION,
                 FAREA AS AREAFUNCIONAL_ID,
                 VRGNG AS OPDETALLE_ID,
                 GRANT_NBR AS SUBVENCION_ID,
@@ -227,11 +240,18 @@ BEGIN
                     ) AS IND_PRESUPUESTO_ASIGNABLE,
                 
                 IFF(MON_ENTCP IN ('CLP','COP'),
-                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
                         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
                         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                     ) AS IND_PRESUPUESTO_ASIGNADO,
+
+                -- IFF(MON_ENTCP IN ('CLP','COP'),
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                --     ) AS IND_PRESUPUESTO_ASIGNADO,
 
                 IFF(MON_ENTCP IN ('CLP','COP'),
                         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X'
@@ -305,17 +325,18 @@ BEGIN
                 MEASURE AS PROGRAMAPRES,
                 CONCAT(FIKRS,'_',RFIPEX) AS POSICIONPRES_ID,
                 RFIPEX AS POSICIONPRES,
-                CONCAT(KOKRS,'_',RFISTL) AS CENTROCOSTO_ID,
-                RFISTL AS CENTROCOSTO,
-                CONCAT(KOKRS,'_',RFIPEX) AS CUENTA_ID,
-                RFIPEX AS CUENTA,
+                CONCAT(KOKRS,'_',LTRIM(RFISTL, '0')) AS CENTROCOSTO_ID,
+                LTRIM(RFISTL, '0')	AS CENTROCOSTO,
+                CONCAT(KOKRS,'_',LTRIM(RFIPEX, '0')) AS CUENTA_ID,
+                LTRIM(RFIPEX, '0')	AS CUENTA,
                 ''	AS ACREEDOR_ID, --LIFNR
                 ''	AS DEUDOR_ID, --KUNNR
                 --IFF(LTRIM(COSTE.SUBDIVISION_ID,'0') = '8', '08', IFF(LTRIM(COSTE.SUBDIVISION_ID,'0') = '25', '09', CECO.TIPOGASTO_ID)) AS GASTOER_ID,
                 '' AS GASTOER_ID,
-                CONCAT(SUBSTR(FISCPER,0,4),IFF(SUBSTR(FISCPER,6,2) = '00','01',
-                        IFF(SUBSTR(FISCPER,6,2) IN ('13','14','15','16'),'12',
-                    SUBSTR(FISCPER,6,2))),'01') AS FECHA_CONTABILIZACION, --BUDAT
+                TO_DATE(CONCAT(ANIO, '-', MES, '-01')) AS FECHA_CONTABILIZACION,
+                -- CONCAT(SUBSTR(FISCPER,0,4),IFF(SUBSTR(FISCPER,6,2) = '00','01',
+                --         IFF(SUBSTR(FISCPER,6,2) IN ('13','14','15','16'),'12',
+                --     SUBSTR(FISCPER,6,2))),'01') AS FECHA_CONTABILIZACION, --BUDAT
                 FAREA AS AREAFUNCIONAL_ID,
                 RVRGNG AS OPDETALLE_ID,
                 GRANT_NBR AS SUBVENCION_ID,
@@ -342,11 +363,18 @@ BEGIN
                     ) AS IND_PRESUPUESTO_ASIGNABLE,
                 
                 IFF(MON_ENTCP IN ('CLP','COP'),
-                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
                         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
                         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                     ) AS IND_PRESUPUESTO_ASIGNADO,
+
+                -- IFF(MON_ENTCP IN ('CLP','COP'),
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                --     ) AS IND_PRESUPUESTO_ASIGNADO,
 
                 IFF(MON_ENTCP IN ('CLP','COP'),
                         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X'
@@ -420,17 +448,18 @@ BEGIN
                 RMEASURE AS PROGRAMAPRES,
                 CONCAT(RFIKRS,'_',RCMMTITEM) AS POSICIONPRES_ID,
                 RCMMTITEM AS POSICIONPRES,
-                CONCAT(SOCIEDADCO_ID,'_',RFUNDSCTR)	AS CENTROCOSTO_ID,
-                RFUNDSCTR AS CENTROCOSTO,
-                CONCAT(SOCIEDADCO_ID,'_',RCMMTITEM)	AS CUENTA_ID,
-                RCMMTITEM AS CUENTA,
+                CONCAT(SOCIEDADCO_ID,'_',LTRIM(RFUNDSCTR, '0')) AS CENTROCOSTO_ID,
+                LTRIM(RFUNDSCTR, '0')	AS CENTROCOSTO,
+                CONCAT(SOCIEDADCO_ID,'_',LTRIM(RCMMTITEM, '0')) AS CUENTA_ID,
+                LTRIM(RCMMTITEM, '0')	AS CUENTA,
                 ''	AS ACREEDOR_ID, --LIFNR
                 ''	AS DEUDOR_ID, --KUNNR
                 --IFF(LTRIM(COSTE.SUBDIVISION_ID,'0') = '8', '08', IFF(LTRIM(COSTE.SUBDIVISION_ID,'0') = '25', '09', CECO.TIPOGASTO_ID)) AS GASTOER_ID,
                 '' AS GASTOER_ID,
-                CONCAT(SUBSTR(FISCPER,0,4),IFF(SUBSTR(FISCPER,6,2) = '00','01',
-                        IFF(SUBSTR(FISCPER,6,2) IN ('13','14','15','16'),'12',
-                    SUBSTR(FISCPER,6,2))),'01') AS FECHA_CONTABILIZACION, --BUDAT
+                TO_DATE(CONCAT(ANIO, '-', MES, '-01')) AS FECHA_CONTABILIZACION,
+                -- CONCAT(SUBSTR(FISCPER,0,4),IFF(SUBSTR(FISCPER,6,2) = '00','01',
+                --         IFF(SUBSTR(FISCPER,6,2) IN ('13','14','15','16'),'12',
+                --     SUBSTR(FISCPER,6,2))),'01') AS FECHA_CONTABILIZACION, --BUDAT
                 RFUNCAREA AS AREAFUNCIONAL_ID,
                 '' AS OPDETALLE_ID, --VRGNG
                 RGRANT_NBR AS SUBVENCION_ID,
@@ -458,11 +487,18 @@ BEGIN
                     ) AS IND_PRESUPUESTO_ASIGNABLE,
                 
                 IFF(MON_ENTCP IN ('CLP','COP'),
-                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
                         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
                         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                     ) AS IND_PRESUPUESTO_ASIGNADO,
+
+                -- IFF(MON_ENTCP IN ('CLP','COP'),
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                --     ) AS IND_PRESUPUESTO_ASIGNADO,
 
                 IFF(MON_ENTCP IN ('CLP','COP'),
                         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X'
@@ -539,15 +575,16 @@ BEGIN
                 RMEASURE AS PROGRAMAPRES,
                 CONCAT(RFIKRS,'_',RCMMTITEM) AS POSICIONPRES_ID,
                 RCMMTITEM AS POSICIONPRES,
-                CONCAT(SOCIEDADCO_ID,'_',RFUNDSCTR)	AS CENTROCOSTO_ID,
-                RFUNDSCTR AS CENTROCOSTO,
-                CONCAT(SOCIEDADCO_ID,'_',RCMMTITEM)	AS CUENTA_ID,
-                RCMMTITEM AS CUENTA,
+                CONCAT(SOCIEDADCO_ID,'_',LTRIM(RFUNDSCTR, '0')) AS CENTROCOSTO_ID,
+                LTRIM(RFUNDSCTR, '0')	AS CENTROCOSTO,
+                CONCAT(SOCIEDADCO_ID,'_',LTRIM(RCMMTITEM, '0')) AS CUENTA_ID,
+                LTRIM(RCMMTITEM, '0')	AS CUENTA,
                 ''	AS ACREEDOR_ID, --LIFNR
                 ''	AS DEUDOR_ID, --KUNNR
                 --IFF(LTRIM(COSTE.SUBDIVISION_ID,'0') = '8', '08', IFF(LTRIM(COSTE.SUBDIVISION_ID,'0') = '25', '09', CECO.TIPOGASTO_ID)) AS GASTOER_ID,
                 '' AS GASTOER_ID,
-                BUDAT AS FECHA_CONTABILIZACION, --BUDAT
+                TO_DATE(CONCAT(ANIO, '-', MES, '-01')) AS FECHA_CONTABILIZACION,
+                -- BUDAT AS FECHA_CONTABILIZACION, --BUDAT
                 RFUNCAREA AS AREAFUNCIONAL_ID,
                 '' AS OPDETALLE_ID, --VRGNG
                 RGRANT_NBR AS SUBVENCION_ID,
@@ -574,11 +611,18 @@ BEGIN
                     ) AS IND_PRESUPUESTO_ASIGNABLE,
                 
                 IFF(MON_ENTCP IN ('CLP','COP'),
-                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
                         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
                         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                     ) AS IND_PRESUPUESTO_ASIGNADO,
+
+                -- IFF(MON_ENTCP IN ('CLP','COP'),
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                --     ) AS IND_PRESUPUESTO_ASIGNADO,
 
                 IFF(MON_ENTCP IN ('CLP','COP'),
                         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X'
@@ -665,15 +709,16 @@ BEGIN
                 MEASURE AS PROGRAMAPRES,
                 CONCAT(FM_AREA,'_',CMMTITEM) AS POSICIONPRES_ID,
                 CMMTITEM AS POSICIONPRES,
-                CONCAT(SOCIEDADCO_ID,'_',FUNDSCTR) AS CENTROCOSTO_ID,
-                FUNDSCTR AS CENTROCOSTO,
-                CONCAT(SOCIEDADCO_ID,'_',CMMTITEM) AS CUENTA_ID,
-                CMMTITEM AS CUENTA,
+                CONCAT(SOCIEDADCO_ID,'_',LTRIM(FUNDSCTR, '0')) AS CENTROCOSTO_ID,
+                LTRIM(FUNDSCTR, '0')	AS CENTROCOSTO,
+                CONCAT(SOCIEDADCO_ID,'_',LTRIM(CMMTITEM, '0')) AS CUENTA_ID,
+                LTRIM(CMMTITEM, '0')	AS CUENTA,
                 '' AS ACREEDOR_ID, --LIFNR
                 '' AS DEUDOR_ID, --KUNNR
                 --IFF(LTRIM(COSTE.SUBDIVISION_ID,'0') = '8', '08', IFF(LTRIM(COSTE.SUBDIVISION_ID,'0') = '25', '09', CECO.TIPOGASTO_ID)) AS GASTOER_ID,
                 '' AS GASTOER_ID,
-                POSTDATE AS FECHA_CONTABILIZACION, --BUDAT
+                TO_DATE(CONCAT(ANIO, '-', MES, '-01')) AS FECHA_CONTABILIZACION,
+                -- POSTDATE AS FECHA_CONTABILIZACION, --BUDAT
                 FUNCAREA AS AREAFUNCIONAL_ID,
                 '' AS OPDETALLE_ID, --VRGNG
                 GRANT_NBR AS SUBVENCION_ID,
@@ -700,11 +745,18 @@ BEGIN
                     ) AS IND_PRESUPUESTO_ASIGNABLE,
                 
                 IFF(MON_ENTCP IN ('CLP','COP'),
-                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
                         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
                         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                     ) AS IND_PRESUPUESTO_ASIGNADO,
+
+                -- IFF(MON_ENTCP IN ('CLP','COP'),
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                --     ) AS IND_PRESUPUESTO_ASIGNADO,
 
                 IFF(MON_ENTCP IN ('CLP','COP'),
                         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X'
@@ -937,5 +989,3 @@ WHERE CONCAT(SUBSTR(FISCPER,0,4),SUBSTR(FISCPER,6,2)) BETWEEN :FECHA_INICIO AND 
 
 END;
 $$;
-
-CALL PRE.SP_PRE_FCT_CONTROLPRESUPUESTAL('197001','202612');

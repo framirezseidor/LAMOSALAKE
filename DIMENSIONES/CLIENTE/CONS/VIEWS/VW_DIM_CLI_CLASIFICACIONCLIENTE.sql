@@ -1,1 +1,1 @@
-Este archivo pertenece a VW_DIM_CLI_CLASIFICACIONCLIENTE
+-- Este archivo pertenece a VW_DIM_CLI_CLASIFICACIONCLIENTE

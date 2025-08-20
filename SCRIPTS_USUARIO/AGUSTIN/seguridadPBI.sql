@@ -44,7 +44,11 @@ VALUES ('ADH_INVENTARIO_TEST', 'CENTRO_ID', 'A111'); // Asignamos valor a Rol
 
 // Validar acceso con Rol y varios valores por dimension
 INSERT INTO MIRRORING.SEG_ROLE_DIMENSION
-VALUES ('ADH_INVENTARIO_TEST', 'CENTRO_ID', 'A112'); // Asignamos valor a Rol
+VALUES
+    ('ADH_INVENTARIO_TEST', 'CENTRO_ID', 'A111'),
+    ('ADH_INVENTARIO_TEST', 'CENTRO_ID', 'A114'),
+    ('ADH_INVENTARIO_TEST', 'CENTRO_ID', 'A121'),
+    ('ADH_INVENTARIO_TEST', 'CENTRO_ID', 'A133'); // Asignamos valor a Rol
 
 // Validar acceso con Rol SAP_ROLE
 DELETE FROM MIRRORING.SEG_ROLE_DIMENSION

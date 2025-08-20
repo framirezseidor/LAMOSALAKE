@@ -184,6 +184,10 @@ BEGIN
            SELECT ('Error en INSERT: ' || :sqlerrm) INTO :TEXTO;
     END;
 
+    --ACTUALIZACIÓN TABLA CALENDARIO
+
+    CALL MIRRORING.SP_ACTUALIZAR_CALENDARIO('FCT_LOG_ADH_INVENTARIO', 'DIM_CAL_ADH_INVENTARIO', 'FECHA_FOTO_INVENTARIO');
+
     ---------------------------------------------------------------------------------
     -- STEP 3: LOG
     ---------------------------------------------------------------------------------

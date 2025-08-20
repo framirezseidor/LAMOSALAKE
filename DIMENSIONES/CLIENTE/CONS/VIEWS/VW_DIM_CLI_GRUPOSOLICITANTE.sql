@@ -1,1 +1,1 @@
-Este archivo pertenece a VW_DIM_CLI_GRUPOSOLICITANTE
+-- Este archivo pertenece a VW_DIM_CLI_GRUPOSOLICITANTE
