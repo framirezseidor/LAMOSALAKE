@@ -2,7 +2,8 @@ CREATE OR REPLACE PROCEDURE CON.SP_CON_FCT_COM_ADH_PEDIDOS_ACT()
 RETURNS VARCHAR(16777216)
 LANGUAGE SQL
 EXECUTE AS OWNER
-AS '
+AS 
+$$
 /*
 ---------------------------------------------------------------------------------
  Versión:            1.0
@@ -28,11 +29,11 @@ BEGIN
     BEGIN
         SELECT CURRENT_TIMESTAMP() INTO :F_INICIO;
 
-        TRUNCATE TABLE CON.FCT_COM_ADH_PEDIDOS_ACT;
+        DELETE FROM CON.FCT_COM_ADH_PEDIDOS_ACT;
 
     EXCEPTION
         WHEN statement_error THEN
-            SELECT (''Error en DELETE: '' || :sqlerrm) INTO :TEXTO;
+            SELECT ('Error en DELETE: ' || :sqlerrm) INTO :TEXTO;
     END;
 
     ---------------------------------------------------------------------------------
@@ -96,7 +97,10 @@ BEGIN
             MANDANTE	AS	MANDANTE	,
             FECHA_CARGA	AS	FECHA_CARGA	,
             ZONA_HORARIA	AS	ZONA_HORARIA	
-        FROM PRE.PFCT_COM_PEDIDOS_ACT;
+        FROM PRE.PFCT_COM_PEDIDOS_ACT
+        WHERE
+        MATERIAL_ID IN ( SELECT MATERIAL_ID FROM MIRRORING.DIM_MAT_MATERIAL_ADH 
+                        WHERE TIPOMATERIAL_ID IN ('ZHAW','FERT'))        ;
 
 
         SELECT COUNT(*) INTO :ROWS_INSERTED FROM CON.FCT_COM_ADH_PEDIDOS_ACT;
@@ -105,22 +109,29 @@ BEGIN
         SELECT DATEDIFF(millisecond, :F_INICIO, :F_FIN) INTO :T_EJECUCION;
     EXCEPTION
         WHEN statement_error THEN
-            SELECT (''Error en INSERT: '' || :sqlerrm) INTO :TEXTO;
+            SELECT ('Error en INSERT: ' || :sqlerrm) INTO :TEXTO;
     END;
 
 
     ---------------------------------------------------------------------------------
     -- STEP 3: LOG
     ---------------------------------------------------------------------------------
-        SELECT COALESCE(:TEXTO,''EJECUCION CORRECTA'') INTO :TEXTO;
+        SELECT COALESCE(:TEXTO,'EJECUCION CORRECTA') INTO :TEXTO;
 
         INSERT INTO LOGS.HISTORIAL_EJECUCIONES 
-        VALUES(''CON.SP_CON_FCT_COM_ADH_PEDIDOS_ACT'',''CON.FCT_COM_ADH_PEDIDOS_ACT'', :F_INICIO, :F_FIN,:T_EJECUCION ,:ROWS_INSERTED, :TEXTO );
+        VALUES('CON.SP_CON_FCT_COM_ADH_PEDIDOS_ACT','CON.FCT_COM_ADH_PEDIDOS_ACT', :F_INICIO, :F_FIN,:T_EJECUCION ,:ROWS_INSERTED, :TEXTO );
 
     ---------------------------------------------------------------------------------
     -- STEP 4: FINALIZACIÓN
     ---------------------------------------------------------------------------------
-    RETURN CONCAT(''Complete - Filas insertadas: '', ROWS_INSERTED);
+    RETURN CONCAT('Complete - Filas insertadas: ', ROWS_INSERTED);
 
 END;
-';
+$$;
+
+
+call con.sp_con_fct_com_adh_pedidos_act();
+
+select * FROM MIRRORING.DIM_MAT_MATERIAL_ADH;
+
+select * from MIRRORING.DIM_MAT_MATERIAL_ADH;

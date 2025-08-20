@@ -112,3 +112,11 @@ GROUP BY
 
 //este es el query para insertar en la tabla de ventas PCP lo historico
 
+truncate table PRE.PFCT_COM_ADH_VENTAS_PCP_HIST;
+
+select * from PRE.PFCT_COM_ADH_VENTAS_PCP_HIST
+where asesorfactura_id = '1300017';
+
+select count(*) from PRE.PFCT_COM_ADH_VENTAS_PCP_HIST;
+
+

@@ -135,5 +135,3 @@ END;
 $$;
  
 
--- select * from  MIRRORING.DIM_CLI_ASESORCOMERCIAL
--- where length(ASESORCOMERCIAL_ID) <8;

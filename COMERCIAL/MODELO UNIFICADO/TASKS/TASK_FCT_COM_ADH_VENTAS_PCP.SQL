@@ -4,17 +4,39 @@ create or replace task MIRRORING.TASK_FCT_COM_ADH_VENTAS_PCP
 	as BEGIN
 
     -- 1. Truncar tabla temporal
-    TRUNCATE TABLE TR_FCT_COM_ADH_VENTAS_PCP;
+   TRUNCATE TABLE TR_FCT_COM_ADH_VENTAS_PCP;
 
     -- 2. Insertar datos desde el stream a la temporal
     INSERT INTO TR_FCT_COM_ADH_VENTAS_PCP
-    SELECT * FROM STREAM_FCT_COM_ADH_VENTAS_PCP;
+    SELECT * FROM MIRRORING.STREAM_FCT_COM_ADH_VENTAS_PCP ;
+
 
     -- 3. Borrar completamente la tabla destino
-    DELETE FROM MIRRORING.FCT_COM_ADH_COMERCIAL WHERE MODELO = 'VENTASPCP';
+-- 1. BORRAR registros eliminados
+    DELETE FROM MIRRORING.FCT_COM_ADH_COMERCIAL d
+    USING (
+      SELECT * FROM MIRRORING.TR_FCT_COM_ADH_VENTAS_PCP 
+      WHERE METADATA$ACTION = 'DELETE' AND MODELO = 'VENTASPCP' AND SISORIGEN_ID= 'FILE'
+    ) s
+    WHERE 
+      d.anio = s.anio and
+      d.aniomes = s.aniomes and
+      d.fecha_comercial = s.fecha_comercial and
+      d.oficinaventas_id = s.oficinaventas_id and
+      d.orgventas_id = s.orgventas_id and
+      d.centro_id = s.centro_id and
+      d.material_id = s.material_id and
+      d.sociedad_id = s.sociedad_id and
+      d.region_id = s.region_id and
+      d.asesorfactura_id = s.asesorfactura_id and
+      d.solicitante_id = s.solicitante_id and
+      d.MODELO = s.MODELO AND 
+      d.SISORIGEN_ID = s.SISORIGEN_ID 
+    ;
 
     -- 4. Insertar nuevos datos directamente (todos los INSERT del stream)
-    INSERT INTO MIRRORING.FCT_COM_ADH_COMERCIAL (
+    INSERT INTO MIRRORING.FCT_COM_ADH_COMERCIAL 
+    (
         -- (lista completa de columnas como ya la tenías)
       ANIO,
       ANIOMES,
@@ -99,13 +121,15 @@ create or replace task MIRRORING.TASK_FCT_COM_ADH_VENTAS_PCP
       MATERIALVENTAS_ID,
       MATERIAL_ID,
       TIPOMATERIAL_ID,
+      UNI_EST,
+      UNI_UMV,
       BOR_IND_BO_CONFIRMADO_TON,
       BOR_IND_BO_ENTREGA_TON,
       BOR_IND_BO_IMPORTE_DOC,
       BOR_IND_BO_NO_CONFIRMADO_TON,
       BOR_IND_BO_TOTAL_TON,
       BOR_MON_DOC,
-      BOR_UNI_EST,
+      --BOR_UNI_EST,
       PED_IND_CANT_CONFIRMADA_TON,
       PED_IND_CANT_CONFIRMADA_UMV,
       PED_IND_CANT_ENTREGADA_TON,
@@ -114,8 +138,8 @@ create or replace task MIRRORING.TASK_FCT_COM_ADH_VENTAS_PCP
       PED_IND_CANT_FACTURADA_UMV,
       PED_IND_CANT_PEDIDO_TON,
       PED_IND_CANT_PEDIDO_UMV,
-      PED_UNI_EST,
-      PED_UNI_UMV,
+      --PED_UNI_EST,
+      --PED_UNI_UMV,
       VTA_IND_COSTOSINTERNOS_LOC,
       VTA_IND_COSTOSINTERNOS_MXN,
       VTA_IND_COSTOSINTERNOS_USD,
@@ -180,9 +204,9 @@ create or replace task MIRRORING.TASK_FCT_COM_ADH_VENTAS_PCP
       VTA_MON_LOC,
       VTA_MON_MXN,
       VTA_MON_USD,
-      VTA_UNI_EST,
+      --VTA_UNI_EST,
       VTA_UNI_PESO,
-      VTA_UNI_UMV,
+      --VTA_UNI_UMV,
       FECHA_CARGA,
       MANDANTE,
       MODELO,
@@ -273,13 +297,15 @@ create or replace task MIRRORING.TASK_FCT_COM_ADH_VENTAS_PCP
       MATERIALVENTAS_ID,
       MATERIAL_ID,
       TIPOMATERIAL_ID,
+      UNI_EST,
+      UNI_UMV,
       BOR_IND_BO_CONFIRMADO_TON,
       BOR_IND_BO_ENTREGA_TON,
       BOR_IND_BO_IMPORTE_DOC,
       BOR_IND_BO_NO_CONFIRMADO_TON,
       BOR_IND_BO_TOTAL_TON,
       BOR_MON_DOC,
-      BOR_UNI_EST,
+      --BOR_UNI_EST,
       PED_IND_CANT_CONFIRMADA_TON,
       PED_IND_CANT_CONFIRMADA_UMV,
       PED_IND_CANT_ENTREGADA_TON,
@@ -288,8 +314,8 @@ create or replace task MIRRORING.TASK_FCT_COM_ADH_VENTAS_PCP
       PED_IND_CANT_FACTURADA_UMV,
       PED_IND_CANT_PEDIDO_TON,
       PED_IND_CANT_PEDIDO_UMV,
-      PED_UNI_EST,
-      PED_UNI_UMV,
+      --PED_UNI_EST,
+      --PED_UNI_UMV,
       VTA_IND_COSTOSINTERNOS_LOC,
       VTA_IND_COSTOSINTERNOS_MXN,
       VTA_IND_COSTOSINTERNOS_USD,
@@ -354,16 +380,16 @@ create or replace task MIRRORING.TASK_FCT_COM_ADH_VENTAS_PCP
       VTA_MON_LOC,
       VTA_MON_MXN,
       VTA_MON_USD,
-      VTA_UNI_EST,
+      --VTA_UNI_EST,
       VTA_UNI_PESO,
-      VTA_UNI_UMV,
+      --VTA_UNI_UMV,
       FECHA_CARGA,
       MANDANTE,
       MODELO,
       SISORIGEN_ID,
       ZONA_HORARIA
-    FROM TR_FCT_COM_ADH_VENTAS_PCP 
-    WHERE METADATA$ACTION = 'INSERT';
+    FROM MIRRORING.TR_FCT_COM_ADH_VENTAS_PCP
+    WHERE MODELO = 'VENTASPCP' AND SISORIGEN_ID= 'FILE' AND METADATA$ACTION = 'INSERT'    ;
 
 --ACTUALIZAR CALENDARIO
 CALL MIRRORING.SP_ACTUALIZAR_CALENDARIO('FCT_COM_ADH_COMERCIAL', 'DIM_CAL_ADH_COMERCIAL');    

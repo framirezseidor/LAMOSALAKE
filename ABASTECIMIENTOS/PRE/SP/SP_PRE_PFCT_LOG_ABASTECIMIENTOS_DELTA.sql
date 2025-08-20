@@ -79,6 +79,7 @@ BEGIN
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
         FECHA_REPARTO,
+        FECHA_ORDEN,
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -149,7 +150,7 @@ BEGIN
         KONNR AS contrato_id,
         KTPNR AS posicioncontrato_id,
         TRIM(LGORT,' ') AS almacen_id,
-        CONCAT(TRIM(LGORT,' '),'_',WERKS) AS ALMACENCENTRO_ID,
+        CONCAT(WERKS,'_',TRIM(LGORT,' ')) AS ALMACENCENTRO_ID,
         LMEIN AS um_base,
         MATKL AS GRUPOARTICULOS_ID,
         LTRIM(TRIM(MATNR,' '),'0') AS material_id ,
@@ -194,9 +195,15 @@ BEGIN
 
         TS_SEQUENCE_NUMBER, UZEIT as hora_reparto, PERIV as variante_fiscal, --Agregados para llave días de colocación
 
-        CONCAT(LTRIM(TRIM(MATNR,' '),'0'),'_',WERKS) AS MATERIALCENTRO_ID,
+        CONCAT(WERKS,'_',LTRIM(TRIM(MATNR,' '),'0')) AS MATERIALCENTRO_ID,
 
         IFF(MATKL IN ('000','001','102','104','107'),DATEADD(day,15,EINDT),IFF(BSTYP IN ('F','L'),DATEADD(day,1,EINDT),EINDT)) AS FECHA_ENTREGAOBJETIVO,
+
+        CASE 
+            WHEN BWVORG IN ('001','011','021', '004','014','024', '005','015','025', '041','051','061') THEN IFF(BEDAT = '1970-01-01', NULL, BEDAT) --FECHADOC
+            WHEN BWVORG IN ('002','012','022','006','016','026') THEN IFF(BUDAT = '1970-01-01', NULL, BUDAT) --FECHACONTAB
+            ELSE IFF(BUDAT = '1970-01-01', NULL, BUDAT) --FECHACONTAB
+        END AS FECHA_ORDEN,
 
         'USD' AS MON_USD,
         'EUR' AS MON_EUR,
@@ -229,7 +236,7 @@ BEGIN
             ON tc_ped.KURST = 'M'
             AND tc_ped.FCURR = MON_PED
             AND tc_ped.TCURR = MON_LOC
-            AND tc_ped.GDATU = FECHA_CONTABILIZACION
+            AND tc_ped.GDATU = FECHA_ORDEN
         LEFT JOIN RAW.CAT_UNIDAD_ESTADISTICA U
         ON UPPER(TRIM(T.MEINS)) = UPPER(TRIM(U.VALOR_ORIGINAL))
         WHERE DOCCOMPRAS IN (SELECT DISTINCT EBELN FROM RAW.SQ1_EXT_2LIS_02_SCL
@@ -258,6 +265,7 @@ BEGIN
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
         FECHA_REPARTO,
+        FECHA_ORDEN,
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -328,11 +336,12 @@ BEGIN
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
         FECHA_REPARTO,
+        FECHA_ORDEN,
 
         CLAVEOPERACION,
 
-        SUM(IFF(MON_PED = 'USD',1,COALESCE(tc_usd.RATE,0))) AS TIPOCAMBIO_USD,
-        SUM(IFF(MON_PED = 'EUR',1,COALESCE(tc_eur.RATE,0))) AS TIPOCAMBIO_EUR,
+        IFF(MON_PED = 'USD',1,COALESCE(tc_usd.RATE,0)) AS TIPOCAMBIO_USD,
+        IFF(MON_PED = 'EUR',1,COALESCE(tc_eur.RATE,0)) AS TIPOCAMBIO_EUR,
 
         SUM(cantidad_um_ped) AS IND_CANTIDAD_UM_PED,
         SUM(IFF(DOCCOMPRAS_CLASE = 'ZDEV', cantidad_um_ped*-1, cantidad_um_ped)) AS IND_CANTIDAD_TOTAL,
@@ -406,17 +415,17 @@ BEGIN
             ON tc_usd.KURST = 'M'
             AND tc_usd.FCURR = MON_PED
             AND tc_usd.TCURR = 'USD'
-            AND tc_usd.GDATU = FECHA_CONTABILIZACION 
+            AND tc_usd.GDATU = FECHA_ORDEN 
         LEFT JOIN PRE.PDIM_ABA_TASACAMBIO AS tc_eur
             ON tc_eur.KURST = 'M'
             AND tc_eur.FCURR = MON_PED
             AND tc_eur.TCURR = 'EUR'
-            AND tc_eur.GDATU = FECHA_CONTABILIZACION
+            AND tc_eur.GDATU = FECHA_ORDEN
         LEFT JOIN PRE.PDIM_ABA_TASACAMBIO AS tc_tipocamb
             ON tc_tipocamb.KURST = 'M'
             AND tc_tipocamb.FCURR = MON_PED
             AND tc_tipocamb.TCURR = MON_LOC
-            AND tc_tipocamb.GDATU = FECHA_CONTABILIZACION
+            AND tc_tipocamb.GDATU = FECHA_ORDEN
         GROUP BY ALL
         ) AS FINAL_SELECT
         LEFT JOIN (----------agrupacion de fletes---------
@@ -467,6 +476,7 @@ BEGIN
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
         FECHA_REPARTO,
+        FECHA_ORDEN,
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -616,7 +626,7 @@ BEGIN
                                                 THEN FECHA_REPARTO
                                                 ELSE FECHA_DOCCOMPRAS
                                         END AS FECHA_DOCCOMPRAS,
-                                        FECHA_REPARTO, FECHA_CONTABILIZACION,
+                                        FECHA_REPARTO, FECHA_CONTABILIZACION,FECHA_ORDEN,
                                         CLAVEOPERACION,
                                         SISORIGEN_ID,
                                         MANDANTE,

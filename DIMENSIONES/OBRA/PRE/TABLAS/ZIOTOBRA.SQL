@@ -5,3 +5,4 @@ create or alter TABLE PRE.ZIOTOBRA (
 	TXTMD VARCHAR(30),
 	TXTLG VARCHAR(30)
 );
+

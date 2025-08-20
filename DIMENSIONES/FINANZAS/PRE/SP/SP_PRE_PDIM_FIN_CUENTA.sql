@@ -2,62 +2,57 @@ CREATE OR REPLACE PROCEDURE PRE.SP_PRE_PDIM_FIN_CUENTA()
 RETURNS VARCHAR(16777216)
 LANGUAGE SQL
 EXECUTE AS OWNER
-AS 'DECLARE
+AS
+$$
+/*
+---------------------------------------------------------------------------------
+ Versión:            1.0
+ Fecha de creación:  2025-04-15
+ Creador:            Juan Pedreros
+ Descripción:        SP que transforma datos desde la capa RAW a PRE para PDIM_FIN_CUENTA
+---------------------------------------------------------------------------------
+*/
 
-
-     ------------ VARIABLES DE ENTORNO ------------ 
-	ID varchar(250)					:= NULL;
-    D_PROCESO VARCHAR(250)	        :=''PDIM_FIN_CUENTA'';
-	D_TABLAAFECTADA VARCHAR(250)    := NULL;
-	D_RESULTADO VARCHAR(10)         := NULL;
-	D_OPERACION VARCHAR(10)		    := NULL;
-	N_REGISTROS NUMBER(38,0)        := NULL;
-	NM_TIPO_LOG VARCHAR(100)        := NULL;
-	F_INICIO TIMESTAMP_NTZ(9)       := NULL;
-	F_FIN TIMESTAMP_NTZ(9)          := NULL;
-	T_EJECUCION NUMBER(38,0)   		:= NULL;
-	D_MENSAJE VARCHAR(250)          := NULL;
+DECLARE
+    -- VARIABLES DE CONTROL
+    F_INICIO        TIMESTAMP_NTZ(9);
+    F_FIN           TIMESTAMP_NTZ(9);
+    T_EJECUCION     NUMBER(38,0);
+    ROWS_INSERTED   NUMBER(38,0);
+    TEXTO           VARCHAR(200);
 
 BEGIN
 
-    //Generacion del identificador del proceso
-    SELECT UUID_STRING() INTO :ID; 
-    
+    ---------------------------------------------------------------------------------
+    -- STEP 1: LIMPIEZA DE DATOS EN LA TABLA PRE
+    ---------------------------------------------------------------------------------
     BEGIN
-
-        ------------ TRUNCAR TABLAS -----------------------------
-        ---------------------------------------------------------
-        // Inicia proceso TRUNCATE 
         SELECT CURRENT_TIMESTAMP() INTO :F_INICIO;
         
         // Process TRUNCATE
-        TRUNCATE TABLE PRE.PDIM_FIN_CUENTA;
+        DELETE FROM PRE.PDIM_FIN_CUENTA;
 		
-		
-        // Fin proceso TRUNCATE
-        SELECT CURRENT_TIMESTAMP() INTO :F_FIN;
-		
-		//Calculo tiempo
+		SELECT CURRENT_TIMESTAMP() INTO :F_FIN;
         SELECT DATEDIFF(millisecond, :F_INICIO, :F_FIN) INTO :T_EJECUCION;
-        
-        //Registro bitacora       
-        --CALL PRE_PRD_SAP.LOGS.SP_LOG_PRD (:ID, :D_PROCESO, ''PDIM_FIN_CUENTA'', ''EXITOSO'',''TRUNCATE'',:SQLROWCOUNT, :NM_TIPO_LOG, :F_INICIO, :F_FIN,  :T_EJECUCION, :D_MENSAJE);
+    EXCEPTION
+        WHEN statement_error THEN
+            SELECT ('Error en DELETE: ' || :sqlerrm) INTO :TEXTO;
+    END;
 
-
-		------------ LLENADO DE TABLAS --------------------------
-        ---------------------------------------------------------
-		
-        // Inicia proceso INSERT 
+    ---------------------------------------------------------------------------------
+    -- STEP 2: INSERCIÓN DE DATOS DESDE RAW HACIA PRE
+    ---------------------------------------------------------------------------------
+    BEGIN
         SELECT CURRENT_TIMESTAMP() INTO :F_INICIO;
         
         // Process INSERT
         INSERT INTO PRE.PDIM_FIN_CUENTA
         SELECT
-            CONCAT(A.KOKRS,''_'',A.KSTAR) AS CUENTA_ID,
+            CONCAT(A.KOKRS,'_',LTRIM(A.KSTAR, '0')) AS CUENTA_ID,
             A.KOKRS AS SOCIEDADCO_ID,
-            A.KSTAR AS CUENTA,
+            LTRIM(A.KSTAR, '0') AS CUENTA,
             A.TXTSH AS CUENTA_TEXT,
-            LPAD(B.TEXTO, 3, ''0'') AS SUBDIVISION_ID,
+            LPAD(B.TEXTO, 3, '0') AS SUBDIVISION_ID,
             C.SUBDIVISION_TEXT AS SUBDIVISION_TEXT,
             A.SISORIGEN_ID,
             A.MANDANTE,
@@ -66,42 +61,38 @@ BEGIN
         FROM  RAW.SQ1_EXT_0COSTELMNT_TEXT AS A
         LEFT JOIN RAW.SQ1_EXT_ZSTXH AS B
         ON A.KSTAR = LEFT(TDNAME,10)
-        AND A.KOKRS=''CAGL''
+        AND A.KOKRS = 'CAGL'
         LEFT JOIN RAW.FILE_CSV_SUBDIVISION AS C
-        ON LPAD(B.TEXTO, 3, ''0'') = LPAD(C.SUBDIVISION_ID, 3, ''0'')
-        WHERE A.LANGU=''S''
+        ON LPAD(B.TEXTO, 3, '0') = LPAD(C.SUBDIVISION_ID, 3, '0')
+        WHERE A.LANGU = 'S'
         GROUP BY ALL;
 
         INSERT INTO PRE.PDIM_FIN_CUENTA (CUENTA_ID, CUENTA_TEXT)
-        VALUES (''DUMMY'', ''DUMMY'');
+        VALUES ('DUMMY', 'DUMMY');
 
-        // Fin proceso INSERT
+        -- Conteo de filas insertadas
+        SELECT COUNT(*) INTO :ROWS_INSERTED FROM PRE.PDIM_FIN_CUENTA;
+
         SELECT CURRENT_TIMESTAMP() INTO :F_FIN;
+        SELECT DATEDIFF(millisecond, :F_INICIO, :F_FIN) INTO :T_EJECUCION;
         
-        //Registro bitacora       
-        --CALL PRE_PRD_SAP.LOGS.SP_LOG_PRD (:ID, :D_PROCESO, ''PDIM_FIN_CUENTA'', ''EXITOSO'',''INSERT'',:SQLROWCOUNT, :NM_TIPO_LOG, :F_INICIO, :F_FIN,  :T_EJECUCION, :D_MENSAJE);
-		
-
-		-------------------------------------------------
-        -------------------------------------------------
-
-        RETURN (''Complete'');
-        
-    ---- MANEJO DE EXCEPCIONES POR ERRORES
     EXCEPTION
-    
-        when statement_error then 
-        
-        SELECT CONCAT(''Failed: Code: '',:sqlcode,
-                    ''\\\\n  Message: '',:sqlerrm,
-                    ''\\\\n  State: '',:sqlstate) INTO :D_MENSAJE;
-        
-        //Registro bitacora       
-        --CALL PRE_PRD_SAP.LOGS.SP_LOG_PRD (:ID, :D_PROCESO, ''PRE_DIM_CUENTA'', ''FALLIDO'',''INSERT'',:SQLROWCOUNT, :NM_TIPO_LOG, :F_INICIO, :F_FIN,  :T_EJECUCION, :D_MENSAJE);
+        WHEN statement_error THEN
+            SELECT ('Error en DELETE: ' || :sqlerrm) INTO :TEXTO;
+    END;
 
-        RETURN (:D_MENSAJE);
+    ---------------------------------------------------------------------------------
+    -- STEP 3: LOG
+    ---------------------------------------------------------------------------------
+    SELECT COALESCE(:TEXTO, 'EJECUCION CORRECTA') INTO :TEXTO;
+
+    INSERT INTO LOGS.HISTORIAL_EJECUCIONES
+    VALUES ('SP_PRE_PDIM_FIN_CUENTA','PRE.PDIM_FIN_CUENTA', :F_INICIO, :F_FIN, :T_EJECUCION, :ROWS_INSERTED, :TEXTO );
+
+    ---------------------------------------------------------------------------------
+    -- STEP 4: FINALIZACIÓN
+    ---------------------------------------------------------------------------------
+    RETURN CONCAT('Complete - Filas insertadas: ', ROWS_INSERTED);
 
 END;
-END';
-
-CALL PRE.SP_PRE_PDIM_FIN_CUENTA();
+$$;

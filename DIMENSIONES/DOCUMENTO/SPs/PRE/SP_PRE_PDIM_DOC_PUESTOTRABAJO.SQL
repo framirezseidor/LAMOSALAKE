@@ -55,7 +55,8 @@ BEGIN
         )
         SELECT
             -- Transformaciones desde RAW
-            ATTR.ARBPL AS PUESTOTRABAJO_ID,
+            --ATTR.ARBPL AS PUESTOTRABAJO_ID,
+            CONCAT(ATTR.WERKS,'_',ATTR.ARBPL) AS PUESTOTRABAJO_ID,
             TEXT.TXTMD AS PUESTOTRABAJO_TEXT,
             ATTR.SISORIGEN_ID,
             ATTR.MANDANTE,
@@ -63,7 +64,7 @@ BEGIN
             RIGHT(CURRENT_TIMESTAMP,5) AS ZONA_HORARIA 
         FROM RAW.SQ1_EXT_0WORKCENTER_ATTR AS ATTR 
         LEFT JOIN RAW.SQ1_EXT_0WORKCENTER_TEXT AS TEXT 
-        ON ATTR.ARBPL = TEXT.ARBPL
+            ON ATTR.ARBPL = TEXT.ARBPL AND ATTR.WERKS = TEXT.WERKS
         WHERE TEXT.LANGU = 'S';
 
         -- Conteo de filas insertadas

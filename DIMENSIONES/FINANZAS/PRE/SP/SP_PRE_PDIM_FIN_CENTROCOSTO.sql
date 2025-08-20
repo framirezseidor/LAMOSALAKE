@@ -83,8 +83,8 @@ BEGIN
             TIPO
         )
         
-        SELECT  CONCAT(CECO.KOKRS,'_',CECO.KOSTL) AS "CENTROCOSTO_ID",
-                CECO.KOSTL AS "CENTROCOSTO",
+        SELECT  CONCAT(CECO.KOKRS,'_',LTRIM(CECO.KOSTL, '0')) AS "CENTROCOSTO_ID",
+                LTRIM(CECO.KOSTL, '0') AS "CENTROCOSTO",
                 CECOTEXT.TXTMD AS "CENTROCOSTO_TEXT",
                 CECO.KOKRS AS "SOCIEDADCO_ID",
                 CECO.BUKRS AS "SOCIEDAD_ID",

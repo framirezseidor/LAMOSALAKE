@@ -77,6 +77,10 @@ BEGIN
         FECHA_ENTREGAPLANIFICADA,
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
+
+        FECHA_ORDEN, --Fecha de Documento para colocads y Fecha de Contabilización para contabilizadas
+        ANIOMES,
+
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -153,6 +157,10 @@ BEGIN
         FECHA_ENTREGAPLANIFICADA,
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
+
+        FECHA_ORDEN,
+        TO_CHAR(FECHA_ORDEN, 'YYYY-MM') AS ANIOMES,
+
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -240,6 +248,9 @@ BEGIN
         FECHA_ENTREGAPLANIFICADA,
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
+
+        FECHA_ORDEN, --Fecha de Documento para colocads y Fecha de Contabilización para contabilizadas
+
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -286,6 +297,9 @@ BEGIN
         FECHA_ENTREGAPLANIFICADA,
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
+
+        FECHA_ORDEN, --Fecha de Documento para colocads y Fecha de Contabilización para contabilizadas
+
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -335,6 +349,7 @@ BEGIN
         FECHA_ENTREGAPLANIFICADA,
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
+        FECHA_ORDEN,
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -378,6 +393,10 @@ BEGIN
         FECHA_ENTREGAPLANIFICADA,
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
+
+        FECHA_ORDEN, --Fecha de Documento para colocads y Fecha de Contabilización para contabilizadas
+        TO_CHAR(FECHA_ORDEN, 'YYYY-MM') AS ANIOMES,
+
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -471,6 +490,7 @@ BEGIN
         FECHA_ENTREGAPLANIFICADA,
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
+        FECHA_ORDEN,
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -512,6 +532,10 @@ BEGIN
         FECHA_ENTREGAPLANIFICADA,
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
+
+        FECHA_ORDEN, --Fecha de Documento para colocads y Fecha de Contabilización para contabilizadas
+        TO_CHAR(FECHA_ORDEN, 'YYYY-MM') AS ANIOMES,
+
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -591,7 +615,7 @@ BEGIN
         SELECT DATEDIFF(millisecond, :F_INICIO, :F_FIN) INTO :T_EJECUCION;
     EXCEPTION
         WHEN statement_error THEN
-            SELECT ('Error en DELETE: ' || :sqlerrm) INTO :TEXTO;
+            SELECT ('Error en INSERT: ' || :sqlerrm) INTO :TEXTO;
             RETURN :TEXTO;
     END;
 
@@ -604,6 +628,8 @@ BEGIN
         CLONE CON.FCT_LOG_ADH_ABASTECIMIENTOS;
  
         CREATE OR REPLACE STREAM MIRRORING.STREAM_FCT_LOG_ADH_ABASTECIMIENTOS ON TABLE MIRRORING.FCT_LOG_ADH_ABASTECIMIENTOS;
+
+        CALL CON.SP_CON_DIM_CAL_ADH_ABASTECIMIENTOS();
 
     ---------------------------------------------------------------------------------
     -- STEP 4: LOG

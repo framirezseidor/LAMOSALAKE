@@ -1,1 +1,1 @@
-Este archivo pertenece a VW_DIM_CLI_GRUPOIMPUTCLIENTE
+-- Este archivo pertenece a VW_DIM_CLI_GRUPOIMPUTCLIENTE

@@ -184,13 +184,13 @@ BEGIN
             T.COUNTRY                                                                 AS PAIS_ID,
             T.COUNTRY || '_' || T.REGION                                              AS REGION_ID,
             T.COUNTRY || '_' || T.TRANSPZONE                                          AS ZONATRANSPORTE_ID,
-            T.VBELN                                                                   AS PEDIDO,
+            LTRIM(T.VBELN, '0')                                                       AS PEDIDO,
             T.POSNR                                                                   AS PEDIDO_POS,
             T.AUART                                                                   AS CLASEPEDIDO_ID,
-            NULLIF('1990-01-01', '1970-01-01')                                        AS FECHA_DOCUMENTO,  -- FECHA DOCUMENTO NO SE ENCUENTRA EN LA FUENTE AUN
-            T.ERDAT                                                                   AS FECHA_CREACION_PEDIDO,
-            T.BSTDK                                                                   AS FECHA_PEDIDO_CLIENTE,
-            T.VDATU                                                                   AS FECHA_PREFERENTE_ENTREGA,
+            NULL                                                                      AS FECHA_DOCUMENTO,  -- FECHA DOCUMENTO NO SE ENCUENTRA EN LA FUENTE AUN NULLIF('1990-01-01', '1970-01-01')
+            NULLIF(NULLIF(T.ERDAT::DATE, DATE '1970-01-01'), DATE '1990-01-01')       AS FECHA_CREACION_PEDIDO,
+            NULLIF(NULLIF(T.BSTDK::DATE, DATE '1970-01-01'), DATE '1990-01-01')       AS FECHA_PEDIDO_CLIENTE,
+            NULLIF(NULLIF(T.VDATU::DATE, DATE '1970-01-01'), DATE '1990-01-01')       AS FECHA_PREFERENTE_ENTREGA,    
             T.AUGRU                                                                   AS MOTIVOPEDIDO_ID,
             T.VSBED                                                                   AS CONDICIONEXP_ID,
             T.INCO1                                                                   AS INCOTERMS_ID,
@@ -227,7 +227,7 @@ BEGIN
             --------------------------------------------------------------
             T.ID_CONVENIO                                                             AS CONVENIO_OBRA,
             T.PLAN_OBRA                                                               AS PLAN_OBRA,
-            T.SEGMENTO                                                                AS SEGMENTO_OBRA_ID,
+            LEFT(T.SEGMENTO, 2)                                                       AS SEGMENTO_OBRA_ID,
             T.KUNNR_ZP                                                                AS PROMOTOR_ID,
             'NIO'                                                                     AS NIO_OBRA, ---NIO_OBRA NO SE ENCUENTRA EN LA FUENTE AUN
             --------------------------------------------------------------
@@ -244,9 +244,9 @@ BEGIN
             LTRIM(T.KUNNR, '0')                                                       AS CLIENTE_ID,
             T.VKORG || '_' || T.VTWEG || '_' || '00' || '_' || LTRIM(T.KUNNR, '0')    AS SOLICITANTE_ID,
             T.VKORG || '_' || T.VTWEG || '_' || '00' || '_' || LTRIM(T.KUNNR_EM, '0') AS DESTINATARIO_ID,
-            T.MATNR                                                                   AS MATERIAL_ID,
-            T.VKORG || '_' || T.VTWEG || '_' || T.MATNR                               AS MATERIALVENTAS_ID,
-            T.WERKS || '_' || T.MATNR                                                 AS MATERIALCENTRO_ID,
+            LTRIM(T.MATNR, '0')                                                       AS MATERIAL_ID,
+            T.VKORG || '_' || T.VTWEG || '_' || LTRIM(T.MATNR, '0')                   AS MATERIALVENTAS_ID,
+            T.WERKS || '_' || LTRIM(T.MATNR, '0')                                     AS MATERIALCENTRO_ID,
             T.CHARG                                                                   AS LOTE,
             T.MTART                                                                   AS TIPOMATERIAL_ID,
             T.CANT_PEND                                                               AS IND_BO_TOTAL_EST,
@@ -321,3 +321,8 @@ BEGIN
     
 END;
 $$;
+
+
+-- SELECT pedido, fecha_backorder, fecha_creacion_pedido, fecha_documento, fecha_pedido_cliente, fecha_preferente_entrega FROM CON.FCT_COM_ADH_BACKORDER_ACT;
+
+

@@ -117,7 +117,3 @@ BEGIN
 END;
 $$; 
  
-
---  select * from mirroring.dim_cli_coordinadorcomercial;
-
- CALL CON.SP_CON_DIM_CLI_COORDINADORCOMERCIAL();

@@ -118,4 +118,3 @@ END;
 $$;
  
 
- select * from mirroring.dim_cli_tiendarecibo;

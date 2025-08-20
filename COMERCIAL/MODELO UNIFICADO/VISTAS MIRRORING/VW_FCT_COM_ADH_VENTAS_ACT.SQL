@@ -102,13 +102,15 @@ create or replace view MIRRORING.VW_FCT_COM_ADH_VENTAS_ACT
         MATERIALVENTAS_ID AS MATERIALVENTAS_ID,
         MATERIAL_ID AS MATERIAL_ID,
         TIPOMATERIAL_ID AS TIPOMATERIAL_ID,
+        UNI_EST AS UNI_EST,  -- FRL 18082025 nueva medida unificada
+        UNI_UMV AS UNI_UMV,  -- FRL 18082025 nueva medida unificada        
         0 AS BOR_IND_BO_CONFIRMADO_TON,
         0 AS BOR_IND_BO_ENTREGA_TON,
         0 AS BOR_IND_BO_IMPORTE_DOC,
         0 AS BOR_IND_BO_NO_CONFIRMADO_TON,
         0 AS BOR_IND_BO_TOTAL_TON,
         '' AS BOR_MON_DOC,
-        '' AS BOR_UNI_EST,
+        --'' AS BOR_UNI_EST, -- FRL 18082025 se eliminan y se unifican las medidas de VENTAS, PEDIDOS y BO
         0 AS PED_IND_CANT_CONFIRMADA_TON,
         0 AS PED_IND_CANT_CONFIRMADA_UMV,
         0 AS PED_IND_CANT_ENTREGADA_TON,
@@ -117,8 +119,8 @@ create or replace view MIRRORING.VW_FCT_COM_ADH_VENTAS_ACT
         0 AS PED_IND_CANT_FACTURADA_UMV,
         0 AS PED_IND_CANT_PEDIDO_TON,
         0 AS PED_IND_CANT_PEDIDO_UMV,
-        '' AS PED_UNI_EST,
-        '' AS PED_UNI_UMV,
+        --'' AS PED_UNI_EST, -- FRL 18082025 se eliminan y se unifican las medidas de VENTAS, PEDIDOS y BO
+        --'' AS PED_UNI_UMV,
         IND_COSTOSINTERNOS_LOC AS VTA_IND_COSTOSINTERNOS_LOC,
         IND_COSTOSINTERNOS_MXN AS VTA_IND_COSTOSINTERNOS_MXN,
         IND_COSTOSINTERNOS_USD AS VTA_IND_COSTOSINTERNOS_USD,
@@ -183,9 +185,9 @@ create or replace view MIRRORING.VW_FCT_COM_ADH_VENTAS_ACT
         MON_LOC AS VTA_MON_LOC,
         MON_MXN AS VTA_MON_MXN,
         MON_USD AS VTA_MON_USD,
-        UNI_EST AS VTA_UNI_EST,
+        --UNI_EST AS VTA_UNI_EST,  -- FRL 18082025 se eliminan y se unifican las medidas de VENTAS, PEDIDOS y BO
         UNI_PESO AS VTA_UNI_PESO,
-        UNI_UMV AS VTA_UNI_UMV,
+        --UNI_UMV AS VTA_UNI_UMV,  -- FRL 18082025 se eliminan y se unifican las medidas de VENTAS, PEDIDOS y BO
         FECHA_CARGA AS FECHA_CARGA,
         MANDANTE AS MANDANTE,
         'VENTAS' AS MODELO,
@@ -197,3 +199,7 @@ create or replace view MIRRORING.VW_FCT_COM_ADH_VENTAS_ACT
 
 
     create or replace stream MIRRORING.STREAM_FCT_COM_ADH_VENTAS_ACT on view MIRRORING.VW_FCT_COM_ADH_VENTAS_ACT;
+
+    create or replace table MIRRORING.TR_FCT_COM_ADH_VENTAS_ACT 
+    as
+    select * from MIRRORING.STREAM_FCT_COM_ADH_VENTAS_ACT;

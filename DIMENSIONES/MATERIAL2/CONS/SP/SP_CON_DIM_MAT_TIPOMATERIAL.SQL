@@ -84,8 +84,27 @@ BEGIN
     ---------------------------------------------------------------------------------
     -- STEP 4: CLONNING
     ---------------------------------------------------------------------------------
-        CREATE OR REPLACE TABLE MIRRORING.DIM_MAT_TIPOMATERIAL
-        CLONE CON.DIM_MAT_TIPOMATERIAL;
+        DELETE FROM MIRRORING.DIM_MAT_TIPOMATERIAL;
+        
+        INSERT INTO MIRRORING.DIM_MAT_TIPOMATERIAL 
+        (
+            TIPOMATERIAL_ID,
+            TIPOMATERIAL_TEXT,
+            TIPOMATERIAL_ID_TEXT,
+            SISORIGEN_ID,
+            MANDANTE ,
+            FECHA_CARGA ,
+            ZONA_HORARIA
+        )
+        SELECT
+            TIPOMATERIAL_ID,
+            TIPOMATERIAL_TEXT,
+            CONCAT(TIPOMATERIAL_ID, ' - ', TIPOMATERIAL_TEXT),
+            SISORIGEN_ID,
+            MANDANTE,
+            FECHA_CARGA,
+            ZONA_HORARIA 
+        FROM CON.DIM_MAT_TIPOMATERIAL;
  
         CREATE OR REPLACE STREAM MIRRORING.STREAM_DIM_MAT_TIPOMATERIAL ON TABLE MIRRORING.DIM_MAT_TIPOMATERIAL;
     ---------------------------------------------------------------------------------
@@ -96,3 +115,4 @@ BEGIN
 END;
 $$;
  
+
