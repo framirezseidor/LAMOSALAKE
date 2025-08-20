@@ -166,3 +166,28 @@ jobs:
         run: |
           snow sql -f "./OPERACIONES/ADH_PRODUCCION/MIRRORING_ADH_PRODUCCION/TABLES/DIM_CAL_ADH_PRODUCCION.SQL"
           snow sql -f "./OPERACIONES/ADH_PRODUCCION/MIRRORING_ADH_PRODUCCION/TABLES/FCT_OPE_ADH_PRODUCCION.SQL"
+
+
+#################### ABASTECIMIENTOS
+      - name: Creando objetos raw abastecimientos
+        run: |
+          snow sql -f "./ABASTECIMIENTOS/RAW/TABLES/EXT_2LIS_02_SCL.sql"
+          snow sql -f "./ABASTECIMIENTOS/RAW/TABLES/MOF_ZMM_IND_ADQUISICION.sql"
+          snow sql -f "./ABASTECIMIENTOS/RAW/TABLES/MOF_ZMM_IND_ADQUISICION_HIST.sql" 
+          snow sql -f "./ABASTECIMIENTOS/RAW/SP/SP_RAW_SQ1_EXT_2LIS_02_SCL_DELETE.sql"      
+
+      - name: Creando objetos pre abastecimientos
+        run: |
+          snow sql -f "./ABASTECIMIENTOS/PRE/TABLES/PFCT_LOG_ABASTECIMIENTOS.sql"
+          snow sql -f "./ABASTECIMIENTOS/PRE/SP/SP_PRE_PFCT_LOG_ABASTECIMIENTOS.sql"
+          snow sql -f "./ABASTECIMIENTOS/PRE/SP/SP_PRE_PFCT_LOG_ABASTECIMIENTOS_HIST.sql"
+          snow sql -f "./ABASTECIMIENTOS/PRE/SP/SP_PRE_PFCT_LOG_ABASTECIMIENTOS_DELTA.sql"
+
+      - name: Creando objetos CON abastecimientos
+        run: |
+          snow sql -f "./ABASTECIMIENTOS/CONS/TABLES/FCT_LOG_ADH_ABASTECIMIENTOS.sql"
+          snow sql -f "./ABASTECIMIENTOS/CONS/TABLES/FCT_LOG_REV_ABASTECIMIENTOS.sql"
+          snow sql -f "./ABASTECIMIENTOS/CONS/SP/SP_CON_FCT_LOG_ADH_ABASTECIMIENTOS.sql"
+          snow sql -f "./ABASTECIMIENTOS/CONS/SP/SP_CON_FCT_LOG_ADH_ABASTECIMIENTOS_DELTA.sql"
+          snow sql -f "./ABASTECIMIENTOS/CONS/SP/SP_CON_FCT_LOG_REV_ABASTECIMIENTOS.sql"
+          snow sql -f "./ABASTECIMIENTOS/CONS/SP/SP_CON_FCT_LOG_REV_ABASTECIMIENTOS_DELTA.sql"
