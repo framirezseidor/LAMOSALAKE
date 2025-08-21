@@ -59,7 +59,7 @@ jobs:
 
       - name: Creando objetos GENERALES
         run: |
-          snow sql -f "./GENERAL/TABLAS/PARAMETROS_EXTRACCION.SQL"
+          snow sql -f "./GENERAL/TABLAS/PARAMETROS_EXTRACCION.sql"
           snow sql -f "./LOGS/TABLAS/HISTORIAL_EJECUCIONES.SQL"
 
       - name: Creando tablas raw ventas
