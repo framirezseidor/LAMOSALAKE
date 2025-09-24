@@ -1,0 +1,47 @@
+create or replace TABLE PRE.PDIM_TRA_CLASEEXPEDICION (
+CLASEEXPEDICION_ID	VARCHAR(3) PRIMARY KEY,
+CLASEEXPEDICION_TEXT	VARCHAR(40),
+SISORIGEN_ID	VARCHAR(3),
+MANDANTE	VARCHAR(4),
+FECHA_CARGA	TIMESTAMP_TZ,
+ZONA_HORARIA	VARCHAR(12)
+);
+
+create or replace TABLE CON.DIM_TRA_CLASEEXPEDICION (
+CLASEEXPEDICION_ID	VARCHAR(3) PRIMARY KEY,
+CLASEEXPEDICION_TEXT	VARCHAR(40),
+SISORIGEN_ID	VARCHAR(3),
+MANDANTE	VARCHAR(4),
+FECHA_CARGA	TIMESTAMP_TZ,
+ZONA_HORARIA	VARCHAR(12)
+);
+
+
+INSERT INTO PRE.PDIM_TRA_CLASEEXPEDICION (
+    CLASEEXPEDICION_ID,
+    CLASEEXPEDICION_TEXT,
+    SISORIGEN_ID,
+    MANDANTE,
+    FECHA_CARGA,
+    ZONA_HORARIA
+) VALUES 
+('01', 'Flete tonelada',     'SQ1', '400', CURRENT_TIMESTAMP(), '-0600'),
+('02', 'Contenedor',         'SQ1', '400', CURRENT_TIMESTAMP(), '-0600'),
+('03', 'Ferrocarril',        'SQ1', '400', CURRENT_TIMESTAMP(), '-0600'),
+('04', 'Navegación Interna', 'SQ1', '400', CURRENT_TIMESTAMP(), '-0600'),
+('05', 'Aeronave',           'SQ1', '400', CURRENT_TIMESTAMP(), '-0600'),
+('06', 'Paquetería',         'SQ1', '400', CURRENT_TIMESTAMP(), '-0600'),
+('07', 'Barco',              'SQ1', '400', CURRENT_TIMESTAMP(), '-0600'),
+('08', 'Barco Imp',          'SQ1', '400', CURRENT_TIMESTAMP(), '-0600'),
+('09', 'Aeronave Imp',       'SQ1', '400', CURRENT_TIMESTAMP(), '-0600'),
+('10', 'Camion Imp',         'SQ1', '400', CURRENT_TIMESTAMP(), '-0600'),
+('11', 'Flete viaje',        'SQ1', '400', CURRENT_TIMESTAMP(), '-0600'),
+('12', 'Barco (DPW)',        'SQ1', '400', CURRENT_TIMESTAMP(), '-0600'),
+('13', 'Barco (APM)',        'SQ1', '400', CURRENT_TIMESTAMP(), '-0600'),
+('14', 'Isla TF',            'SQ1', '400', CURRENT_TIMESTAMP(), '-0600'),
+('Z1', 'Torton',             'SQ1', '400', CURRENT_TIMESTAMP(), '-0600'),
+('Z2', 'Plataforma',         'SQ1', '400', CURRENT_TIMESTAMP(), '-0600'),
+('Z3', 'Full',               'SQ1', '400', CURRENT_TIMESTAMP(), '-0600');
+
+
+--

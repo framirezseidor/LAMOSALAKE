@@ -1,0 +1,760 @@
+CREATE OR REPLACE PROCEDURE CON.SP_CON_FCT_LOG_ADH_ABASTECIMIENTOS()
+RETURNS VARCHAR(16777216)
+LANGUAGE SQL
+EXECUTE AS OWNER
+AS
+$$
+/*
+---------------------------------------------------------------------------------
+ Versión:            2.0
+ Fecha de creación:  2025-04-25
+ Creador:            Juan Esteban Méndez N
+ Descripción:        SP FULL que transforma datos desde la capa PRE a CON para ABASTECIMIENTOS ADH
+---------------------------------------------------------------------------------
+*/
+
+DECLARE
+    -- VARIABLES DE CONTROL
+    F_INICIO        TIMESTAMP_NTZ(9);
+    F_FIN           TIMESTAMP_NTZ(9);
+    T_EJECUCION     NUMBER(38,0);
+    ROWS_INSERTED   NUMBER(38,0);
+    TEXTO           VARCHAR(200);
+    FECHA_INICIO    VARCHAR(100);
+    FECHA_FIN       VARCHAR(100);
+
+BEGIN
+
+    ---------------------------------------------------------------------------------
+    -- STEP 1: LIMPIEZA DE DATOS EN LA TABLA CON
+    ---------------------------------------------------------------------------------
+    BEGIN
+        SELECT R_INICIO 
+        INTO :FECHA_INICIO 
+        FROM RAW.PARAMETROS_EXTRACCION 
+        WHERE ORDEN = '1' AND EXTRACTOR = '2LIS_02_SCL' AND NEGOCIO = 'ADHMEXICO' AND PARAMETRO = 'PERIODO';
+
+        SELECT R_FIN
+        INTO :FECHA_FIN 
+        FROM RAW.PARAMETROS_EXTRACCION 
+        WHERE ORDEN = '1' AND EXTRACTOR = '2LIS_02_SCL' AND NEGOCIO = 'ADHMEXICO' AND PARAMETRO = 'PERIODO';
+
+        SELECT CURRENT_TIMESTAMP() INTO :F_INICIO;
+
+        DELETE FROM CON.FCT_LOG_ADH_ABASTECIMIENTOS
+        WHERE CONCAT(SUBSTR(FECHA_DOCCOMPRAS, 0, 4), SUBSTR(FECHA_DOCCOMPRAS, 6, 2)) BETWEEN :FECHA_INICIO AND :FECHA_FIN
+        ;
+
+        SELECT CURRENT_TIMESTAMP() INTO :F_FIN;
+        SELECT DATEDIFF(millisecond, :F_INICIO, :F_FIN) INTO :T_EJECUCION;
+    EXCEPTION
+        WHEN statement_error THEN
+            SELECT ('Error en DELETE: ' || :sqlerrm) INTO :TEXTO;
+    END;
+
+    ---------------------------------------------------------------------------------
+    -- STEP 2: INSERCIÓN DE DATOS DESDE PRE HACIA CON
+    ---------------------------------------------------------------------------------
+    BEGIN
+        SELECT CURRENT_TIMESTAMP() INTO :F_INICIO;
+
+        INSERT INTO CON.FCT_LOG_ADH_ABASTECIMIENTOS(
+        CENTRO_ID,
+        ALMACENCENTRO_ID,
+        ORGCOMPRAS_ID,
+        GRUPOCOMPRAS_ID,
+        MATERIAL_ID,
+        MATERIALCENTRO_ID,
+        GRUPOARTICULOS_ID,
+        PROVEEDOR_ID,
+        DOCCOMPRAS_CLASE,
+        DOCCOMPRAS_TIPO,
+        DOCCOMPRAS,
+        DOCCOMPRAS_POS,
+        DOCCOMPRAS_REPARTO,
+        FECHA_LIBERACION,
+        FECHA_DOCCOMPRAS,
+        FECHA_ENTREGAPLANIFICADA,
+        FECHA_ENTREGAOBJETIVO,
+        FECHA_CONTABILIZACION,
+
+        FECHA_ORDEN, --Fecha de Documento para colocads y Fecha de Contabilización para contabilizadas
+        ANIOMES,
+
+        CLAVEOPERACION,
+        SOLPED,
+        SOLPED_POS,
+
+        IND_CANTIDAD_TOTAL,
+        UM_PEDIDO,
+
+        IND_IMPTE_COMPRA_PED,
+        IND_IMPTE_FLETE_PED,
+        IND_IMPTE_COMPRA_SIN_FLETE_PED,
+        MON_PED,
+
+        IND_IMPTE_COMPRA_LOC,
+        IND_IMPTE_FLETE_LOC,
+        IND_IMPTE_COMPRA_SIN_FLETE_LOC ,
+        MON_LOC,
+
+        IND_IMPTE_COMPRA_USD,
+        IND_IMPTE_FLETE_USD,
+        IND_IMPTE_COMPRA_SIN_FLETE_USD,
+        MON_USD,
+
+        IND_IMPTE_COMPRA_EUR,
+        IND_IMPTE_FLETE_EUR,
+        IND_IMPTE_COMPRA_SIN_FLETE_EUR,
+        MON_EUR,
+
+        TIPOCAMBIO_USD,
+        TIPOCAMBIO_EUR,
+
+        IND_CANT_DIAS_COLOCACION,
+        IND_CANT_POSICIONES_PEDIDO,
+
+        /*IND_CANT_EM_PEDIDO_ENTIEMPO, 
+        IND_CANT_EM_COMPLETAS_ENTIEMPO, 
+        IND_CANT_POS_COMPLETAS_ENTIEMPO,
+        IND_CANT_POS_NOCOMPLETAS_ENTIEMPO,
+
+        IND_CANT_EM_TOTAL_VENCIDAS,
+        IND_CANT_DIASPONDERADOS,
+        IND_CANT_DIASPODERADOS_ANT,
+        IND_CANT_POS_TOTAL,*/
+
+        CLAVEMP_LOC,
+        CLAVEMP_USD,
+        CLAVEMP_EUR,
+
+        ESTADO,
+
+        SISORIGEN_ID,
+        MANDANTE,
+        FECHA_CARGA,
+        ZONA_HORARIA,
+        MODELO,
+        ANIO,
+        MES,
+        ALMACEN_ID,
+        SOCIEDAD_ID,
+        PRECIO_ESTANDAR_MXN,
+        PRECIO_ESTANDAR_ML,
+        PRECIO_ESTANDAR_USD,
+        UEN_ID
+        )
+        --------------------------------------------NIVEL DE SERVICIOS--------------------------------------------------
+
+        ------------------------------------------- Fecha Entrega --------------------------------------------
+        SELECT
+        CENTRO_ID,
+        ALMACENCENTRO_ID,
+        ORGCOMPRAS_ID,
+        GRUPOCOMPRAS_ID,
+        MATERIAL_ID,
+        MATERIALCENTRO_ID,
+        GRUPOARTICULOS_ID,
+        PROVEEDOR_ID,
+        DOCCOMPRAS_CLASE,
+        DOCCOMPRAS_TIPO,
+        DOCCOMPRAS,
+        DOCCOMPRAS_POS,
+        DOCCOMPRAS_REPARTO,
+        FECHA_LIBERACION,
+        FECHA_DOCCOMPRAS,
+        FECHA_ENTREGAPLANIFICADA,
+        FECHA_ENTREGAOBJETIVO,
+        FECHA_CONTABILIZACION,
+
+        FECHA_ORDEN,
+        TO_CHAR(FECHA_ORDEN, 'YYYY-MM') AS ANIOMES,
+
+        CLAVEOPERACION,
+        SOLPED,
+        SOLPED_POS,
+
+        0 AS IND_CANTIDAD_TOTAL,
+        UM_PEDIDO,
+
+        0 AS IND_IMPTE_COMPRA_PED,
+        0 AS IND_IMPTE_FLETE_PED,
+        0 AS IND_IMPTE_COMPRA_SIN_FLETE_PED,
+        MON_PED,
+
+        0 AS IND_IMPTE_COMPRA_LOC,
+        0 AS IND_IMPTE_FLETE_LOC,
+        0 AS IND_IMPTE_COMPRA_SIN_FLETE_LOC ,
+        MON_LOC,
+
+        0 AS IND_IMPTE_COMPRA_USD,
+        0 AS IND_IMPTE_FLETE_USD,
+        0 AS IND_IMPTE_COMPRA_SIN_FLETE_USD,
+        MON_USD,
+
+        0 AS IND_IMPTE_COMPRA_EUR,
+        0 AS IND_IMPTE_FLETE_EUR,
+        0 AS IND_IMPTE_COMPRA_SIN_FLETE_EUR,
+        MON_EUR,
+
+        0 AS TIPOCAMBIO_USD,
+        0 AS TIPOCAMBIO_EUR,
+
+        0 AS IND_CANT_DIAS_COLOCACION ,
+        0 AS IND_CANT_POSICIONES_PEDIDO,
+
+        /*SUM(IND_CANT_EM_PEDIDO_ENTIEMPO) AS IND_CANT_EM_PEDIDO_ENTIEMPO, 
+        SUM(IND_CANT_EM_COMPLETAS_ENTIEMPO) AS IND_CANT_EM_COMPLETAS_ENTIEMPO, 
+        CASE 
+            WHEN GRUPOARTICULOS_ID IN ('000','001','102','104','107') 
+            THEN IFF((SUM(IND_CANT_EM_COMPLETAS_ENTIEMPO)*100/SUM(IND_CANT_EM_PEDIDO_ENTIEMPO))>=70,1,0) 
+            ELSE IFF((SUM(IND_CANT_EM_COMPLETAS_ENTIEMPO)*100/SUM(IND_CANT_EM_PEDIDO_ENTIEMPO))>=90,1,0) 
+        END AS IND_CANT_POS_COMPLETAS_ENTIEMPO,
+        CASE 
+            WHEN GRUPOARTICULOS_ID IN ('000','001','102','104','107') 
+            THEN IFF((SUM(IND_CANT_EM_COMPLETAS_ENTIEMPO)*100/SUM(IND_CANT_EM_PEDIDO_ENTIEMPO))>=70,0,1) 
+            ELSE IFF((SUM(IND_CANT_EM_COMPLETAS_ENTIEMPO)*100/SUM(IND_CANT_EM_PEDIDO_ENTIEMPO))>=90,0,1) 
+        END AS IND_CANT_POS_NOCOMPLETAS_ENTIEMPO,
+
+        0 AS IND_CANT_EM_TOTAL_VENCIDAS,
+        0 AS IND_CANT_DIASPONDERADOS,
+        0 AS IND_CANT_DIASPODERADOS_ANT,
+        IND_CANT_POS_COMPLETAS_ENTIEMPO + IND_CANT_POS_NOCOMPLETAS_ENTIEMPO AS IND_CANT_POS_TOTAL,*/
+
+        CONCAT(MON_PED,'_',MON_LOC,'_',LAST_DAY(DATEADD(MONTH, -1, FECHA_CONTABILIZACION))) AS CLAVEMP_LOC,
+        CONCAT(MON_PED,'_USD','_',LAST_DAY(DATEADD(MONTH, -1, FECHA_CONTABILIZACION))) AS CLAVEMP_USD,
+        CONCAT(MON_PED,'_EUR','_',LAST_DAY(DATEADD(MONTH, -1, FECHA_CONTABILIZACION))) AS CLAVEMP_EUR,
+
+        ESTADO,
+
+        A.SISORIGEN_ID,
+        A.MANDANTE,
+        A.FECHA_CARGA,
+        A.ZONA_HORARIA,
+        'Abastecimiento' as MODELO,
+        TO_CHAR(FECHA_ORDEN, 'YYYY') AS ANIO,
+        TO_CHAR(FECHA_ORDEN, 'MM') AS MES,
+        SUBSTR(ALMACENCENTRO_ID,6) AS ALMACEN_ID,
+        '' AS SOCIEDAD_ID,
+        MAX(P.MATPRICE) AS PRECIO_ESTANDAR_MXN,
+        MAX(L.MATPRICE) AS PRECIO_ESTANDAR_ML,
+        MAX(U.MATPRICE) AS PRECIO_ESTANDAR_USD,
+        CASE WHEN CENTRO_ID = 'A111' THEN 'AMT1'
+             WHEN CENTRO_ID = 'A112' THEN ''
+             WHEN CENTRO_ID = 'A113' THEN 'AGD2'
+             WHEN CENTRO_ID = 'A114' THEN ''
+             WHEN CENTRO_ID = 'A115' THEN 'ACH1'
+             WHEN CENTRO_ID = 'A119' THEN ''
+             WHEN CENTRO_ID = 'A121' THEN 'AGD1'
+             WHEN CENTRO_ID = 'A122' THEN 'ALE1'
+             WHEN CENTRO_ID = 'A124' THEN 'AMR1'
+             WHEN CENTRO_ID = 'A126' THEN ''
+             WHEN CENTRO_ID = 'A131' THEN 'ANV1'
+             WHEN CENTRO_ID = 'A135' THEN 'ACH4' END AS UEN
+
+        FROM(
+
+        SELECT
+        SUBSTR(FECHA_ENTREGAPLANIFICADA, 0, 4) AS anio,
+        SUBSTR(FECHA_ENTREGAPLANIFICADA, 6, 2) AS mes,
+        CONCAT(SUBSTR(FECHA_ENTREGAPLANIFICADA, 0, 4), SUBSTR(FECHA_ENTREGAPLANIFICADA, 6, 2)) AS aniomes,
+        CENTRO_ID,
+        ALMACENCENTRO_ID,
+        ORGCOMPRAS_ID,
+        GRUPOCOMPRAS_ID,
+        MATERIAL_ID,
+        MATERIALCENTRO_ID,
+        GRUPOARTICULOS_ID,
+        PROVEEDOR_ID,
+        DOCCOMPRAS_CLASE,
+        DOCCOMPRAS_TIPO,
+        DOCCOMPRAS,
+        DOCCOMPRAS_POS,
+        DOCCOMPRAS_REPARTO,
+        UM_PEDIDO,
+        FECHA_LIBERACION,
+        FECHA_DOCCOMPRAS,
+        FECHA_ENTREGAPLANIFICADA,
+        FECHA_ENTREGAOBJETIVO,
+        FECHA_CONTABILIZACION,
+
+        FECHA_ORDEN, --Fecha de Documento para colocads y Fecha de Contabilización para contabilizadas
+
+        CLAVEOPERACION,
+        SOLPED,
+        SOLPED_POS,
+        MON_LOC,
+        MON_PED,
+        MON_USD,
+        MON_EUR,
+        SISORIGEN_ID,
+        MANDANTE,
+        FECHA_CARGA,
+        ZONA_HORARIA,
+
+        IND_CANTIDAD_TOTAL AS IND_CANT_EM_PEDIDO_ENTIEMPO, -- 0CPQUAOU --> ZCTD_PED
+        0 AS IND_CANT_EM_COMPLETAS_ENTIEMPO, -- 0CPDEOGQUOU --> ZCTD_ENT
+        'COLOCADAS' AS ESTADO
+
+        FROM PRE.PFCT_LOG_ABASTECIMIENTOS
+        WHERE --DOCCOMPRAS_CLASE IN ('LP','NB','ZDNP','ZFIN','ZINV','ZIPT','ZNB','ZNBS','ZURG')
+        CLAVEOPERACION IN ('001','011','021', '004','014','024', '005','015','025', '041','051','061')
+        --AND SUBSTRING(ALMACENCENTRO_ID, 1, POSITION('_' IN ALMACENCENTRO_ID) - 1) IN ('', 'ME01', 'MP01', 'MP02', 'RF01', 'RF02')
+
+        UNION ALL
+            
+        SELECT
+        SUBSTR(FECHA_ENTREGAPLANIFICADA, 0, 4) AS anio,
+        SUBSTR(FECHA_ENTREGAPLANIFICADA, 6, 2) AS mes,
+        CONCAT(SUBSTR(FECHA_ENTREGAPLANIFICADA, 0, 4), SUBSTR(FECHA_ENTREGAPLANIFICADA, 6, 2)) AS aniomes,
+        CENTRO_ID,
+        ALMACENCENTRO_ID,
+        ORGCOMPRAS_ID,
+        GRUPOCOMPRAS_ID,
+        MATERIAL_ID,
+        MATERIALCENTRO_ID,
+        GRUPOARTICULOS_ID,
+        PROVEEDOR_ID,
+        DOCCOMPRAS_CLASE,
+        DOCCOMPRAS_TIPO,
+        DOCCOMPRAS,
+        DOCCOMPRAS_POS,
+        DOCCOMPRAS_REPARTO,
+        UM_PEDIDO,
+        FECHA_LIBERACION,
+        FECHA_DOCCOMPRAS,
+        FECHA_ENTREGAPLANIFICADA,
+        FECHA_ENTREGAOBJETIVO,
+        FECHA_CONTABILIZACION,
+
+        FECHA_ORDEN, --Fecha de Documento para colocads y Fecha de Contabilización para contabilizadas
+
+        CLAVEOPERACION,
+        SOLPED,
+        SOLPED_POS,
+        MON_LOC,
+        MON_PED,
+        MON_USD,
+        MON_EUR,
+        SISORIGEN_ID,
+        MANDANTE,
+        FECHA_CARGA,
+        ZONA_HORARIA,
+
+        0 AS IND_CANT_EM_PEDIDO_ENTIEMPO,
+        IFF((DATEDIFF(DAY, FECHA_CONTABILIZACION, FECHA_ENTREGAOBJETIVO) >= 0), IND_CANTIDAD_TOTAL, 0) AS IND_CANT_EM_COMPLETAS_ENTIEMPO,
+        'CONTABILIZADAS' AS ESTADO
+        FROM PRE.PFCT_LOG_ABASTECIMIENTOS
+        WHERE 
+            --DOCCOMPRAS_CLASE IN ('LP','NB','ZDNP','ZFIN','ZINV','ZIPT','ZNB','ZNBS','ZURG')
+            CLAVEOPERACION IN ('002','012','022','006','016','026')
+            --AND SUBSTRING(ALMACENCENTRO_ID, 1, POSITION('_' IN ALMACENCENTRO_ID) - 1) IN ('',' ','ME01','MP01','MP02','RF01','RF02')
+            AND IND_CANTIDAD_TOTAL <> 0) A
+
+        ---JOINS PARA SACAR PRECIO ESTANDAR
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='10') L 
+        ON A.MATERIAL_ID=LTRIM(L.MATERIAL, '0') AND A.CENTRO_ID=L.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(L.fiscper,4),'-',RIGHT(L.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='30') P 
+        ON A.MATERIAL_ID=LTRIM(P.MATERIAL, '0') AND A.CENTRO_ID=P.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(P.fiscper,4),'-',RIGHT(P.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='40') U 
+        ON A.MATERIAL_ID=LTRIM(U.MATERIAL, '0') AND A.CENTRO_ID=U.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(U.fiscper,4),'-',RIGHT(U.fiscper,2))
+
+        JOIN RAW.PARAMETROS_EXTRACCION
+        ON EXTRACTOR = '2LIS_02_SCL'
+        AND NEGOCIO = 'ADHMEXICO'
+        AND PARAMETRO = 'ORGCOMPRAS_ID'
+        AND ORGCOMPRAS_ID BETWEEN R_INICIO AND R_FIN
+
+        WHERE CONCAT(SUBSTR(FECHA_DOCCOMPRAS, 0, 4), SUBSTR(FECHA_DOCCOMPRAS, 6, 2)) BETWEEN :FECHA_INICIO AND :FECHA_FIN
+
+        GROUP BY 
+        CENTRO_ID,
+        ALMACENCENTRO_ID,
+        ORGCOMPRAS_ID,
+        GRUPOCOMPRAS_ID,
+        MATERIAL_ID,
+        MATERIALCENTRO_ID,
+        GRUPOARTICULOS_ID,
+        PROVEEDOR_ID,
+        DOCCOMPRAS_CLASE,
+        DOCCOMPRAS_TIPO,
+        DOCCOMPRAS,
+        DOCCOMPRAS_POS,
+        DOCCOMPRAS_REPARTO,
+        FECHA_LIBERACION,
+        FECHA_DOCCOMPRAS,
+        FECHA_ENTREGAPLANIFICADA,
+        FECHA_ENTREGAOBJETIVO,
+        FECHA_CONTABILIZACION,
+        FECHA_ORDEN,
+        CLAVEOPERACION,
+        SOLPED,
+        SOLPED_POS,
+        UM_PEDIDO,
+        MON_PED,
+        MON_LOC,
+        MON_USD,
+        MON_EUR,
+        CLAVEMP_LOC,
+        CLAVEMP_USD,
+        CLAVEMP_EUR,
+        ESTADO,
+        A.SISORIGEN_ID,
+        A.MANDANTE,
+        A.FECHA_CARGA,
+        A.ZONA_HORARIA,
+        MODELO,
+        ANIO,
+        MES,
+        ALMACEN_ID,
+        SOCIEDAD_ID,
+        UEN
+
+        HAVING SUM(IND_CANT_EM_PEDIDO_ENTIEMPO) <> 0
+
+        ----------------------------------------Fin Fecha Entrega --------------------------------------------
+        UNION ALL
+        ---------------------------------------- Fecha Contable --------------------------------------------
+
+        SELECT
+        CENTRO_ID,
+        ALMACENCENTRO_ID,
+        ORGCOMPRAS_ID,
+        GRUPOCOMPRAS_ID,
+        MATERIAL_ID,
+        MATERIALCENTRO_ID,
+        GRUPOARTICULOS_ID,
+        PROVEEDOR_ID,
+        DOCCOMPRAS_CLASE,
+        DOCCOMPRAS_TIPO,
+        DOCCOMPRAS,
+        DOCCOMPRAS_POS,
+        DOCCOMPRAS_REPARTO,
+        FECHA_LIBERACION,
+        FECHA_DOCCOMPRAS,
+        FECHA_ENTREGAPLANIFICADA,
+        FECHA_ENTREGAOBJETIVO,
+        FECHA_CONTABILIZACION,
+
+        FECHA_ORDEN, --Fecha de Documento para colocads y Fecha de Contabilización para contabilizadas
+        TO_CHAR(FECHA_ORDEN, 'YYYY-MM') AS ANIOMES,
+
+        CLAVEOPERACION,
+        SOLPED,
+        SOLPED_POS,
+
+        0 AS IND_CANTIDAD_TOTAL,
+        UM_PEDIDO,
+
+        0 AS IND_IMPTE_COMPRA_PED,
+        0 AS IND_IMPTE_FLETE_PED,
+        0 AS IND_IMPTE_COMPRA_SIN_FLETE_PED,
+        MON_PED,
+
+        0 AS IND_IMPTE_COMPRA_LOC,
+        0 AS IND_IMPTE_FLETE_LOC,
+        0 AS IND_IMPTE_COMPRA_SIN_FLETE_LOC ,
+        MON_LOC,
+
+        0 AS IND_IMPTE_COMPRA_USD,
+        0 AS IND_IMPTE_FLETE_USD,
+        0 AS IND_IMPTE_COMPRA_SIN_FLETE_USD,
+        MON_USD,
+
+        0 AS IND_IMPTE_COMPRA_EUR,
+        0 AS IND_IMPTE_FLETE_EUR,
+        0 AS IND_IMPTE_COMPRA_SIN_FLETE_EUR,
+        MON_EUR,
+
+        0 AS TIPOCAMBIO_USD,
+        0 AS TIPOCAMBIO_EUR,
+
+        0 AS IND_CANT_DIAS_COLOCACION ,
+        0 AS IND_CANT_POSICIONES_PEDIDO,
+
+        /*0 AS IND_CANT_EM_PEDIDO_ENTIEMPO, 
+        0 AS IND_CANT_EM_COMPLETAS_ENTIEMPO, 
+        0 AS IND_CANT_POS_COMPLETAS_ENTIEMPO,
+        0 AS IND_CANT_POS_NOCOMPLETAS_ENTIEMPO,
+
+        SUM(IFF((DATEDIFF(day, fecha_contabilizacion, FECHA_ENTREGAOBJETIVO) < 0), IND_CANTIDAD_TOTAL, 0)) AS IND_CANT_EM_TOTAL_VENCIDAS,
+        SUM(DATEDIFF(day, fecha_reparto, fecha_contabilizacion) * IND_CANTIDAD_TOTAL) AS IND_CANT_DIASPONDERADOS,
+        SUM(IFF((DATEDIFF(day, fecha_contabilizacion, FECHA_ENTREGAOBJETIVO) < 0),
+            IFF(DATEDIFF(day, FECHA_ENTREGAOBJETIVO, fecha_contabilizacion) = 0,
+                DATEDIFF(day, FECHA_ENTREGAOBJETIVO, fecha_contabilizacion),
+                (DATEDIFF(day, FECHA_ENTREGAOBJETIVO, fecha_contabilizacion) * IND_CANTIDAD_TOTAL)
+            ), 0
+        )) AS IND_CANT_DIASPODERADOS_ANT,
+            --COUNT(DISTINCT CONCAT(DOCCOMPRAS, '_', DOCCOMPRAS_POS, '_', DOCCOMPRAS_REPARTO)) AS IND_CANT_POS_TOTAL,
+            0 AS IND_CANT_POS_TOTAL,*/
+
+        CONCAT(MON_PED,'_',MON_LOC,'_',LAST_DAY(DATEADD(MONTH, -1, FECHA_CONTABILIZACION))) AS CLAVEMP_LOC,
+        CONCAT(MON_PED,'_USD','_',LAST_DAY(DATEADD(MONTH, -1, FECHA_CONTABILIZACION))) AS CLAVEMP_USD,
+        CONCAT(MON_PED,'_EUR','_',LAST_DAY(DATEADD(MONTH, -1, FECHA_CONTABILIZACION))) AS CLAVEMP_EUR,
+
+        'CONTABILIZADAS' AS ESTADO,
+
+        A.SISORIGEN_ID,
+        A.MANDANTE,
+        A.FECHA_CARGA,
+        A.ZONA_HORARIA,
+        'Abastecimiento' as MODELO,
+        TO_CHAR(FECHA_ORDEN, 'YYYY') AS ANIO,
+        TO_CHAR(FECHA_ORDEN, 'MM') AS MES,
+        SUBSTR(ALMACENCENTRO_ID,6) AS ALMACEN_ID,
+        '' AS SOCIEDAD_ID,
+        MAX(P.MATPRICE) AS PRECIO_ESTANDAR_MXN,
+        MAX(L.MATPRICE) AS PRECIO_ESTANDAR_ML,
+        MAX(U.MATPRICE) AS PRECIO_ESTANDAR_USD,
+        CASE WHEN CENTRO_ID = 'A111' THEN 'AMT1'
+             WHEN CENTRO_ID = 'A112' THEN ''
+             WHEN CENTRO_ID = 'A113' THEN 'AGD2'
+             WHEN CENTRO_ID = 'A114' THEN ''
+             WHEN CENTRO_ID = 'A115' THEN 'ACH1'
+             WHEN CENTRO_ID = 'A119' THEN ''
+             WHEN CENTRO_ID = 'A121' THEN 'AGD1'
+             WHEN CENTRO_ID = 'A122' THEN 'ALE1'
+             WHEN CENTRO_ID = 'A124' THEN 'AMR1'
+             WHEN CENTRO_ID = 'A126' THEN ''
+             WHEN CENTRO_ID = 'A131' THEN 'ANV1'
+             WHEN CENTRO_ID = 'A135' THEN 'ACH4' END AS UEN
+
+        FROM PRE.PFCT_LOG_ABASTECIMIENTOS A
+
+        ---JOINS PARA SACAR PRECIO ESTANDAR
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='10') L 
+        ON A.MATERIAL_ID=LTRIM(L.MATERIAL, '0') AND A.CENTRO_ID=L.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(L.fiscper,4),'-',RIGHT(L.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='30') P 
+        ON A.MATERIAL_ID=LTRIM(P.MATERIAL, '0') AND A.CENTRO_ID=P.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(P.fiscper,4),'-',RIGHT(P.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='40') U 
+        ON A.MATERIAL_ID=LTRIM(U.MATERIAL, '0') AND A.CENTRO_ID=U.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(U.fiscper,4),'-',RIGHT(U.fiscper,2))
+
+        JOIN RAW.PARAMETROS_EXTRACCION
+        ON EXTRACTOR = '2LIS_02_SCL'
+        AND NEGOCIO = 'ADHMEXICO'
+        AND PARAMETRO = 'ORGCOMPRAS_ID'
+        AND ORGCOMPRAS_ID BETWEEN R_INICIO AND R_FIN
+
+        WHERE --DOCCOMPRAS_CLASE IN ('LP', 'NB', 'ZDNP', 'ZFIN', 'ZINV', 'ZIPT', 'ZNB', 'ZNBS', 'ZURG')
+        CLAVEOPERACION IN ('002','012','022','006','016','026')
+        --AND SUBSTRING(ALMACENCENTRO_ID, 1, POSITION('_' IN ALMACENCENTRO_ID) - 1) IN ('ME01', 'MP01', 'MP02', 'RF01', 'RF02')
+
+        AND CONCAT(SUBSTR(FECHA_DOCCOMPRAS, 0, 4), SUBSTR(FECHA_DOCCOMPRAS, 6, 2)) BETWEEN :FECHA_INICIO AND :FECHA_FIN
+
+        GROUP BY  
+        CENTRO_ID,
+        ALMACENCENTRO_ID,
+        ORGCOMPRAS_ID,
+        GRUPOCOMPRAS_ID,
+        MATERIAL_ID,
+        MATERIALCENTRO_ID,
+        GRUPOARTICULOS_ID,
+        PROVEEDOR_ID,
+        DOCCOMPRAS_CLASE,
+        DOCCOMPRAS_TIPO,
+        DOCCOMPRAS,
+        DOCCOMPRAS_POS,
+        DOCCOMPRAS_REPARTO,
+        FECHA_LIBERACION,
+        FECHA_DOCCOMPRAS,
+        FECHA_ENTREGAPLANIFICADA,
+        FECHA_ENTREGAOBJETIVO,
+        FECHA_CONTABILIZACION,
+        FECHA_ORDEN,
+        CLAVEOPERACION,
+        SOLPED,
+        SOLPED_POS,
+        UM_PEDIDO,
+        MON_PED,
+        MON_LOC,
+        MON_USD,
+        MON_EUR,
+        CLAVEMP_LOC,
+        CLAVEMP_USD,
+        CLAVEMP_EUR,
+        ESTADO,
+        A.SISORIGEN_ID,
+        A.MANDANTE,
+        A.FECHA_CARGA,
+        A.ZONA_HORARIA,
+        MODELO,
+        ANIO,
+        MES,
+        ALMACEN_ID,
+        SOCIEDAD_ID,
+        UEN
+        ----------------------------------------Fin Fecha Contable --------------------------------------------
+        ---------------------------------------- FIN NIVEL DE SERVICIOS--------------------------------------------------
+
+        UNION ALL
+
+        -----------------------------------BASE Y DIAS ------------------------------------------
+        SELECT
+        CENTRO_ID,
+        ALMACENCENTRO_ID,
+        ORGCOMPRAS_ID,
+        GRUPOCOMPRAS_ID,
+        MATERIAL_ID,
+        MATERIALCENTRO_ID,
+        GRUPOARTICULOS_ID,
+        PROVEEDOR_ID,
+        DOCCOMPRAS_CLASE,
+        DOCCOMPRAS_TIPO,
+        DOCCOMPRAS,
+        DOCCOMPRAS_POS,
+        DOCCOMPRAS_REPARTO,
+        FECHA_LIBERACION,
+        FECHA_DOCCOMPRAS,
+        FECHA_ENTREGAPLANIFICADA,
+        FECHA_ENTREGAOBJETIVO,
+        FECHA_CONTABILIZACION,
+
+        FECHA_ORDEN, --Fecha de Documento para colocads y Fecha de Contabilización para contabilizadas
+        TO_CHAR(FECHA_ORDEN, 'YYYY-MM') AS ANIOMES,
+
+        CLAVEOPERACION,
+        SOLPED,
+        SOLPED_POS,
+
+        IND_CANTIDAD_TOTAL,
+        UM_PEDIDO,
+
+        IND_IMPTE_COMPRA_PED,
+        IND_IMPTE_FLETE_PED,
+        IND_IMPTE_COMPRA_SIN_FLETE_PED,
+        MON_PED,
+
+        IND_IMPTE_COMPRA_LOC,
+        IND_IMPTE_FLETE_LOC,
+        IND_IMPTE_COMPRA_SIN_FLETE_LOC ,
+        MON_LOC,
+
+        IND_IMPTE_COMPRA_USD,
+        IND_IMPTE_FLETE_USD,
+        IND_IMPTE_COMPRA_SIN_FLETE_USD,
+        MON_USD,
+
+        IND_IMPTE_COMPRA_EUR,
+        IND_IMPTE_FLETE_EUR,
+        IND_IMPTE_COMPRA_SIN_FLETE_EUR,
+        MON_EUR,
+
+        TIPOCAMBIO_USD,
+        TIPOCAMBIO_EUR,
+
+        IND_CANT_DIAS_COLOCACION,
+        IND_CANT_POSICIONES_PEDIDO,
+
+        /*0 AS IND_CANT_EM_PEDIDO_ENTIEMPO, 
+        0 AS IND_CANT_EM_COMPLETAS_ENTIEMPO, 
+        0 AS IND_CANT_POS_COMPLETAS_ENTIEMPO,
+        0 AS IND_CANT_POS_NOCOMPLETAS_ENTIEMPO,
+
+        0 AS IND_CANT_EM_TOTAL_VENCIDAS,
+        0 AS IND_CANT_DIASPONDERADOS,
+        0 AS IND_CANT_DIASPODERADOS_ANT,
+        0 AS IND_CANT_POS_TOTAL,*/
+
+        CONCAT(MON_PED,'_',MON_LOC,'_',LAST_DAY(DATEADD(MONTH, -1, FECHA_CONTABILIZACION))) AS CLAVEMP_LOC,
+        CONCAT(MON_PED,'_USD','_',LAST_DAY(DATEADD(MONTH, -1, FECHA_CONTABILIZACION))) AS CLAVEMP_USD,
+        CONCAT(MON_PED,'_EUR','_',LAST_DAY(DATEADD(MONTH, -1, FECHA_CONTABILIZACION))) AS CLAVEMP_EUR,
+
+        CASE 
+            WHEN CLAVEOPERACION IN ('001','011','021', '004','014','024', '005','015','025', '041','051','061') THEN 'COLOCADAS'
+            WHEN CLAVEOPERACION IN ('002','012','022','006','016','026') THEN 'CONTABILIZADAS'
+            ELSE 'NA'
+        END AS ESTADO,
+
+        A.SISORIGEN_ID,
+        A.MANDANTE,
+        A.FECHA_CARGA,
+        A.ZONA_HORARIA,
+        'Abastecimiento' as MODELO,
+        TO_CHAR(FECHA_ORDEN, 'YYYY') AS ANIO,
+        TO_CHAR(FECHA_ORDEN, 'MM') AS MES,
+        SUBSTR(ALMACENCENTRO_ID,6) AS ALMACEN_ID,
+        '' AS SOCIEDAD_ID,
+        P.MATPRICE AS PRECIO_ESTANDAR_MXN,
+        L.MATPRICE AS PRECIO_ESTANDAR_ML,
+        U.MATPRICE AS PRECIO_ESTANDAR_USD,
+        CASE WHEN CENTRO_ID = 'A111' THEN 'AMT1'
+             WHEN CENTRO_ID = 'A112' THEN ''
+             WHEN CENTRO_ID = 'A113' THEN 'AGD2'
+             WHEN CENTRO_ID = 'A114' THEN ''
+             WHEN CENTRO_ID = 'A115' THEN 'ACH1'
+             WHEN CENTRO_ID = 'A119' THEN ''
+             WHEN CENTRO_ID = 'A121' THEN 'AGD1'
+             WHEN CENTRO_ID = 'A122' THEN 'ALE1'
+             WHEN CENTRO_ID = 'A124' THEN 'AMR1'
+             WHEN CENTRO_ID = 'A126' THEN ''
+             WHEN CENTRO_ID = 'A131' THEN 'ANV1'
+             WHEN CENTRO_ID = 'A135' THEN 'ACH4' END AS UEN
+
+        FROM PRE.PFCT_LOG_ABASTECIMIENTOS A
+
+        ---JOINS PARA SACAR PRECIO ESTANDAR
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='10') L 
+        ON A.MATERIAL_ID=LTRIM(L.MATERIAL, '0') AND A.CENTRO_ID=L.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(L.fiscper,4),'-',RIGHT(L.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='30') P 
+        ON A.MATERIAL_ID=LTRIM(P.MATERIAL, '0') AND A.CENTRO_ID=P.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(P.fiscper,4),'-',RIGHT(P.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='40') U 
+        ON A.MATERIAL_ID=LTRIM(U.MATERIAL, '0') AND A.CENTRO_ID=U.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(U.fiscper,4),'-',RIGHT(U.fiscper,2))
+
+        JOIN RAW.PARAMETROS_EXTRACCION
+        ON EXTRACTOR = '2LIS_02_SCL'
+        AND NEGOCIO = 'ADHMEXICO'
+        AND PARAMETRO = 'ORGCOMPRAS_ID'
+        AND ORGCOMPRAS_ID BETWEEN R_INICIO AND R_FIN
+
+        WHERE CONCAT(SUBSTR(FECHA_DOCCOMPRAS, 0, 4), SUBSTR(FECHA_DOCCOMPRAS, 6, 2)) BETWEEN :FECHA_INICIO AND :FECHA_FIN
+
+----------------------------------FIN BASE Y DIAS ------------------------------------------
+;
+ 
+
+        -- Conteo de filas insertadas
+        SELECT COUNT(*) INTO :ROWS_INSERTED FROM CON.FCT_LOG_ADH_ABASTECIMIENTOS;
+
+        SELECT CURRENT_TIMESTAMP() INTO :F_FIN;
+        SELECT DATEDIFF(millisecond, :F_INICIO, :F_FIN) INTO :T_EJECUCION;
+    EXCEPTION
+        WHEN statement_error THEN
+            SELECT ('Error en INSERT: ' || :sqlerrm) INTO :TEXTO;
+            RETURN :TEXTO;
+    END;
+
+    ---------------------------------------------------------------------------------
+    -- STEP 3: CLONNING
+    ---------------------------------------------------------------------------------
+ 
+    --CONDICION EXPEDICION
+        CREATE OR REPLACE TABLE MIRRORING.FCT_LOG_ADH_ABASTECIMIENTOS
+        CLONE CON.FCT_LOG_ADH_ABASTECIMIENTOS;
+ 
+        CREATE OR REPLACE STREAM MIRRORING.STREAM_FCT_LOG_ADH_ABASTECIMIENTOS ON TABLE MIRRORING.FCT_LOG_ADH_ABASTECIMIENTOS;
+
+        CALL CON.SP_CON_DIM_CAL_ADH_ABASTECIMIENTOS();
+        
+---------------------------------------------------------------------------------
+    -- STEP  APIC
+    ---------------------------------------------------------------------------------
+
+    CALL CON.SP_CON_FCT_LOG_ADH_ABAST_FCT_ADH_APIC();
+
+    ---------------------------------------------------------------------------------
+    -- STEP 4: LOG
+    ---------------------------------------------------------------------------------
+    SELECT COALESCE(:TEXTO, 'EJECUCION CORRECTA') INTO :TEXTO;
+
+    INSERT INTO LOGS.HISTORIAL_EJECUCIONES
+    VALUES ('SP_CON_FCT_LOG_ADH_ABASTECIMIENTOS','CON.FCT_LOG_ADH_ABASTECIMIENTOS', :F_INICIO, :F_FIN, :T_EJECUCION, :ROWS_INSERTED, :TEXTO );
+
+    ---------------------------------------------------------------------------------
+    -- STEP 5: FINALIZACIÓN
+    ---------------------------------------------------------------------------------
+    RETURN CONCAT('Complete - Filas insertadas: ', ROWS_INSERTED);
+
+END;
+$$;
+ 
+ 

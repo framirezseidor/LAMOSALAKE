@@ -1,0 +1,72 @@
+// Comparación de registros extraídos transaccion Mirroring contra Azure Data Lake
+SELECT count(*) FROM MIRRORING.VW_FCT_LOG_ADH_INVENTARIO; // 2133
+
+// Validar suma de indicadores
+
+SELECT
+    SUM(IND_BLOQUEADO_TON) as BLOQUEADO,
+    SUM(IND_CONTROL_CALIDAD_TON) as CONTROL_CALIDAD,
+    SUM(IND_COSTO_INV_MXN) as COSTO_INV_MXN,
+    SUM(IND_INVENTARIO_FISICO_TON) as INVENTARIO_FISICO,
+    SUM(IND_LIBRE_UTILIZACION_TON) as LIBRE_UTILIZACION,
+    SUM(IND_LIBRE_VENTA_TON) as LIBRE_VENTA,
+    SUM(IND_STOCK_SEGURIDAD_TON) as STOCK_SEGURIDAD,
+    SUM(IND_TRANSITO_TON) as TRANSITO
+FROM MIRRORING.VW_FCT_LOG_ADH_INVENTARIO;
+
+---------------- SEGURIDAD PBI
+// Roles y Dims 
+SELECT * FROM MIRRORING.SEG_ROLE_DIMENSION
+WHERE ROLE_NM = 'ADH_INVENTARIO_TEST';
+
+SELECT * FROM MIRRORING.SEG_USUARIO_ROLE
+WHERE USER_MAIL LIKE 'test%';
+SELECT * FROM MIRRORING.SEG_USUARIO_DIMENSION;
+// Validar Acceso sin Rol
+DELETE FROM MIRRORING.SEG_USUARIO_DIMENSION
+WHERE USER_MAIL LIKE 'test.pbi%'; // Eliminamos los roles a usuario
+
+// Validar acceso con Rol y valor ALL
+
+INSERT INTO MIRRORING.SEG_USUARIO_ROLE
+VALUES ('test.pbi@grupolamosa.com', 'ADH_INVENTARIO_TEST'); // Asignamos Rol a usuario
+
+INSERT INTO MIRRORING.SEG_ROLE_DIMENSION
+VALUES ('ADH_INVENTARIO_TEST', 'CENTRO_ID', 'ALL'); // Asignamos valor ALL a Rol
+
+// Validar acceso con Rol y un valor por dimension 
+
+DELETE FROM MIRRORING.SEG_ROLE_DIMENSION
+WHERE ROLE_NM LIKE 'ADH_INVENTARIO%'; // Eliminamos permisos anteriores de Rol
+
+INSERT INTO MIRRORING.SEG_ROLE_DIMENSION
+VALUES ('ADH_INVENTARIO_TEST', 'CENTRO_ID', 'A111'); // Asignamos valor a Rol
+
+// Validar acceso con Rol y varios valores por dimension
+INSERT INTO MIRRORING.SEG_ROLE_DIMENSION
+VALUES
+    ('ADH_INVENTARIO_TEST', 'CENTRO_ID', 'A111'),
+    ('ADH_INVENTARIO_TEST', 'CENTRO_ID', 'A114'),
+    ('ADH_INVENTARIO_TEST', 'CENTRO_ID', 'A121'),
+    ('ADH_INVENTARIO_TEST', 'CENTRO_ID', 'A133'); // Asignamos valor a Rol
+
+// Validar acceso con Rol SAP_ROLE
+DELETE FROM MIRRORING.SEG_ROLE_DIMENSION
+WHERE ROLE_NM LIKE 'ADH_INVENTARIO%'; // Eliminamos permisos anteriores de Rol
+
+DELETE FROM MIRRORING.SEG_USUARIO_ROLE
+WHERE USER_MAIL LIKE 'test.pbi%'; // Eliminamos los roles a usuario
+
+INSERT INTO MIRRORING.SEG_USUARIO_ROLE
+VALUES ('test.pbi@grupolamosa.com', 'SAP_ROLE'); // Asignamos Rol SAP_ROLE a usuario
+
+// Validar acceso con Rol y restriccion
+INSERT INTO MIRRORING.SEG_USUARIO_DIMENSION
+VALUES ('test.pbi@grupolamosa.com', 'CENTRO_ID', 'A112'); // Asignamos valor a Rol
+SHOW COLUMNS ON MIRRORING.SEG_USUARIO_DIMENSION;
+------------- Tests Evidencias --------
+
+SELECT 
+    
+FROM CON.FCT_LOG_ADH_INVENTARIO_FOTO
+WHERE FECHA_FOTO_INVENTARIO = '2025';
