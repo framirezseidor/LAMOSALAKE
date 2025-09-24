@@ -80,18 +80,17 @@ jobs:
           snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/PFCT_COM_ADH_VENTAS_PCP.SQL"
           snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/PFCT_COM_REV_VENTAS_PCP.SQL"
           snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/PFCT_COM_VENTAS.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/SP_PRE_PFCT_COM_VENTAS.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/SP_PRE_PFCT_COM_VENTAS_HIST.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/SP_PRE_PFCT_COM_REV_VENTAS_PCP.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/SP_PRE_PFCT_COM_ADH_VENTAS_PCP.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_PRE_PFCT_COM_VENTAS.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_PRE_PFCT_COM_VENTAS_HIST.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_PRE_PFCT_COM_REV_VENTAS_PCP.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_PRE_PFCT_COM_ADH_VENTAS_PCP.SQL"
 
       - name: Creando objetos CON ventas
         run: |
-          snow sql -f "./COMERCIAL/VENTAS/CON/TABLAS/FCT_COM_ADH_VENTAS_ACT.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/CON/TABLAS/FCT_COM_ADH_VENTAS_PCP.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/CON/TABLAS/FCT_COM_REV_VENTAS_ACT.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/CON/TABLAS/FCT_COM_REV_VENTAS_PCP.SQL"                   
-          snow sql -f "./COMERCIAL/VENTAS/CON/VISTAS/FCT_COM_REV_VENTAS_PCP.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/CONS/TABLAS/FCT_COM_ADH_VENTAS_ACT.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/CONS/TABLAS/FCT_COM_ADH_VENTAS_PCP.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/CONS/TABLAS/FCT_COM_REV_VENTAS_ACT.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/CONS/TABLAS/FCT_COM_REV_VENTAS_PCP.SQL"                   
 
       - name: Creando objetos raw pedidos
         run: |
@@ -107,15 +106,12 @@ jobs:
 ###################  RENTABILIDAD
       - name: Creando objetos de RENTABILIDAD  
         run: |
-          snow sql -f "./COMERCIAL/BACKORDER/RAW/TABLES/MOF_ZBWSD_PEDIDOS_BACKORDER.SQL"
-          snow sql -f "./COMERCIAL/BACKORDER/RAW/TABLES/CAT_UNIDAD_ESTADISTICA.SQL"
           snow sql -f "./FINANZAS\RENTABILIDAD\RAW\TABLES\SQ1_TBL_ACDOCA.SQL"
           snow sql -f "./FINANZAS\RENTABILIDAD\RAW\TABLES\BW4_RENTABILIDAD_HIST.SQL"        
           snow sql -f "./FINANZAS\RENTABILIDAD\RAW\TABLES\SQ1_TBL_ZSD_CONV_PRECMAT.SQL"
           snow sql -f "./DIMENSIONES\FINANZAS\RAW\TABLAS\SQ1_TBL_SETLEAF.SQL"
           snow sql -f "./DIMENSIONES\FINANZAS\RAW\TABLAS\SQ1_EXT_0COSTCENTER_ATTR.SQL"
           snow sql -f "./DIMENSIONES\OBRA\RAW\TABLAS\SQ1_TBL_ZSD_CONVENIO_HDR.SQL"
-          snow sql -f "./COMERCIAL\BACKORDER\RAW\TABLES\CAT_UNIDAD_ESTADISTICA.SQL"     
 
       - name: Creando objetos pre rentabilidad
         run: |
