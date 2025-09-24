@@ -57,11 +57,6 @@ jobs:
           echo "Cantidad de .sql encontrados: $(find . -type f -iname '*.sql' | wc -l)"
 
 
-      - name: Reemplazar extensión en min a myus
-          # Renombra todas las extensiones .SQL, .Sql, etc., a .sql
-        run:  find . -type f -regex '.*\.[sS][qQ][lL]$' | while read f; do mv "$f" "$(dirname "$f")/$(basename "$f" | sed 's/\.[sS][qQ][lL]$/.SQL/')"; done
-
-
       - name: Creando objetos GENERALES
         run: |
           snow sql -f "./GENERAL/TABLAS/PARAMETROS_EXTRACCION.SQL"
@@ -118,7 +113,7 @@ jobs:
           snow sql -f "./FINANZAS\RENTABILIDAD\RAW\TABLES\BW4_RENTABILIDAD_HIST.SQL"        
           snow sql -f "./FINANZAS\RENTABILIDAD\RAW\TABLES\SQ1_TBL_ZSD_CONV_PRECMAT.SQL"
           snow sql -f "./DIMENSIONES\FINANZAS\RAW\TABLAS\SQ1_TBL_SETLEAF.SQL"
-          snow sql -f "./DIMENSIONES\FINANZAS\RAW\TABLAS\SQ1_EXT_0COSTCENTER_ATTR.sql"
+          snow sql -f "./DIMENSIONES\FINANZAS\RAW\TABLAS\SQ1_EXT_0COSTCENTER_ATTR.SQL"
           snow sql -f "./DIMENSIONES\OBRA\RAW\TABLAS\SQ1_TBL_ZSD_CONVENIO_HDR.SQL"
           snow sql -f "./COMERCIAL\BACKORDER\RAW\TABLES\CAT_UNIDAD_ESTADISTICA.SQL"     
 
@@ -176,23 +171,23 @@ jobs:
 #################### ABASTECIMIENTOS
       - name: Creando objetos raw abastecimientos
         run: |
-          snow sql -f "./ABASTECIMIENTOS/RAW/TABLES/EXT_2LIS_02_SCL.sql"
-          snow sql -f "./ABASTECIMIENTOS/RAW/TABLES/MOF_ZMM_IND_ADQUISICION.sql"
-          snow sql -f "./ABASTECIMIENTOS/RAW/TABLES/MOF_ZMM_IND_ADQUISICION_HIST.sql" 
-          snow sql -f "./ABASTECIMIENTOS/RAW/SP/SP_RAW_SQ1_EXT_2LIS_02_SCL_DELETE.sql"      
+          snow sql -f "./ABASTECIMIENTOS/RAW/TABLES/EXT_2LIS_02_SCL.SQL"
+          snow sql -f "./ABASTECIMIENTOS/RAW/TABLES/MOF_ZMM_IND_ADQUISICION.SQL"
+          snow sql -f "./ABASTECIMIENTOS/RAW/TABLES/MOF_ZMM_IND_ADQUISICION_HIST.SQL" 
+          snow sql -f "./ABASTECIMIENTOS/RAW/SP/SP_RAW_SQ1_EXT_2LIS_02_SCL_DELETE.SQL"      
 
       - name: Creando objetos pre abastecimientos
         run: |
-          snow sql -f "./ABASTECIMIENTOS/PRE/TABLES/PFCT_LOG_ABASTECIMIENTOS.sql"
-          snow sql -f "./ABASTECIMIENTOS/PRE/SP/SP_PRE_PFCT_LOG_ABASTECIMIENTOS.sql"
-          snow sql -f "./ABASTECIMIENTOS/PRE/SP/SP_PRE_PFCT_LOG_ABASTECIMIENTOS_HIST.sql"
-          snow sql -f "./ABASTECIMIENTOS/PRE/SP/SP_PRE_PFCT_LOG_ABASTECIMIENTOS_DELTA.sql"
+          snow sql -f "./ABASTECIMIENTOS/PRE/TABLES/PFCT_LOG_ABASTECIMIENTOS.SQL"
+          snow sql -f "./ABASTECIMIENTOS/PRE/SP/SP_PRE_PFCT_LOG_ABASTECIMIENTOS.SQL"
+          snow sql -f "./ABASTECIMIENTOS/PRE/SP/SP_PRE_PFCT_LOG_ABASTECIMIENTOS_HIST.SQL"
+          snow sql -f "./ABASTECIMIENTOS/PRE/SP/SP_PRE_PFCT_LOG_ABASTECIMIENTOS_DELTA.SQL"
 
       - name: Creando objetos CON abastecimientos
         run: |
-          snow sql -f "./ABASTECIMIENTOS/CONS/TABLES/FCT_LOG_ADH_ABASTECIMIENTOS.sql"
-          snow sql -f "./ABASTECIMIENTOS/CONS/TABLES/FCT_LOG_REV_ABASTECIMIENTOS.sql"
-          snow sql -f "./ABASTECIMIENTOS/CONS/SP/SP_CON_FCT_LOG_ADH_ABASTECIMIENTOS.sql"
-          snow sql -f "./ABASTECIMIENTOS/CONS/SP/SP_CON_FCT_LOG_ADH_ABASTECIMIENTOS_DELTA.sql"
-          snow sql -f "./ABASTECIMIENTOS/CONS/SP/SP_CON_FCT_LOG_REV_ABASTECIMIENTOS.sql"
-          snow sql -f "./ABASTECIMIENTOS/CONS/SP/SP_CON_FCT_LOG_REV_ABASTECIMIENTOS_DELTA.sql"
+          snow sql -f "./ABASTECIMIENTOS/CONS/TABLES/FCT_LOG_ADH_ABASTECIMIENTOS.SQL"
+          snow sql -f "./ABASTECIMIENTOS/CONS/TABLES/FCT_LOG_REV_ABASTECIMIENTOS.SQL"
+          snow sql -f "./ABASTECIMIENTOS/CONS/SP/SP_CON_FCT_LOG_ADH_ABASTECIMIENTOS.SQL"
+          snow sql -f "./ABASTECIMIENTOS/CONS/SP/SP_CON_FCT_LOG_ADH_ABASTECIMIENTOS_DELTA.SQL"
+          snow sql -f "./ABASTECIMIENTOS/CONS/SP/SP_CON_FCT_LOG_REV_ABASTECIMIENTOS.SQL"
+          snow sql -f "./ABASTECIMIENTOS/CONS/SP/SP_CON_FCT_LOG_REV_ABASTECIMIENTOS_DELTA.SQL"
