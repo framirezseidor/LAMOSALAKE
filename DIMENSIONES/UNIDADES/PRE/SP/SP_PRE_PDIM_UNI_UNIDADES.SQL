@@ -48,22 +48,38 @@ BEGIN
         (
             UNIDAD_ID,
             UNIDAD_TEXTO,
+            UNIDAD_ID_TEXTO,
             MANDANTE,
             SISORIGEN_ID,
             FECHA_CARGA,
             ZONA_HORARIA
         )
-       SELECT DISTINCT
-            "T006A~MSEHI" AS UNIDAD_ID,
+        SELECT DISTINCT
+            COALESCE(U.VALOR_ESTANDARD, T."T006A~MSEHI") AS UNIDAD_ID,
             CASE
-                WHEN LENGTH(TRIM("T006A~MSEHL"))>0 AND "T006A~MSEHL" IS NOT NULL THEN "T006A~MSEHL"
+                WHEN "T006A~MSEHL" IS NOT NULL AND LENGTH(TRIM("T006A~MSEHL")) > 0
+                    THEN "T006A~MSEHL"
                 ELSE UPPER("T006A~MSEH3")
-            END                  AS UNIDAD_TEXTO,
+            END AS UNIDAD_TEXTO,
+            COALESCE(COALESCE(U.VALOR_ESTANDARD, T."T006A~MSEHI"), '') || ' - ' ||
+            COALESCE(
+                CASE
+                    WHEN "T006A~MSEHL" IS NOT NULL AND LENGTH(TRIM("T006A~MSEHL")) > 0
+                        THEN TRIM("T006A~MSEHL")
+                    ELSE UPPER(TRIM("T006A~MSEH3"))
+                END
+            ,'') AS UNIDAD_ID_TEXTO,
             "T006A~MANDT" AS MANDANTE,
             SISORIGEN_ID,
             FECHA_CARGA,
             ZONA_HORARIA
-        FROM RAW.SQ1_TBL_T006A ;
+        FROM RAW.SQ1_TBL_T006A T
+        LEFT JOIN (
+            SELECT VALOR_ORIGINAL, VALOR_ESTANDARD
+            FROM RAW.CAT_UNIDAD_ESTADISTICA
+            WHERE UPPER(TRIM(VALOR_ORIGINAL)) = 'TO'     -- solo mapeamos TO → T
+        ) U
+        ON UPPER(TRIM(T."T006A~MSEHI")) = UPPER(TRIM(U.VALOR_ORIGINAL));
         
         -- Conteo de filas insertadas
         SELECT COUNT(*) INTO :ROWS_INSERTED FROM PRE.PDIM_UNI_UNIDADES;
@@ -90,3 +106,11 @@ BEGIN
 
 END;
 $$;
+
+-- CALL PRE.SP_PRE_PDIM_UNI_UNIDADES();
+
+-- select * from PRE.PDIM_UNI_UNIDADES;
+
+-- select * from RAW.SQ1_TBL_T006A T;
+
+-- select * from  RAW.CAT_UNIDAD_ESTADISTICA;

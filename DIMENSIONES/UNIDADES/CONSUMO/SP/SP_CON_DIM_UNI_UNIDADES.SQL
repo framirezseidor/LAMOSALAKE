@@ -48,6 +48,7 @@ BEGIN
         (
             UNIDAD_ID ,
             UNIDAD_TEXTO ,
+            UNIDAD_ID_TEXTO,
             MANDANTE ,
             SISORIGEN_ID ,
             FECHA_CARGA ,
@@ -56,6 +57,7 @@ BEGIN
        SELECT 
             UNIDAD_ID ,
             UNIDAD_TEXTO ,
+            UNIDAD_ID_TEXTO,
             MANDANTE ,
             SISORIGEN_ID ,
             FECHA_CARGA ,
@@ -110,3 +112,12 @@ BEGIN
 
 END;
 $$;
+
+-- TRUNCATE TABLE CON.DIM_UNI_UNIDADES;
+-- CALL CON.SP_CON_DIM_UNI_UNIDADES();
+
+-- SELECT * FROM CON.DIM_UNI_UNIDADES;
+
+
+select * from CON.DIM_UNI_UNIDADES
+where UNIDAD_ID IN ('BTO','CJ');

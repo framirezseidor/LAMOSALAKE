@@ -62,6 +62,7 @@ BEGIN
         ALMACENCENTRO_ID,
         --CENTROCOSTO_ID , 
         --SOCIEDADCO_ID,
+        MATERIALCENTRO_ID,
         MATERIAL_ID ,
         LOTE ,
         MATERIAL_ENTREGADO_ID ,
@@ -72,6 +73,13 @@ BEGIN
         ORDENFABRICACION_ID ,
         PUESTOTRABAJO_ID,
         CLIENTE_ID,
+        MON_LOC,
+        IND_IMPTE_ML,
+        IND_IMPTE_COMPRA_ML,
+        TIPOCAMBIO_USD,
+        MON_USD,
+        IND_IMPTE_USD,
+        IND_IMPTE_COMPRA_USD,
         IND_CANTIDAD_UMB,
         IND_CANTIDAD_UME,
         IND_CONSUMO_UMB,
@@ -105,6 +113,7 @@ BEGIN
             ALMACENCENTRO_ID,
             --CENTROCOSTO_ID , 
             --SOCIEDADCO_ID,
+            MATERIALCENTRO_ID,
             MATERIAL_ID ,
             LOTE ,
             MATERIAL_ENTREGADO_ID,
@@ -115,6 +124,13 @@ BEGIN
             ORDENFABRICACION_ID ,
             PUESTOTRABAJO_ID,
             CLIENTE_ID,
+            MON_LOC,
+            IND_IMPTE_ML,
+            IND_IMPTE_COMPRA_ML,
+            TIPOCAMBIO_USD,
+            MON_USD,
+            IND_IMPTE_USD,
+            IND_IMPTE_COMPRA_USD,
             IND_CANTIDAD_UMB,
             IND_CANTIDAD_UME,
             IND_CONSUMO_UMB,
@@ -155,7 +171,7 @@ BEGIN
     ---------------------------------------------------------------------------------
     -- STEP 4: MIRRORING
     ---------------------------------------------------------------------------------    
-    --DELETE FROM MIRRORING.FCT_OPE_ADH_PROD_ACT;
+    DELETE FROM MIRRORING.FCT_OPE_ADH_PRODUCCION;
 
     --INSERT INTO MIRRORING.FCT_OPE_ADH_PROD_ACT
     INSERT INTO MIRRORING.FCT_OPE_ADH_PRODUCCION
@@ -168,6 +184,7 @@ BEGIN
         CENTRO_ID, 
         ALMACEN_ID,
         ALMACENCENTRO_ID,
+        MATERIALCENTRO_ID,
         MATERIAL_ID ,
         MATERIAL_ENTREGADO_ID ,
         TEXTO_CABECERA_DOCUMENTO,
@@ -176,6 +193,13 @@ BEGIN
         ORDENFABRICACION_ID ,
         PUESTOTRABAJO_ID,
         CLIENTE_ID,
+        MON_LOC,
+        IND_IMPTE_ML,
+        IND_IMPTE_COMPRA_ML,
+        TIPOCAMBIO_USD,
+        MON_USD,
+        IND_IMPTE_USD,
+        IND_IMPTE_COMPRA_USD,
         IND_CANTIDAD_UMB,
         IND_CANTIDAD_UME,
         IND_CONSUMO_UMB,
@@ -205,6 +229,7 @@ BEGIN
             CENTRO_ID, 
             ALMACEN_ID,
             ALMACENCENTRO_ID,
+            MATERIALCENTRO_ID,
             MATERIAL_ID ,
             MATERIAL_ENTREGADO_ID,
             TEXTO_CABECERA_DOCUMENTO,
@@ -213,6 +238,13 @@ BEGIN
             ORDENFABRICACION_ID ,
             PUESTOTRABAJO_ID,
             CLIENTE_ID,
+            MON_LOC,
+            IND_IMPTE_ML,
+            IND_IMPTE_COMPRA_ML,
+            TIPOCAMBIO_USD,
+            MON_USD,
+            IND_IMPTE_USD,
+            IND_IMPTE_COMPRA_USD,
             IND_CANTIDAD_UMB,
             IND_CANTIDAD_UME,
             IND_CONSUMO_UMB,
@@ -227,7 +259,7 @@ BEGIN
             IND_AJUSTEINVENTARIO_UME,
             UNI_UMB,
             UNI_EST,
-            'FCT_OPE_ADH_PROD_ACT' as MODELO,
+            'PRODUCCION' as MODELO,
             SISORIGEN_ID,
             MANDANTE,
             FECHA_CARGA ,
@@ -240,6 +272,11 @@ BEGIN
         
         --Actualización tabla calendario
         CALL MIRRORING.SP_ACTUALIZAR_CALENDARIO('FCT_OPE_ADH_PRODUCCION', 'DIM_CAL_ADH_PRODUCCION', 'FECHA_CONTABILIZACION');
+ 
+    ---------------------------------------------------------------------------------
+    -- STEP FCT APIC
+    ---------------------------------------------------------------------------------
+        CALL CON.SP_CON_FCT_OPE_ADH_PROD_FCT_APIC();
     ---------------------------------------------------------------------------------
     -- STEP 5: FINALIZACIÓN
     ---------------------------------------------------------------------------------

@@ -59,15 +59,15 @@ jobs:
 
       - name: Creando objetos GENERALES
         run: |
-          snow sql -f "./GENERAL/TABLAS/PARAMETROS_EXTRACCION.sql"
-          snow sql -f "./LOGS/TABLAS/HISTORIAL_EJECUCIONES.SQL"
+          snow sql -f "./GENERAL\TABLAS\PARAMETROS_EXTRACCION.SQL"
+          snow sql -f "./LOGS\TABLAS\HISTORIAL_EJECUCIONES.SQL"
 
       - name: Creando tablas raw ventas
         run: |
           snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_ADH_VENTAS_PCP.SQL"
           snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/MOF_ZBWSD_CUADERNO_FINANCIERO.SQL"
           snow sql -f "./COMERCIAL/PEDIDOS/RAW/TABLAS/MOF_ZBWSD_CAPTURA_DIARIA.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_REV_VENTAS_PCP.sql"
+          snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_REV_VENTAS_PCP.SQL"
 
       - name: Creando funciones raw ventas
         run: |          
@@ -76,22 +76,22 @@ jobs:
 
       - name: Creando objetos pre ventas
         run: |
-          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/PFCT_COM_ADH_VENTAS_PCP_HIST.sql"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/PFCT_COM_ADH_VENTAS_PCP.sql"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/PFCT_COM_REV_VENTAS_PCP.sql"
+          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/PFCT_COM_ADH_VENTAS_PCP_HIST.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/PFCT_COM_ADH_VENTAS_PCP.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/PFCT_COM_REV_VENTAS_PCP.SQL"
           snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/PFCT_COM_VENTAS.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_PRE_PFCT_COM_VENTAS.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_PRE_PFCT_COM_VENTAS_HIST.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_PRE_PFCT_COM_REV_VENTAS_PCP.SQL"
-          snow sql -f "./COMERCIAL/VENTAS/PRE/SP/SP_PRE_PFCT_COM_ADH_VENTAS_PCP.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/SP_PRE_PFCT_COM_VENTAS.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/SP_PRE_PFCT_COM_VENTAS_HIST.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/SP_PRE_PFCT_COM_REV_VENTAS_PCP.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/PRE/TABLAS/SP_PRE_PFCT_COM_ADH_VENTAS_PCP.SQL"
 
       - name: Creando objetos CON ventas
         run: |
-          snow sql -f "./COMERCIAL/VENTAS/CON/TABLAS/FCT_COM_ADH_VENTAS_ACT.sql"
-          snow sql -f "./COMERCIAL/VENTAS/CON/TABLAS/FCT_COM_ADH_VENTAS_PCP.sql"
-          snow sql -f "./COMERCIAL/VENTAS/CON/TABLAS/FCT_COM_REV_VENTAS_ACT.sql"
-          snow sql -f "./COMERCIAL/VENTAS/CON/TABLAS/FCT_COM_REV_VENTAS_PCP.sql"                   
-          snow sql -f "./COMERCIAL/VENTAS/CON/VISTAS/FCT_COM_REV_VENTAS_PCP.sql"
+          snow sql -f "./COMERCIAL/VENTAS/CON/TABLAS/FCT_COM_ADH_VENTAS_ACT.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/CON/TABLAS/FCT_COM_ADH_VENTAS_PCP.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/CON/TABLAS/FCT_COM_REV_VENTAS_ACT.SQL"
+          snow sql -f "./COMERCIAL/VENTAS/CON/TABLAS/FCT_COM_REV_VENTAS_PCP.SQL"                   
+          snow sql -f "./COMERCIAL/VENTAS/CON/VISTAS/FCT_COM_REV_VENTAS_PCP.SQL"
 
       - name: Creando objetos raw pedidos
         run: |

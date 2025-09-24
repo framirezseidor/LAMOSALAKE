@@ -241,5 +241,7 @@ BEGIN
     ---------------------------------------------------------------------------------
     RETURN CONCAT('Complete - Filas insertadas: ', ROWS_INSERTED);
 
+    CALL MIRRORING.SP_ACTUALIZAR_CALENDARIO('FCT_FIN_ADH_CARTERA', 'DIM_CAL_ADH_CARTERA', 'FECHA');
+
 END;
 $$;

@@ -48,6 +48,7 @@ BEGIN
         (
             MONEDA_ID ,
             MONEDA_TEXTO ,
+            MONEDA_ID_TEXTO,
             MANDANTE ,
             SISORIGEN_ID ,
             FECHA_CARGA ,
@@ -55,12 +56,13 @@ BEGIN
         )
        SELECT DISTINCT
             "TCURT~WAERS" AS MONEDA_ID,
-            "TCURT~LTEXT" AS MONEDA_TEXTO,
+            "TCURT~LTEXT" AS MONEDA_TEXTO, 
+            CONCAT("TCURT~WAERS", ' - ', "TCURT~LTEXT") AS MONEDA_ID_TEXTO,
             "TCURT~MANDT" AS MANDANTE,
             SISORIGEN_ID,
             FECHA_CARGA,
             ZONA_HORARIA
-        FROM RAW.SQ1_TBL_TCURT ;
+        FROM RAW.SQ1_TBL_TCURT;
         
         -- Conteo de filas insertadas
         SELECT COUNT(*) INTO :ROWS_INSERTED FROM PRE.PDIM_MON_MONEDA;
@@ -87,3 +89,5 @@ BEGIN
 
 END;
 $$;
+
+

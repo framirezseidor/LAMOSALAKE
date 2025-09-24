@@ -66,7 +66,8 @@ BEGIN
                     SUBSTR(ZHLDT,6,2))) AS MES,
                 CONCAT(ANIO,MES) AS ANIOMES,
                 KOKRS	AS SOCIEDADCO_ID,
-                IFF(CONCAT(FIKRS,'_',FISTL) = CONCAT(FIKRS,'_','DUMMY'),'NA',EXT31.BUKRS) AS SOCIEDAD_ID,
+                COALESCE(CECO.SOCIEDAD_ID,'DUMMY') AS SOCIEDAD_ID,
+                -- IFF(CONCAT(FIKRS,'_',FISTL) = CONCAT(FIKRS,'_','DUMMY'),'NA',EXT31.BUKRS) AS SOCIEDAD_ID,
                 FIKRS	AS ENTIDADCP_ID,
                 BUCAT	AS CATEGORIAPRES_ID,
                 FMTYPE	AS TIPOVALOR_ID,
@@ -83,7 +84,7 @@ BEGIN
                 LTRIM(FISTL, '0')	AS CENTROCOSTO,
                 CONCAT(KOKRS,'_',LTRIM(FIPEX, '0'))	AS CUENTA_ID,
                 LTRIM(FIPEX, '0')	AS CUENTA,
-                LIFNR	AS ACREEDOR_ID,
+                LTRIM(LIFNR, '0')	AS ACREEDOR_ID,
                 ''	AS DEUDOR_ID, --KUNNR
                 --IFF(CUENTA.SUBDIVISION_ID = 'Z08', '8', IFF(CUENTA.SUBDIVISION_ID = 'Z25', '9', 'ZTPOGASTO')) AS GASTOER_ID,
                 '' AS GASTOER_ID,
@@ -114,19 +115,19 @@ BEGIN
                         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                     ) AS IND_PRESUPUESTO_ASIGNABLE,
                 
-                IFF(MON_ENTCP IN ('CLP','COP'),
-                        (IFF(TIPOVALORPRES_ID IN ('B1'),
-                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                        (IFF(TIPOVALORPRES_ID IN ('B1'),
-                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
-                    ) AS IND_PRESUPUESTO_ASIGNADO,
-
                 -- IFF(MON_ENTCP IN ('CLP','COP'),
-                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         (IFF(TIPOVALORPRES_ID IN ('B1'),
                 --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         (IFF(TIPOVALORPRES_ID IN ('B1'),
                 --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                 --     ) AS IND_PRESUPUESTO_ASIGNADO,
+
+                IFF(MON_ENTCP IN ('CLP','COP'),
+                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                    ) AS IND_PRESUPUESTO_ASIGNADO,
 
                 IFF(MON_ENTCP IN ('CLP','COP'),
                         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X'
@@ -176,11 +177,15 @@ BEGIN
                 EXT31.ZONA_HORARIA,
                 EXT31.TIPO
         FROM RAW.SQ1_EXT_0PU_IS_PS_31 AS EXT31
-
+        
         LEFT JOIN PRE.PDIM_FIN_CUENTA AS CUENTA
 		ON CONCAT(KOKRS,'_',LTRIM(EXT31.FIPEX, '0')) = CUENTA.CUENTA_ID
 
+        LEFT JOIN PRE.PDIM_FIN_CENTROCOSTO AS CECO
+            ON CONCAT('CAGL','_',LTRIM(EXT31.FISTL, '0')) = CECO.CENTROCOSTO_ID
+
         WHERE FIKRS BETWEEN 'FMAR' AND 'FMPE'
+        AND (CECO.FECHA_DESDE IS NULL OR CECO.FECHA_HASTA IS NULL OR CURRENT_DATE BETWEEN CECO.FECHA_DESDE AND CECO.FECHA_HASTA)
         AND CONCAT(SUBSTR(ZHLDT,0,4),SUBSTR(ZHLDT,6,2)) BETWEEN :FECHA_INICIO AND :FECHA_FIN --AND EXT31.TIPO='FULL'
 
         UNION ALL
@@ -191,7 +196,8 @@ BEGIN
                     SUBSTR(ZHLDT,6,2))) AS MES,
                 CONCAT(ANIO,MES) AS ANIOMES,
                 KOKRS	AS SOCIEDADCO_ID,
-                BUKRS	AS SOCIEDAD_ID,
+                COALESCE(CECO.SOCIEDAD_ID,'DUMMY') AS SOCIEDAD_ID,
+                -- BUKRS	AS SOCIEDAD_ID,
                 FIKRS	AS ENTIDADCP_ID,
                 BUCAT	AS CATEGORIAPRES_ID,
                 FMTYPE	AS TIPOVALOR_ID,
@@ -208,8 +214,8 @@ BEGIN
                 LTRIM(FISTL, '0')	AS CENTROCOSTO,
                 CONCAT(KOKRS,'_',LTRIM(FIPEX, '0'))	AS CUENTA_ID,
                 LTRIM(FIPEX, '0')	AS CUENTA,
-                LIFNR AS ACREEDOR_ID,
-                KUNNR AS DEUDOR_ID,
+                LTRIM(LIFNR, '0') AS ACREEDOR_ID,
+                LTRIM(KUNNR, '0') AS DEUDOR_ID,
                 --IFF(LTRIM(COSTE.SUBDIVISION_ID,'0') = '8', '08', IFF(LTRIM(COSTE.SUBDIVISION_ID,'0') = '25', '09', CECO.TIPOGASTO_ID)) AS GASTOER_ID,
                 '' AS GASTOER_ID,
                 TO_DATE(CONCAT(ANIO, '-', MES, '-01')) AS FECHA_CONTABILIZACION,
@@ -239,19 +245,19 @@ BEGIN
                         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                     ) AS IND_PRESUPUESTO_ASIGNABLE,
                 
-                IFF(MON_ENTCP IN ('CLP','COP'),
-                        (IFF(TIPOVALORPRES_ID IN ('B1'),
-                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                        (IFF(TIPOVALORPRES_ID IN ('B1'),
-                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
-                    ) AS IND_PRESUPUESTO_ASIGNADO,
-
                 -- IFF(MON_ENTCP IN ('CLP','COP'),
-                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         (IFF(TIPOVALORPRES_ID IN ('B1'),
                 --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         (IFF(TIPOVALORPRES_ID IN ('B1'),
                 --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                 --     ) AS IND_PRESUPUESTO_ASIGNADO,
+
+                IFF(MON_ENTCP IN ('CLP','COP'),
+                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                    ) AS IND_PRESUPUESTO_ASIGNADO,
 
                 IFF(MON_ENTCP IN ('CLP','COP'),
                         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X'
@@ -301,7 +307,10 @@ BEGIN
                 EXT32.ZONA_HORARIA,
                 EXT32.TIPO
         FROM RAW.SQ1_EXT_0PU_IS_PS_32 AS EXT32
+        LEFT JOIN PRE.PDIM_FIN_CENTROCOSTO AS CECO
+            ON CONCAT('CAGL','_',LTRIM(EXT32.FISTL, '0')) = CECO.CENTROCOSTO_ID
         WHERE FIKRS BETWEEN 'FMAR' AND 'FMPE'
+        AND (CECO.FECHA_DESDE IS NULL OR CECO.FECHA_HASTA IS NULL OR CURRENT_DATE BETWEEN CECO.FECHA_DESDE AND CECO.FECHA_HASTA)
         AND CONCAT(SUBSTR(FISCPER,0,4),SUBSTR(FISCPER,6,2)) BETWEEN :FECHA_INICIO AND :FECHA_FIN --AND EXT32.TIPO='FULL'
 
         UNION ALL
@@ -312,7 +321,8 @@ BEGIN
                     SUBSTR(ZHLDT,6,2))) AS MES,
                 CONCAT(ANIO,MES) AS ANIOMES,
                 KOKRS	AS SOCIEDADCO_ID,
-                RBUKRS	AS SOCIEDAD_ID,
+                COALESCE(CECO.SOCIEDAD_ID,'DUMMY') AS SOCIEDAD_ID,
+                -- RBUKRS	AS SOCIEDAD_ID,
                 FIKRS	AS ENTIDADCP_ID,
                 BUCAT	AS CATEGORIAPRES_ID,
                 FMTYPE	AS TIPOVALOR_ID,
@@ -362,19 +372,19 @@ BEGIN
                         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                     ) AS IND_PRESUPUESTO_ASIGNABLE,
                 
-                IFF(MON_ENTCP IN ('CLP','COP'),
-                        (IFF(TIPOVALORPRES_ID IN ('B1'),
-                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                        (IFF(TIPOVALORPRES_ID IN ('B1'),
-                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
-                    ) AS IND_PRESUPUESTO_ASIGNADO,
-
                 -- IFF(MON_ENTCP IN ('CLP','COP'),
-                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         (IFF(TIPOVALORPRES_ID IN ('B1'),
                 --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         (IFF(TIPOVALORPRES_ID IN ('B1'),
                 --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                 --     ) AS IND_PRESUPUESTO_ASIGNADO,
+
+                IFF(MON_ENTCP IN ('CLP','COP'),
+                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                    ) AS IND_PRESUPUESTO_ASIGNADO,
 
                 IFF(MON_ENTCP IN ('CLP','COP'),
                         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X'
@@ -424,7 +434,10 @@ BEGIN
                 EXT33.ZONA_HORARIA,
                 EXT33.TIPO
         FROM RAW.SQ1_EXT_0PU_IS_PS_33 AS EXT33
+        LEFT JOIN PRE.PDIM_FIN_CENTROCOSTO AS CECO
+            ON CONCAT('CAGL','_',LTRIM(EXT33.RFISTL, '0')) = CECO.CENTROCOSTO_ID
         WHERE FIKRS BETWEEN 'FMAR' AND 'FMPE'
+        AND (CECO.FECHA_DESDE IS NULL OR CECO.FECHA_HASTA IS NULL OR CURRENT_DATE BETWEEN CECO.FECHA_DESDE AND CECO.FECHA_HASTA)
         AND CONCAT(SUBSTR(FISCPER,0,4),SUBSTR(FISCPER,6,2)) BETWEEN :FECHA_INICIO AND :FECHA_FIN
 
         UNION ALL
@@ -435,7 +448,8 @@ BEGIN
                     SUBSTR(FISCPER,6,2))) AS MES,
                 CONCAT(ANIO,MES) AS ANIOMES,
                 'CAGL'	AS SOCIEDADCO_ID,
-                ''	AS SOCIEDAD_ID, --LEFT JOIN CON DIM
+                COALESCE(CECO.SOCIEDAD_ID,'DUMMY') AS SOCIEDAD_ID,
+                -- ''	AS SOCIEDAD_ID, --LEFT JOIN CON DIM
                 RFIKRS	AS ENTIDADCP_ID,
                 BUCAT	AS CATEGORIAPRES_ID,
                 FMTYPE	AS TIPOVALOR_ID,
@@ -486,19 +500,19 @@ BEGIN
                         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                     ) AS IND_PRESUPUESTO_ASIGNABLE,
                 
-                IFF(MON_ENTCP IN ('CLP','COP'),
-                        (IFF(TIPOVALORPRES_ID IN ('B1'),
-                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                        (IFF(TIPOVALORPRES_ID IN ('B1'),
-                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
-                    ) AS IND_PRESUPUESTO_ASIGNADO,
-
                 -- IFF(MON_ENTCP IN ('CLP','COP'),
-                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         (IFF(TIPOVALORPRES_ID IN ('B1'),
                 --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         (IFF(TIPOVALORPRES_ID IN ('B1'),
                 --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                 --     ) AS IND_PRESUPUESTO_ASIGNADO,
+
+                IFF(MON_ENTCP IN ('CLP','COP'),
+                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                    ) AS IND_PRESUPUESTO_ASIGNADO,
 
                 IFF(MON_ENTCP IN ('CLP','COP'),
                         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X'
@@ -562,7 +576,7 @@ BEGIN
                     SUBSTR(FISCPER,6,2))) AS MES,
                 CONCAT(ANIO,MES) AS ANIOMES,
                 'CAGL' AS SOCIEDADCO_ID,
-                CECO.SOCIEDAD_ID AS SOCIEDAD_ID,
+                COALESCE(CECO.SOCIEDAD_ID,'DUMMY') AS SOCIEDAD_ID,
                 RFIKRS	AS ENTIDADCP_ID,
                 BUCAT	AS CATEGORIAPRES_ID,
                 FMTYPE	AS TIPOVALOR_ID,
@@ -610,19 +624,19 @@ BEGIN
                         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                     ) AS IND_PRESUPUESTO_ASIGNABLE,
                 
-                IFF(MON_ENTCP IN ('CLP','COP'),
-                        (IFF(TIPOVALORPRES_ID IN ('B1'),
-                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                        (IFF(TIPOVALORPRES_ID IN ('B1'),
-                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
-                    ) AS IND_PRESUPUESTO_ASIGNADO,
-
                 -- IFF(MON_ENTCP IN ('CLP','COP'),
-                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         (IFF(TIPOVALORPRES_ID IN ('B1'),
                 --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         (IFF(TIPOVALORPRES_ID IN ('B1'),
                 --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                 --     ) AS IND_PRESUPUESTO_ASIGNADO,
+
+                IFF(MON_ENTCP IN ('CLP','COP'),
+                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                    ) AS IND_PRESUPUESTO_ASIGNADO,
 
                 IFF(MON_ENTCP IN ('CLP','COP'),
                         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X'
@@ -696,7 +710,7 @@ BEGIN
                     SUBSTR(FISCPER,6,2))) AS MES,
                 CONCAT(ANIO,MES) AS ANIOMES,
                 'CAGL' AS SOCIEDADCO_ID,
-                CECO.SOCIEDAD_ID AS SOCIEDAD_ID,
+                COALESCE(CECO.SOCIEDAD_ID,'DUMMY') AS SOCIEDAD_ID,
                 FM_AREA	AS ENTIDADCP_ID,
                 BUCAT	AS CATEGORIAPRES_ID,
                 FMTYPE	AS TIPOVALOR_ID,
@@ -744,19 +758,19 @@ BEGIN
                         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                     ) AS IND_PRESUPUESTO_ASIGNABLE,
                 
-                IFF(MON_ENTCP IN ('CLP','COP'),
-                        (IFF(TIPOVALORPRES_ID IN ('B1'),
-                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                        (IFF(TIPOVALORPRES_ID IN ('B1'),
-                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
-                    ) AS IND_PRESUPUESTO_ASIGNADO,
-
                 -- IFF(MON_ENTCP IN ('CLP','COP'),
-                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         (IFF(TIPOVALORPRES_ID IN ('B1'),
                 --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
-                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         (IFF(TIPOVALORPRES_ID IN ('B1'),
                 --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
                 --     ) AS IND_PRESUPUESTO_ASIGNADO,
+
+                IFF(MON_ENTCP IN ('CLP','COP'),
+                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                        (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                    ) AS IND_PRESUPUESTO_ASIGNADO,
 
                 IFF(MON_ENTCP IN ('CLP','COP'),
                         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X'

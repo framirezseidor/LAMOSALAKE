@@ -66,6 +66,10 @@ BEGIN
             SELECT ('Error en DELETE: ' || :sqlerrm) INTO :TEXTO;
     END;
 
+    --ACTUALIZACIÓN TABLA CALENDARIO
+
+    CALL MIRRORING.SP_ACTUALIZAR_CALENDARIO('FCT_LOG_REV_INVENTARIO', 'DIM_CAL_REV_INVENTARIO', 'FECHA_FOTO_INVENTARIO');
+
     ---------------------------------------------------------------------------------
     -- STEP 2: INSERCIÓN DE DATOS DESDE PRE HACIA CON
     ---------------------------------------------------------------------------------
