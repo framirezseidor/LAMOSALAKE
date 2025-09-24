@@ -59,12 +59,7 @@ jobs:
 
       - name: Reemplazar extensión en min a myus
           # Renombra todas las extensiones .SQL, .Sql, etc., a .sql
-        run:  find . -type f -regex '.*\.[sS][qQ][lL]$' | while read f; do
-          mv "$f" "$(dirname "$f")/$(basename "$f" | sed 's/\.[sS][qQ][lL]$/.SQL/')"
-          done
-
-
-
+        run:  find . -type f -regex '.*\.[sS][qQ][lL]$' | while read f; do mv "$f" "$(dirname "$f")/$(basename "$f" | sed 's/\.[sS][qQ][lL]$/.SQL/')"; done
 
 
       - name: Creando objetos GENERALES
