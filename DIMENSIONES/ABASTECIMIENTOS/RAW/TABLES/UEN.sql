@@ -1,4 +1,0 @@
-create or alter TABLE RAW.UEN (
-	UEN_ID VARCHAR(5),
-	DESCRIPCION_UEN VARCHAR(50)
-);

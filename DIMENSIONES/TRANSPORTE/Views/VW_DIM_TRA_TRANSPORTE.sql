@@ -1,2 +1,0 @@
-create or replace view CON.VW_DIM_TRA_TRANSPORTE as
-SELECT * FROM CON.DIM_TRA_TRANSPORTE;
