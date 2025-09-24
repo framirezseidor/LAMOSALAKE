@@ -197,6 +197,10 @@ BEGIN
         VALUES('SP_CON_FCT_LOG_ADH_INVENTARIO_ACT','FCT_LOG_ADH_INVENTARIO_ACT', :F_INICIO, :F_FIN,:T_EJECUCION ,:ROWS_INSERTED, :TEXTO );
 
     ---------------------------------------------------------------------------------
+    -- STEP : FACT APIC
+    ---------------------------------------------------------------------------------
+        CALL CON.SP_CON_FCT_LOG_ADH_INV_FCT_ADH_APIC();
+    ---------------------------------------------------------------------------------
     -- STEP 4: FINALIZACIÓN
     ---------------------------------------------------------------------------------
     RETURN CONCAT('Complete - Filas insertadas: ', ROWS_INSERTED);

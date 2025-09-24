@@ -101,6 +101,7 @@ BEGIN
             ORGVENTAS_ID_TEXT,
             SOCIEDAD_TEXT,
             PAIS_TEXT,
+            PAIS_ID_TEXT,
             NEGOCIOGRUPO_TEXT,
 
             SISORIGEN_ID,
@@ -118,7 +119,8 @@ BEGIN
             CONCAT(OV.ORGVENTAS_ID, ' - ', OV.ORGVENTAS_TEXT ) ORGVENTAS_ID_TEXT,
             COALESCE(S.SOCIEDAD_TEXT,'-') SOCIEDAD_TEXT ,
             COALESCE(P.PAIS_TEXT,'-') PAIS_TEXT ,
-            COALESCE(NG.NEGOCIOGRUPO_TEXT,'-') NEGOCIOGRUPO_TEXT,
+            CONCAT(P.PAIS_ID, ' - ', COALESCE(P.PAIS_TEXT,'-')) PAIS_ID_TEXT,
+            COALESCE(NG.NEGOCIOGRUPO_TEXT,'-') NEGOCIOGRUPO_TEXT, 
             
             OV.SISORIGEN_ID,
             OV.MANDANTE,
@@ -141,9 +143,10 @@ BEGIN
             PAIS_ID,
             NEGOCIOGRUPO_ID,
             ORGVENTAS_TEXT,
-             ORGVENTAS_ID_TEXT,
+            ORGVENTAS_ID_TEXT,
             SOCIEDAD_TEXT,
             PAIS_TEXT,
+            PAIS_ID_TEXT,
             NEGOCIOGRUPO_TEXT,
             SISORIGEN_ID,
             MANDANTE,
@@ -159,6 +162,7 @@ BEGIN
             'A104 - Solutek' AS ORGVENTAS_ID_TEXT,
             'Solutek' AS SOCIEDAD_TEXT ,
             'México' AS PAIS_TEXT ,
+            'MX - México' AS PAIS_ID_TEXT,
             'ADHESIVOS' AS NEGOCIOGRUPO_TEXT,
             'FILE' AS SISORIGEN_ID,
             '-' AS MANDANTE,
@@ -173,3 +177,7 @@ BEGIN
 
 END;
 $$;
+
+-- CALL CON.SP_CON_DIM_ORG_ORGANIZACIONVENTAS();
+
+-- SELECT * FROM MIRRORING.DIM_ORG_ORGANIZACIONVENTAS;

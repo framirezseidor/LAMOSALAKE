@@ -123,7 +123,16 @@ BEGIN
         SISORIGEN_ID,
         MANDANTE,
         FECHA_CARGA,
-        ZONA_HORARIA
+        ZONA_HORARIA,
+        MODELO,
+        ANIO,
+        MES,
+        ALMACEN_ID,
+        SOCIEDAD_ID,
+        PRECIO_ESTANDAR_MXN,
+        PRECIO_ESTANDAR_ML,
+        PRECIO_ESTANDAR_USD,
+        UEN_ID
         )
         --------------------------------------------NIVEL DE SERVICIOS--------------------------------------------------
 
@@ -204,10 +213,30 @@ BEGIN
         CONCAT(MON_PED,'_USD') AS CLAVEMP_USD,
         CONCAT(MON_PED,'_EUR') AS CLAVEMP_EUR,
 
-        SISORIGEN_ID,
-        MANDANTE,
-        FECHA_CARGA,
-        ZONA_HORARIA
+        A.SISORIGEN_ID,
+        A.MANDANTE,
+        A.FECHA_CARGA,
+        A.ZONA_HORARIA,
+        'Abastecimiento' as MODELO,
+        TO_CHAR(FECHA_ORDEN, 'YYYY') AS ANIO,
+        TO_CHAR(FECHA_ORDEN, 'MM') AS MES,
+        SUBSTR(ALMACENCENTRO_ID,6) AS ALMACEN_ID,
+        '' AS SOCIEDAD_ID,
+        MAX(P.MATPRICE) AS PRECIO_ESTANDAR_MXN,
+        MAX(L.MATPRICE) AS PRECIO_ESTANDAR_ML,
+        MAX(U.MATPRICE) AS PRECIO_ESTANDAR_USD,
+        CASE WHEN CENTRO_ID = 'A111' THEN 'AMT1'
+             WHEN CENTRO_ID = 'A112' THEN ''
+             WHEN CENTRO_ID = 'A113' THEN 'AGD2'
+             WHEN CENTRO_ID = 'A114' THEN ''
+             WHEN CENTRO_ID = 'A115' THEN 'ACH1'
+             WHEN CENTRO_ID = 'A119' THEN ''
+             WHEN CENTRO_ID = 'A121' THEN 'AGD1'
+             WHEN CENTRO_ID = 'A122' THEN 'ALE1'
+             WHEN CENTRO_ID = 'A124' THEN 'AMR1'
+             WHEN CENTRO_ID = 'A126' THEN ''
+             WHEN CENTRO_ID = 'A131' THEN 'ANV1'
+             WHEN CENTRO_ID = 'A135' THEN 'ACH4' END AS UEN
 
         FROM(
 
@@ -295,12 +324,20 @@ BEGIN
 
         0 AS IND_CANT_EM_PEDIDO_ENTIEMPO,
         IFF((DATEDIFF(DAY, FECHA_CONTABILIZACION, FECHA_ENTREGAOBJETIVO) >= 0), IND_CANTIDAD_TOTAL, 0) AS IND_CANT_EM_COMPLETAS_ENTIEMPO
-        FROM PRE.PFCT_LOG_ABASTECIMIENTOS
+        FROM PRE.PFCT_LOG_ABASTECIMIENTOS 
         WHERE 
             --DOCCOMPRAS_CLASE IN ('LP','NB','ZDNP','ZFIN','ZINV','ZIPT','ZNB','ZNBS','ZURG')
             CLAVEOPERACION IN ('002','012','022','006','016','026')
             --AND SUBSTRING(ALMACENCENTRO_ID, 1, POSITION('_' IN ALMACENCENTRO_ID) - 1) IN ('',' ','ME01','MP01','MP02','RF01','RF02')
-            AND IND_CANTIDAD_TOTAL <> 0)
+            AND IND_CANTIDAD_TOTAL <> 0) A
+
+        ---JOINS PARA SACAR PRECIO ESTANDAR
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='10') L 
+        ON A.MATERIAL_ID=LTRIM(L.MATERIAL, '0') AND A.CENTRO_ID=L.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(L.fiscper,4),'-',RIGHT(L.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='30') P 
+        ON A.MATERIAL_ID=LTRIM(P.MATERIAL, '0') AND A.CENTRO_ID=P.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(P.fiscper,4),'-',RIGHT(P.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='40') U 
+        ON A.MATERIAL_ID=LTRIM(U.MATERIAL, '0') AND A.CENTRO_ID=U.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(U.fiscper,4),'-',RIGHT(U.fiscper,2))
 
         JOIN RAW.PARAMETROS_EXTRACCION
         ON EXTRACTOR = '2LIS_02_SCL'
@@ -344,10 +381,16 @@ BEGIN
         CLAVEMP_LOC,
         CLAVEMP_USD,
         CLAVEMP_EUR,
-        SISORIGEN_ID,
-        MANDANTE,
-        FECHA_CARGA,
-        ZONA_HORARIA
+        A.SISORIGEN_ID,
+        A.MANDANTE,
+        A.FECHA_CARGA,
+        A.ZONA_HORARIA,
+        MODELO,
+        ANIO,
+        MES,
+        ALMACEN_ID,
+        SOCIEDAD_ID,
+        UEN
 
         HAVING SUM(IND_CANT_EM_PEDIDO_ENTIEMPO) <> 0
 
@@ -429,12 +472,40 @@ BEGIN
         CONCAT(MON_PED,'_USD') AS CLAVEMP_USD,
         CONCAT(MON_PED,'_EUR') AS CLAVEMP_EUR,
 
-        SISORIGEN_ID,
-        MANDANTE,
-        FECHA_CARGA,
-        ZONA_HORARIA
+        A.SISORIGEN_ID,
+        A.MANDANTE,
+        A.FECHA_CARGA,
+        A.ZONA_HORARIA,
+        'Abastecimiento' as MODELO,
+        TO_CHAR(FECHA_ORDEN, 'YYYY') AS ANIO,
+        TO_CHAR(FECHA_ORDEN, 'MM') AS MES,
+        SUBSTR(ALMACENCENTRO_ID,6) AS ALMACEN_ID,
+        '' AS SOCIEDAD_ID,
+        MAX(P.MATPRICE) AS PRECIO_ESTANDAR_MXN,
+        MAX(L.MATPRICE) AS PRECIO_ESTANDAR_ML,
+        MAX(U.MATPRICE) AS PRECIO_ESTANDAR_USD,
+        CASE WHEN CENTRO_ID = 'A111' THEN 'AMT1'
+             WHEN CENTRO_ID = 'A112' THEN ''
+             WHEN CENTRO_ID = 'A113' THEN 'AGD2'
+             WHEN CENTRO_ID = 'A114' THEN ''
+             WHEN CENTRO_ID = 'A115' THEN 'ACH1'
+             WHEN CENTRO_ID = 'A119' THEN ''
+             WHEN CENTRO_ID = 'A121' THEN 'AGD1'
+             WHEN CENTRO_ID = 'A122' THEN 'ALE1'
+             WHEN CENTRO_ID = 'A124' THEN 'AMR1'
+             WHEN CENTRO_ID = 'A126' THEN ''
+             WHEN CENTRO_ID = 'A131' THEN 'ANV1'
+             WHEN CENTRO_ID = 'A135' THEN 'ACH4' END AS UEN
 
-        FROM PRE.PFCT_LOG_ABASTECIMIENTOS
+        FROM PRE.PFCT_LOG_ABASTECIMIENTOS A
+
+        ---JOINS PARA SACAR PRECIO ESTANDAR
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='10') L 
+        ON A.MATERIAL_ID=LTRIM(L.MATERIAL, '0') AND A.CENTRO_ID=L.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(L.fiscper,4),'-',RIGHT(L.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='30') P 
+        ON A.MATERIAL_ID=LTRIM(P.MATERIAL, '0') AND A.CENTRO_ID=P.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(P.fiscper,4),'-',RIGHT(P.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='40') U 
+        ON A.MATERIAL_ID=LTRIM(U.MATERIAL, '0') AND A.CENTRO_ID=U.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(U.fiscper,4),'-',RIGHT(U.fiscper,2))
 
         JOIN RAW.PARAMETROS_EXTRACCION
         ON EXTRACTOR = '2LIS_02_SCL'
@@ -482,10 +553,16 @@ BEGIN
         CLAVEMP_LOC,
         CLAVEMP_USD,
         CLAVEMP_EUR,
-        SISORIGEN_ID,
-        MANDANTE,
-        FECHA_CARGA,
-        ZONA_HORARIA
+        A.SISORIGEN_ID,
+        A.MANDANTE,
+        A.FECHA_CARGA,
+        A.ZONA_HORARIA,
+        MODELO,
+        ANIO,
+        MES,
+        ALMACEN_ID,
+        SOCIEDAD_ID,
+        UEN
         ----------------------------------------Fin Fecha Contable --------------------------------------------
         ---------------------------------------- FIN NIVEL DE SERVICIOS--------------------------------------------------
 
@@ -560,12 +637,40 @@ BEGIN
         CLAVEMP_USD,
         CLAVEMP_EUR,
 
-        SISORIGEN_ID,
-        MANDANTE,
-        FECHA_CARGA,
-        ZONA_HORARIA
+        A.SISORIGEN_ID,
+        A.MANDANTE,
+        A.FECHA_CARGA,
+        A.ZONA_HORARIA,
+        'Abastecimiento' as MODELO,
+        TO_CHAR(FECHA_ORDEN, 'YYYY') AS ANIO,
+        TO_CHAR(FECHA_ORDEN, 'MM') AS MES,
+        SUBSTR(ALMACENCENTRO_ID,6) AS ALMACEN_ID,
+        '' AS SOCIEDAD_ID,
+        P.MATPRICE AS PRECIO_ESTANDAR_MXN,
+        L.MATPRICE AS PRECIO_ESTANDAR_ML,
+        U.MATPRICE AS PRECIO_ESTANDAR_USD,
+        CASE WHEN CENTRO_ID = 'A111' THEN 'AMT1'
+             WHEN CENTRO_ID = 'A112' THEN ''
+             WHEN CENTRO_ID = 'A113' THEN 'AGD2'
+             WHEN CENTRO_ID = 'A114' THEN ''
+             WHEN CENTRO_ID = 'A115' THEN 'ACH1'
+             WHEN CENTRO_ID = 'A119' THEN ''
+             WHEN CENTRO_ID = 'A121' THEN 'AGD1'
+             WHEN CENTRO_ID = 'A122' THEN 'ALE1'
+             WHEN CENTRO_ID = 'A124' THEN 'AMR1'
+             WHEN CENTRO_ID = 'A126' THEN ''
+             WHEN CENTRO_ID = 'A131' THEN 'ANV1'
+             WHEN CENTRO_ID = 'A135' THEN 'ACH4' END AS UEN
 
-        FROM PRE.PFCT_LOG_ABASTECIMIENTOS
+        FROM PRE.PFCT_LOG_ABASTECIMIENTOS A
+
+        ---JOINS PARA SACAR PRECIO ESTANDAR
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='10') L 
+        ON A.MATERIAL_ID=LTRIM(L.MATERIAL, '0') AND A.CENTRO_ID=L.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(L.fiscper,4),'-',RIGHT(L.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='30') P 
+        ON A.MATERIAL_ID=LTRIM(P.MATERIAL, '0') AND A.CENTRO_ID=P.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(P.fiscper,4),'-',RIGHT(P.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='40') U 
+        ON A.MATERIAL_ID=LTRIM(U.MATERIAL, '0') AND A.CENTRO_ID=U.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(U.fiscper,4),'-',RIGHT(U.fiscper,2))
 
         JOIN RAW.PARAMETROS_EXTRACCION
         ON EXTRACTOR = '2LIS_02_SCL'
@@ -604,8 +709,16 @@ BEGIN
 
         CALL CON.SP_CON_DIM_CAL_ADH_ABASTECIMIENTOS();
 
+
+
+---------------------------------------------------------------------------------
+    -- STEP  APIC
     ---------------------------------------------------------------------------------
-    -- STEP 4: LOG
+
+    CALL CON.SP_CON_FCT_LOG_ADH_ABAST_FCT_ADH_APIC();
+
+    ---------------------------------------------------------------------------------
+    -- STEP : LOG
     ---------------------------------------------------------------------------------
     SELECT COALESCE(:TEXTO, 'EJECUCION CORRECTA') INTO :TEXTO;
 

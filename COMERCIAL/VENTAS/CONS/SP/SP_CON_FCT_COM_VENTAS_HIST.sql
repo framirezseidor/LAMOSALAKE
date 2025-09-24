@@ -261,7 +261,15 @@
                 VENTA_REAL_TON AS IND_VENTA_REAL_TON,
                 UNIDAD_ESTADISTICA_CLAVE AS UNI_EST,
                 VENTA_REAL_UM_VENTA AS IND_VENTA_REAL_UMV,
-                MEDIDA_DE_VENTA_CLAVE AS UNI_UMV,
+                CASE UPPER(TRIM(MEDIDA_DE_VENTA_CLAVE))
+                    WHEN '#'   THEN NULL          -- elimina '#'
+                    WHEN 'CJ'  THEN 'CS'          -- CJ -> CS
+                    WHEN 'BTO' THEN 'PAK'         -- BTO -> PAK
+                    WHEN 'TON' THEN 'T'           -- TON -> T
+                    WHEN 'SAC' THEN 'PAK'
+                    WHEN 'PZA' THEN 'ST'
+                    ELSE UPPER(TRIM(MEDIDA_DE_VENTA_CLAVE))
+                END AS UNI_UMV,
                 VENTA_PRECIO_LISTA_ML AS IND_VENTA_PRECIOLISTA_LOC,
                 VENTA_PRECIO_TEORICO_ML AS IND_VENTA_PRECIOTEORICO_LOC,
                 VENTA_PRECIO_FACTURA_ML AS IND_VENTA_PRECIOFACTURA_LOC,
@@ -357,14 +365,23 @@
     $$;
 
 
-call CON.SP_CON_FCT_COM_VENTAS_HIST();   
+-- call CON.SP_CON_FCT_COM_VENTAS_HIST();   
 
 
---create or replace stream MIRRORING.STREAM_FCT_COM_ADH_VENTAS_HIST on view  
--- MIRRORING.VW_FCT_COM_ADH_VENTAS_HIST;
+-- --create or replace stream MIRRORING.STREAM_FCT_COM_ADH_VENTAS_HIST on view  
+-- -- MIRRORING.VW_FCT_COM_ADH_VENTAS_HIST;
 
-select count(*) from mirroring.fct_com_adh_comercial;
+-- select count(*) from mirroring.fct_com_adh_comercial;
 
 -- TRUNCATE TABLE CON.FCT_COM_ADH_VENTAS_HIST;
 
-select count(*) from con.fct_com_adh_ventas_hist;
+-- select distinct uni_umv from con.fct_com_adh_ventas_hist;
+
+
+-- SELECT DISTINCT UNI_UMV FROM MIRRORING.FCT_COM_ADH_COMERCIAL
+-- WHERE SISORIGEN_ID = 'BW4';
+
+
+-- UPDATE CON.FCT_COM_ADH_VENTAS_HIST
+-- SET UNI_UMV = 'PAK'
+-- WHERE UNI_UMV = 'BTO';

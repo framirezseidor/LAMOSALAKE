@@ -45,7 +45,7 @@ BEGIN
     BEGIN
         SELECT CURRENT_TIMESTAMP() INTO :F_INICIO;
 
-        INSERT INTO CON.FCT_COM_ADH_VENTAS_PCP
+        INSERT INTO CON.FCT_COM_ADH_VENTAS_PCP_HIST
         (
             ANIO	,
             MES	,
@@ -138,3 +138,10 @@ $$;
  
 
 
+-- truncate table CON.FCT_COM_ADH_VENTAS_PCP_HIST;
+
+-- call CON.SP_CON_FCT_COM_ADH_VENTAS_PCP_HIST();
+
+
+-- select distinct anio from mirroring.FCT_COM_ADH_COMERCIAL
+-- where modelo = 'VENTASPCP'

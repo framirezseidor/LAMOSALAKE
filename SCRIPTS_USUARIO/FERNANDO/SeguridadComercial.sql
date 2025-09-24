@@ -1,7 +1,7 @@
 select * from mirroring.seg_usuario_dimension;
-TRUNCATE TABLE MIRRORING.SEG_USUARIO_DIMENSION;
-select * from mirroring.seg_usuario_role;
+select * from mirroring.seg_usuario_dimension;
 
+select * from mirroring.seg_usuario_role;
 INSERT INTO mirroring.seg_usuario_role (USER_MAIL, ROLE_NM)
 VALUES ('test.pbi@grupolamosa.com', 'ADH_DIRECCION_GENERAL_ROLE');
 DELETE FROM mirroring.seg_usuario_role
@@ -11,6 +11,13 @@ where role_nm = 'ADH_DIRECCION_GENERAL_ROLE';
 select * from mirroring.seg_role_dimension
 where role_nm = 'ADH_DIRECCION_GENERAL_ROLE';
 
+
+INSERT INTO MIRRORING.SEG_USUARIO_DIMENSION (USER_NM, DIM, VALOR) VALUES ('test.pbi@grupolamosa.com', 'CENTRO_ID', 'A124');
+
+INSERT INTO MIRRORING.SEG_USUARIO_DIMENSION
+VALUES
+    ('test.pbi@grupolamosa.com', 'CENTRO_ID', 'A124'); // Asignamos valor a Rol
+SELECT * FROM MIRRORING.SEG_USUARIO_DIMENSION;
 
 INSERT INTO mirroring.seg_role_dimension (ROLE_NM, DIMENSION_NM, VALOR)
 VALUES
@@ -119,10 +126,7 @@ VALUES
 ('ADH_DIRECCION_GENERAL_ROLE', 'GRUPOCLIENTES2_ID', 'ALL'),
 ('ADH_DIRECCION_GENERAL_ROLE', 'GRUPOVENDEDORES_ID', 'ALL'),
 ('ADH_DIRECCION_GENERAL_ROLE', 'OFICINAVENTAS_ID', 'ALL'),
-('ADH_DIRECCION_GENERAL_ROLE', 'ORGVENTAS_ID', 'A101'),
-('ADH_DIRECCION_GENERAL_ROLE', 'ORGVENTAS_ID', 'A102'),
-('ADH_DIRECCION_GENERAL_ROLE', 'ORGVENTAS_ID', 'A103'),
-('ADH_DIRECCION_GENERAL_ROLE', 'ORGVENTAS_ID', 'A201'),
+('ADH_DIRECCION_GENERAL_ROLE', 'ORGVENTAS_ID', 'ALL'),
 ('ADH_DIRECCION_GENERAL_ROLE', 'SOCIEDAD_ID', 'ALL'),
 ('ADH_DIRECCION_GENERAL_ROLE', 'UENADHESIVOS_ID', 'ALL');
 ---
@@ -364,3 +368,14 @@ VALUES
 ('ADH_PLANEACION_MERCADOS_ROLE', 'SOCIEDAD_ID', 'A103'),
 ('ADH_PLANEACION_MERCADOS_ROLE', 'SOCIEDAD_ID', 'A201'),
 ('ADH_PLANEACION_MERCADOS_ROLE', 'UENADHESIVOS_ID', 'ALL');
+
+
+select distinct fecha_comercial from mirroring.fct_com_adh_comercial
+where modelo = 'BACKORDER';
+
+select * from con.dim_doc_clasepedido
+where clasepedido_id = 'ZSIB';
+
+
+SELECT * FROM MIRRORING.fct_com_adh_comercial
+WHERE UNI_UMV = 'TON';

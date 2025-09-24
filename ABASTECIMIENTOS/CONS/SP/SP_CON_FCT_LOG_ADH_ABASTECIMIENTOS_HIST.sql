@@ -6,6 +6,10 @@ AS
 $$
 /*
 ---------------------------------------------------------------------------------
+---YA NO ESTA EN USO------------------------
+---------------------------------------------------------------------------------
+
+---------------------------------------------------------------------------------
  Versión:            1.0
  Fecha de creación:  2025-04-25
  Creador:            Juan Esteban Méndez N
@@ -117,7 +121,8 @@ BEGIN
         SISORIGEN_ID,
         MANDANTE,
         FECHA_CARGA,
-        ZONA_HORARIA
+        ZONA_HORARIA,
+        MODELO
         )
         --------------------------------------------NIVEL DE SERVICIOS--------------------------------------------------
 
@@ -199,7 +204,8 @@ BEGIN
         SISORIGEN_ID,
         MANDANTE,
         FECHA_CARGA,
-        ZONA_HORARIA
+        ZONA_HORARIA,
+        'Abastecimiento' as MODELO
 
         FROM(
 

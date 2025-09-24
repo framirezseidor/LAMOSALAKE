@@ -29,7 +29,7 @@ BEGIN
     BEGIN
         SELECT CURRENT_TIMESTAMP() INTO :F_INICIO;
 
-        --DELETE FROM CON.FCT_OPE_REV_PROD_ACT;
+        DELETE FROM CON.FCT_OPE_REV_PROD_ACT;
 
         SELECT CURRENT_TIMESTAMP() INTO :F_FIN;
         SELECT DATEDIFF(millisecond, :F_INICIO, :F_FIN) INTO :T_EJECUCION;
@@ -137,10 +137,93 @@ BEGIN
 
     INSERT INTO LOGS.HISTORIAL_EJECUCIONES
     VALUES ('SP_CON_FCT_OPE_REV_PROD_ACT','CON.FCT_OPE_REV_PROD_ACT', :F_INICIO, :F_FIN, :T_EJECUCION, :ROWS_INSERTED, :TEXTO );
+    ---------------------------------------------------------------------------------
+    -- STEP 4: MIRRORING
+    ---------------------------------------------------------------------------------
+    DELETE FROM MIRRORING.FCT_OPE_REV_PRODUCCION;
 
+    INSERT INTO MIRRORING.FCT_OPE_REV_PRODUCCION
+    (
+        ANIO,
+        MES,
+        ANIOMES,
+        CENTRO_ID,
+        ALMACEN_ID,
+        ALMACENCENTRO_ID,
+        GRUPOCLIENTES2_ID,
+        FECHA_CONTABILIZACION ,
+        CLASEMOVIMIENTO_ID,
+        DOCMATERIAL ,
+        DOCMATERIAL_POS,
+        CLASEORDFAB_ID,
+        ORDENFABRICACION ,
+        NOTIFICACION,
+        NOTIFICACION_CONTADOR_LLAVE ,
+        NOTIFICACION_OPERACION ,
+        NOTIFICACION_CONTADOR,
+        PERFIL_CONTROL_FABRICACION,
+        PERFILCF_CENTRO_ID ,
+        MATERIAL_ID ,
+        MATERIALCENTRO_ID ,
+        LOTE ,
+        MATERIAL_NOTIF ,
+        CALIDAD_NOTIF,
+        MARCAPLANEACION_ID,
+        IND_PRODUCCION_TOTAL_M2 ,
+        IND_PRODUCCION_1A_M2 ,
+        IND_PRODUCCION_2A_M2 ,
+        UNI_EST,
+        MODELO ,
+        SISORIGEN_ID,
+        MANDANTE,
+        FECHA_CARGA,
+        ZONA_HORARIA
+    )
+    SELECT
+            ANIO,
+            MES,
+            ANIOMES,
+            CENTRO_ID,
+            ALMACEN_ID,
+            ALMACENCENTRO_ID,
+            GRUPOCLIENTES2_ID,
+            FECHA_CONTABILIZACION ,
+            CLASEMOVIMIENTO_ID,
+            DOCMATERIAL ,
+            DOCMATERIAL_POS,
+            CLASEORDFAB_ID,
+            ORDENFABRICACION ,
+            NOTIFICACION,
+            NOTIFICACION_CONTADOR_LLAVE ,
+            NOTIFICACION_OPERACION ,
+            NOTIFICACION_CONTADOR,
+            PERFIL_CONTROL_FABRICACION,
+            PERFILCF_CENTRO_ID ,
+            MATERIAL_ID ,
+            MATERIALCENTRO_ID ,
+            LOTE ,
+            MATERIAL_NOTIF ,
+            CALIDAD_NOTIF,
+            MARCAPLANEACION_ID,
+            IND_PRODUCCION_TOTAL_M2 ,
+            IND_PRODUCCION_1A_M2 ,
+            IND_PRODUCCION_2A_M2 ,
+            UNI_EST,
+            'FCT_OPE_REV_PROD_ACT' AS MODELO,
+            SISORIGEN_ID,
+            MANDANTE,
+            FECHA_CARGA,
+            ZONA_HORARIA
+        FROM CON.FCT_OPE_REV_PROD_ACT;
+
+        -- STREAM
+        CREATE OR REPLACE STREAM MIRRORING.STREAM_FCT_OPE_REV_PRODUCCION ON TABLE MIRRORING.FCT_OPE_REV_PRODUCCION;
+        
+        --Actualización tabla calendario
+        CALL MIRRORING.SP_ACTUALIZAR_CALENDARIO('FCT_OPE_REV_PRODUCCION', 'DIM_CAL_REV_PRODUCCION', 'FECHA_CONTABILIZACION');
 
     ---------------------------------------------------------------------------------
-    -- STEP 4: FINALIZACIÓN
+    -- STEP 5: FINALIZACIÓN
     ---------------------------------------------------------------------------------
     RETURN CONCAT('Complete - Filas insertadas: ', ROWS_INSERTED);
 

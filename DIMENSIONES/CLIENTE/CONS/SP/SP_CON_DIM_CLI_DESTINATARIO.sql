@@ -142,6 +142,55 @@ BEGIN
             ON DES.ASESORDEST_ID = AC.ASESORCOMERCIAL_ID
         ;
 
+--------------------------------------------------------------------------------------------------
+-----------INSERCIÓN DE DATOS HISTÓRICOS
+-----------------------------------------------------------------------------------------------
+    INSERT INTO MIRRORING.DIM_CLI_DESTINATARIO
+        (
+            DESTINATARIO_ID	,
+            DESTINATARIO	,
+            ORGVENTAS_ID	,
+            CANALDISTRIB_ID	,
+            SECTOR_ID	,
+            COORDINADORDEST_ID	,
+            ASESORDEST_ID	,
+            DESTINATARIO_TEXT	,
+            DESTINATARIO_ID_TEXT	,
+            COORDINADORDEST_TEXT	,
+            COORDINADORDEST_ID_TEXT	,
+            ASESORDEST_TEXT	,
+            ASESORDEST_ID_TEXT	,
+            SISORIGEN_ID	,
+            MANDANTE	,
+            FECHA_CARGA	,
+            ZONA_HORARIA	
+        )
+        SELECT
+            COALESCE(DESTINATARIO_ID, '') AS DESTINATARIO_ID	,
+            COALESCE(DESTINATARIO, '') AS DESTINATARIO	,
+            COALESCE(ORGVENTAS_ID, '') AS ORGVENTAS_ID	,
+            COALESCE(CANALDISTRIB_ID, '') AS CANALDISTRIB_ID	,
+            COALESCE(SECTOR_ID, '') AS SECTOR_ID	,
+            COALESCE(COORDINADORDEST_ID, '') AS COORDINADORDEST_ID	,
+            COALESCE(ASESORDEST_ID, '') AS ASESORDEST_ID	,
+            COALESCE(DESTINATARIO_TEXT, '') AS DESTINATARIO_TEXT	,
+            COALESCE(DESTINATARIO_ID_TEXT, '') AS DESTINATARIO_ID_TEXT	,
+            COALESCE(COORDINADORDEST_TEXT, '') AS COORDINADORDEST_TEXT	,
+            COALESCE(COORDINADORDEST_ID_TEXT, '') AS COORDINADORDEST_ID_TEXT	,
+            COALESCE(ASESORDEST_TEXT, '') AS ASESORDEST_TEXT	,
+            COALESCE(ASESORDEST_ID_TEXT, '') AS ASESORDEST_ID_TEXT	,
+            SISORIGEN_ID	,
+            MANDANTE	,
+            CURRENT_TIMESTAMP() AS FECHA_CARGA,
+            TO_CHAR(CURRENT_TIMESTAMP(), 'TZH:TZM') AS ZONA_HORARIA
+        FROM 
+            RAW.FILE_XLS_DIM_CLI_DESTINATARIO_ADH_DMH;
+
+
+
+
+
+
     ---------------------------------------------------------------------------------
     -- STEP 5: FINALIZACIÓN
     ---------------------------------------------------------------------------------

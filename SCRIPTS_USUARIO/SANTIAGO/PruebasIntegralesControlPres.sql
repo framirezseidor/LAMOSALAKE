@@ -159,3 +159,211 @@ GROUP BY ALL;
 
 SELECT *
 FROM CON.VW_FCT_FIN_CONTROLPRESUPUESTAL;
+
+
+
+
+SELECT SUM(IND_PRESUPUESTO_ASIGNADO)
+FROM (
+        SELECT  CECO.SOCIEDAD_ID AS SOCIEDAD_ID,
+                -- IFF(CONCAT(FIKRS,'_',FISTL) = CONCAT(FIKRS,'_','DUMMY'),'NA',EXT31.BUKRS) AS SOCIEDAD_ID,
+                '' AS TIPOVALORPRES_ID, --VALTYPE_9
+                FKBTR AS IND_IMPORTE_ENTCP,
+                WAERS AS MON_ENTCP,
+                FMTYPE	AS TIPOVALOR_ID,
+                STATS	AS INDICADOREST_ID,
+                
+                IFF(MON_ENTCP IN ('CLP','COP'),
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
+                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
+                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                    ) AS IND_PRESUPUESTO_ASIGNADO
+
+                -- IFF(MON_ENTCP IN ('CLP','COP'),
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                --     ) AS IND_PRESUPUESTO_ASIGNADO
+
+        FROM RAW.SQ1_EXT_0PU_IS_PS_31 AS EXT31
+
+        LEFT JOIN PRE.PDIM_FIN_CUENTA AS CUENTA
+		ON CONCAT(KOKRS,'_',LTRIM(EXT31.FIPEX, '0')) = CUENTA.CUENTA_ID
+
+        LEFT JOIN PRE.PDIM_FIN_CENTROCOSTO AS CECO
+            ON CONCAT('CAGL','_',LTRIM(EXT31.FISTL, '0')) = CECO.CENTROCOSTO_ID
+
+        WHERE FIKRS BETWEEN 'FMAR' AND 'FMPE'
+        AND (CECO.FECHA_DESDE IS NULL OR CECO.FECHA_HASTA IS NULL OR CURRENT_DATE BETWEEN CECO.FECHA_DESDE AND CECO.FECHA_HASTA)
+
+        UNION ALL
+
+        SELECT  CECO.SOCIEDAD_ID AS SOCIEDAD_ID,
+                -- BUKRS	AS SOCIEDAD_ID,
+                '' AS TIPOVALORPRES_ID, --VALTYPE_9
+                FKBTR AS IND_IMPORTE_ENTCP,
+                WAERS AS MON_ENTCP,
+                FMTYPE	AS TIPOVALOR_ID,
+                STATS	AS INDICADOREST_ID,
+                
+                IFF(MON_ENTCP IN ('CLP','COP'),
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
+                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
+                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                    ) AS IND_PRESUPUESTO_ASIGNADO
+
+                -- IFF(MON_ENTCP IN ('CLP','COP'),
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                --     ) AS IND_PRESUPUESTO_ASIGNADO
+
+        FROM RAW.SQ1_EXT_0PU_IS_PS_32 AS EXT32
+        LEFT JOIN PRE.PDIM_FIN_CENTROCOSTO AS CECO
+            ON CONCAT('CAGL','_',LTRIM(EXT32.FISTL, '0')) = CECO.CENTROCOSTO_ID
+        WHERE FIKRS BETWEEN 'FMAR' AND 'FMPE'
+        AND (CECO.FECHA_DESDE IS NULL OR CECO.FECHA_HASTA IS NULL OR CURRENT_DATE BETWEEN CECO.FECHA_DESDE AND CECO.FECHA_HASTA)
+
+        UNION ALL
+
+        SELECT  CECO.SOCIEDAD_ID AS SOCIEDAD_ID,
+                -- RBUKRS	AS SOCIEDAD_ID,
+                '' AS TIPOVALORPRES_ID, --VALTYPE_9
+                FKBTR AS IND_IMPORTE_ENTCP,
+                WAERS AS MON_ENTCP,
+                FMTYPE	AS TIPOVALOR_ID,
+                RSTATS	AS INDICADOREST_ID,
+                
+                IFF(MON_ENTCP IN ('CLP','COP'),
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
+                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
+                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                    ) AS IND_PRESUPUESTO_ASIGNADO
+
+                -- IFF(MON_ENTCP IN ('CLP','COP'),
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                --     ) AS IND_PRESUPUESTO_ASIGNADO
+
+        FROM RAW.SQ1_EXT_0PU_IS_PS_33 AS EXT33
+        LEFT JOIN PRE.PDIM_FIN_CENTROCOSTO AS CECO
+            ON CONCAT('CAGL','_',LTRIM(EXT33.RFISTL, '0')) = CECO.CENTROCOSTO_ID
+        WHERE FIKRS BETWEEN 'FMAR' AND 'FMPE'
+        AND (CECO.FECHA_DESDE IS NULL OR CECO.FECHA_HASTA IS NULL OR CURRENT_DATE BETWEEN CECO.FECHA_DESDE AND CECO.FECHA_HASTA)
+
+        UNION ALL
+
+        SELECT  CECO.SOCIEDAD_ID AS SOCIEDAD_ID,
+                -- ''	AS SOCIEDAD_ID, --LEFT JOIN CON DIM
+                VALTYPE_9 AS TIPOVALORPRES_ID,
+                AMOUNT AS IND_IMPORTE_ENTCP,
+                FMCUR AS MON_ENTCP,
+                FMTYPE	AS TIPOVALOR_ID,
+                ''	AS INDICADOREST_ID, --STATS
+                
+                IFF(MON_ENTCP IN ('CLP','COP'),
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
+                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
+                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                    ) AS IND_PRESUPUESTO_ASIGNADO
+
+                -- IFF(MON_ENTCP IN ('CLP','COP'),
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                --     ) AS IND_PRESUPUESTO_ASIGNADO
+
+        FROM RAW.SQ1_EXT_0PU_IS_PS_41 AS EXT41
+        LEFT JOIN PRE.PDIM_FIN_CENTROCOSTO AS CECO
+            ON CONCAT('CAGL','_',EXT41.RFUNDSCTR) = CECO.CENTROCOSTO_ID
+        WHERE RFIKRS BETWEEN 'FMAR' AND 'FMPE'
+        AND (CECO.FECHA_DESDE IS NULL OR CECO.FECHA_HASTA IS NULL OR CURRENT_DATE BETWEEN CECO.FECHA_DESDE AND CECO.FECHA_HASTA)
+
+        UNION ALL
+
+        SELECT  CECO.SOCIEDAD_ID AS SOCIEDAD_ID,
+                VALTYPE_9 AS TIPOVALORPRES_ID,
+                AMOUNT AS IND_IMPORTE_ENTCP,
+                FMCUR AS MON_ENTCP,
+                FMTYPE	AS TIPOVALOR_ID,
+                ''	AS INDICADOREST_ID, --STATS
+                
+                IFF(MON_ENTCP IN ('CLP','COP'),
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
+                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
+                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                    ) AS IND_PRESUPUESTO_ASIGNADO
+
+                -- IFF(MON_ENTCP IN ('CLP','COP'),
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                --     ) AS IND_PRESUPUESTO_ASIGNADO
+
+        FROM RAW.SQ1_EXT_0PU_IS_PS_42 AS EXT42
+        LEFT JOIN PRE.PDIM_FIN_CENTROCOSTO AS CECO
+            ON CONCAT('CAGL','_',EXT42.RFUNDSCTR) = CECO.CENTROCOSTO_ID
+        WHERE RFIKRS BETWEEN 'FMAR' AND 'FMPE'
+        AND (	(BUDAT = '1970-01-01'
+                    AND (CECO.FECHA_DESDE IS NULL 
+                            OR CECO.FECHA_HASTA IS NULL
+                            OR CURRENT_DATE BETWEEN CECO.FECHA_DESDE AND CECO.FECHA_HASTA)
+                )
+                OR (BUDAT != '1970-01-01'
+                    AND (CECO.FECHA_DESDE IS NULL
+                            OR CECO.FECHA_HASTA IS NULL
+                            OR BUDAT BETWEEN CECO.FECHA_DESDE AND CECO.FECHA_HASTA)
+                )
+        )
+
+        UNION ALL
+
+        SELECT  CECO.SOCIEDAD_ID AS SOCIEDAD_ID,
+                VALTYPE AS TIPOVALORPRES_ID,
+                AMOUNT AS IND_IMPORTE_ENTCP,
+                FMCUR AS MON_ENTCP,
+                FMTYPE	AS TIPOVALOR_ID,
+                '' AS INDICADOREST_ID, --STATS
+                
+                IFF(MON_ENTCP IN ('CLP','COP'),
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
+                        IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                        (IFF(TIPOVALORPRES_ID IN ('B1'),
+                        IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                    ) AS IND_PRESUPUESTO_ASIGNADO
+
+                -- IFF(MON_ENTCP IN ('CLP','COP'),
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) * 100, -- Calculo de vista CON
+                --         (IFF(TIPOVALOR_ID = '70' AND INDICADOREST_ID <> 'X',
+                --         IND_IMPORTE_ENTCP,0)) -- Calculo de tabla CON
+                --     ) AS IND_PRESUPUESTO_ASIGNADO
+
+        FROM RAW.SQ1_EXT_0PU_IS_PS_43 AS EXT43
+        LEFT JOIN PRE.PDIM_FIN_CENTROCOSTO AS CECO
+            ON CONCAT('CAGL','_',EXT43.FUNDSCTR) = CECO.CENTROCOSTO_ID
+        WHERE FM_AREA BETWEEN 'FMAR' AND 'FMPE'
+        AND (	(POSTDATE = '1970-01-01'
+                    AND (CECO.FECHA_DESDE IS NULL 
+                            OR CECO.FECHA_HASTA IS NULL
+                            OR CURRENT_DATE BETWEEN CECO.FECHA_DESDE AND CECO.FECHA_HASTA)
+                )
+                OR (POSTDATE != '1970-01-01'
+                    AND (CECO.FECHA_DESDE IS NULL
+                            OR CECO.FECHA_HASTA IS NULL
+                            OR POSTDATE BETWEEN CECO.FECHA_DESDE AND CECO.FECHA_HASTA)
+                )
+        )
+);
+GROUP BY SOCIEDAD_ID;

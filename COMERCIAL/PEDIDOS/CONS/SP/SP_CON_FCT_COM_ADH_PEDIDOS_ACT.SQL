@@ -130,8 +130,8 @@ END;
 $$;
 
 
-call con.sp_con_fct_com_adh_pedidos_act();
+-- call con.sp_con_fct_com_adh_pedidos_act();
 
-select * FROM MIRRORING.DIM_MAT_MATERIAL_ADH;
+-- SELECT * FROM MIRRORING.FCT_COM_ADH_COMERCIAL
+-- WHERE MODELO = 'PEDIDOS'  ;
 
-select * from MIRRORING.DIM_MAT_MATERIAL_ADH;

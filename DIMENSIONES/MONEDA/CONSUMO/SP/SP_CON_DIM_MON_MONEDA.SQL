@@ -48,6 +48,7 @@ BEGIN
         (
             MONEDA_ID ,
             MONEDA_TEXTO ,
+            MONEDA_ID_TEXTO,
             MANDANTE ,
             SISORIGEN_ID ,
             FECHA_CARGA ,
@@ -56,6 +57,7 @@ BEGIN
        SELECT 
             MONEDA_ID ,
             MONEDA_TEXTO ,
+            MONEDA_ID_TEXTO,
             MANDANTE ,
             SISORIGEN_ID ,
             FECHA_CARGA ,
@@ -116,3 +118,5 @@ BEGIN
 
 END;
 $$;
+
+.

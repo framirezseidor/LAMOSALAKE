@@ -71,6 +71,8 @@ BEGIN
         FECHA_ENTREGAPLANIFICADA,
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
+        FECHA_ORDEN,
+        ANIOMES,
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -121,7 +123,16 @@ BEGIN
         SISORIGEN_ID,
         MANDANTE,
         FECHA_CARGA,
-        ZONA_HORARIA
+        ZONA_HORARIA,
+        MODELO,
+        ANIO,
+        MES,
+        ALMACEN_ID,
+        SOCIEDAD_ID,
+        PRECIO_ESTANDAR_MXN,
+        PRECIO_ESTANDAR_ML,
+        PRECIO_ESTANDAR_USD,
+        UEN_ID
         )
         --------------------------------------------NIVEL DE SERVICIOS--------------------------------------------------
 
@@ -145,6 +156,8 @@ BEGIN
         FECHA_ENTREGAPLANIFICADA,
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
+        FECHA_ORDEN,
+        TO_CHAR(FECHA_ORDEN, 'YYYY-MM') AS ANIOMES,
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -200,10 +213,19 @@ BEGIN
         CONCAT(MON_PED,'_USD') AS CLAVEMP_USD,
         CONCAT(MON_PED,'_EUR') AS CLAVEMP_EUR,
 
-        SISORIGEN_ID,
-        MANDANTE,
-        FECHA_CARGA,
-        ZONA_HORARIA
+        A.SISORIGEN_ID,
+        A.MANDANTE,
+        A.FECHA_CARGA,
+        A.ZONA_HORARIA,
+        'Abastecimiento' as MODELO,
+        TO_CHAR(FECHA_ORDEN, 'YYYY') AS ANIO,
+        TO_CHAR(FECHA_ORDEN, 'MM') AS MES,
+        SUBSTR(ALMACENCENTRO_ID,6) AS ALMACEN_ID,
+        '' AS SOCIEDAD_ID,
+        MAX(P.MATPRICE) AS PRECIO_ESTANDAR_MXN,
+        MAX(L.MATPRICE) AS PRECIO_ESTANDAR_ML,
+        MAX(U.MATPRICE) AS PRECIO_ESTANDAR_USD,
+        '' AS UEN
 
         FROM(
 
@@ -230,6 +252,7 @@ BEGIN
         FECHA_ENTREGAPLANIFICADA,
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
+        FECHA_ORDEN,
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -275,6 +298,7 @@ BEGIN
         FECHA_ENTREGAPLANIFICADA,
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
+        FECHA_ORDEN,
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -294,7 +318,15 @@ BEGIN
             --DOCCOMPRAS_CLASE IN ('LP','NB','ZDNP','ZFIN','ZINV','ZIPT','ZNB','ZNBS','ZURG')
             CLAVEOPERACION IN ('002','012','022','006','016','026')
             --AND SUBSTRING(ALMACENCENTRO_ID, 1, POSITION('_' IN ALMACENCENTRO_ID) - 1) IN ('',' ','ME01','MP01','MP02','RF01','RF02')
-            AND IND_CANTIDAD_TOTAL <> 0)
+            AND IND_CANTIDAD_TOTAL <> 0) A
+
+        ---JOINS PARA SACAR PRECIO ESTANDAR
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='10') L 
+        ON A.MATERIAL_ID=LTRIM(L.MATERIAL, '0') AND A.CENTRO_ID=L.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(L.fiscper,4),'-',RIGHT(L.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='30') P 
+        ON A.MATERIAL_ID=LTRIM(P.MATERIAL, '0') AND A.CENTRO_ID=P.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(P.fiscper,4),'-',RIGHT(P.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='40') U 
+        ON A.MATERIAL_ID=LTRIM(U.MATERIAL, '0') AND A.CENTRO_ID=U.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(U.fiscper,4),'-',RIGHT(U.fiscper,2))
 
         JOIN RAW.PARAMETROS_EXTRACCION
         ON EXTRACTOR = '2LIS_02_SCL'
@@ -326,6 +358,7 @@ BEGIN
         FECHA_ENTREGAPLANIFICADA,
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
+        FECHA_ORDEN,
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -337,10 +370,16 @@ BEGIN
         CLAVEMP_LOC,
         CLAVEMP_USD,
         CLAVEMP_EUR,
-        SISORIGEN_ID,
-        MANDANTE,
-        FECHA_CARGA,
-        ZONA_HORARIA
+        A.SISORIGEN_ID,
+        A.MANDANTE,
+        A.FECHA_CARGA,
+        A.ZONA_HORARIA,
+        MODELO,
+        ANIO,
+        MES,
+        ALMACEN_ID,
+        SOCIEDAD_ID,
+        UEN
 
         HAVING SUM(IND_CANT_EM_PEDIDO_ENTIEMPO) <> 0
 
@@ -367,6 +406,8 @@ BEGIN
         FECHA_ENTREGAPLANIFICADA,
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
+        FECHA_ORDEN, --Fecha de Documento para colocads y Fecha de Contabilización para contabilizadas
+        TO_CHAR(FECHA_ORDEN, 'YYYY-MM') AS ANIOMES,
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -420,12 +461,29 @@ BEGIN
         CONCAT(MON_PED,'_USD') AS CLAVEMP_USD,
         CONCAT(MON_PED,'_EUR') AS CLAVEMP_EUR,
 
-        SISORIGEN_ID,
-        MANDANTE,
-        FECHA_CARGA,
-        ZONA_HORARIA
+        A.SISORIGEN_ID,
+        A.MANDANTE,
+        A.FECHA_CARGA,
+        A.ZONA_HORARIA,
+        'Abastecimiento' as MODELO,
+        TO_CHAR(FECHA_ORDEN, 'YYYY') AS ANIO,
+        TO_CHAR(FECHA_ORDEN, 'MM') AS MES,
+        SUBSTR(ALMACENCENTRO_ID,6) AS ALMACEN_ID,
+        '' AS SOCIEDAD_ID,
+        MAX(P.MATPRICE) AS PRECIO_ESTANDAR_MXN,
+        MAX(L.MATPRICE) AS PRECIO_ESTANDAR_ML,
+        MAX(U.MATPRICE) AS PRECIO_ESTANDAR_USD,
+        '' AS UEN
 
-        FROM PRE.PFCT_LOG_ABASTECIMIENTOS
+        FROM PRE.PFCT_LOG_ABASTECIMIENTOS A
+
+        ---JOINS PARA SACAR PRECIO ESTANDAR
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='10') L 
+        ON A.MATERIAL_ID=LTRIM(L.MATERIAL, '0') AND A.CENTRO_ID=L.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(L.fiscper,4),'-',RIGHT(L.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='30') P 
+        ON A.MATERIAL_ID=LTRIM(P.MATERIAL, '0') AND A.CENTRO_ID=P.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(P.fiscper,4),'-',RIGHT(P.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='40') U 
+        ON A.MATERIAL_ID=LTRIM(U.MATERIAL, '0') AND A.CENTRO_ID=U.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(U.fiscper,4),'-',RIGHT(U.fiscper,2))
 
         JOIN RAW.PARAMETROS_EXTRACCION
         ON EXTRACTOR = '2LIS_02_SCL'
@@ -461,6 +519,7 @@ BEGIN
         FECHA_ENTREGAPLANIFICADA,
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
+        FECHA_ORDEN, --Fecha de Documento para colocads y Fecha de Contabilización para contabilizadas
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -472,10 +531,16 @@ BEGIN
         CLAVEMP_LOC,
         CLAVEMP_USD,
         CLAVEMP_EUR,
-        SISORIGEN_ID,
-        MANDANTE,
-        FECHA_CARGA,
-        ZONA_HORARIA
+        A.SISORIGEN_ID,
+        A.MANDANTE,
+        A.FECHA_CARGA,
+        A.ZONA_HORARIA,
+        MODELO,
+        ANIO,
+        MES,
+        ALMACEN_ID,
+        SOCIEDAD_ID,
+        UEN
         ----------------------------------------Fin Fecha Contable --------------------------------------------
         ---------------------------------------- FIN NIVEL DE SERVICIOS--------------------------------------------------
 
@@ -501,6 +566,8 @@ BEGIN
         FECHA_ENTREGAPLANIFICADA,
         FECHA_ENTREGAOBJETIVO,
         FECHA_CONTABILIZACION,
+        FECHA_ORDEN, --Fecha de Documento para colocads y Fecha de Contabilización para contabilizadas
+        TO_CHAR(FECHA_ORDEN, 'YYYY-MM') AS ANIOMES,
         CLAVEOPERACION,
         SOLPED,
         SOLPED_POS,
@@ -548,12 +615,29 @@ BEGIN
         CLAVEMP_USD,
         CLAVEMP_EUR,
 
-        SISORIGEN_ID,
-        MANDANTE,
-        FECHA_CARGA,
-        ZONA_HORARIA
+        A.SISORIGEN_ID,
+        A.MANDANTE,
+        A.FECHA_CARGA,
+        A.ZONA_HORARIA,
+        'Abastecimiento' as MODELO,
+        TO_CHAR(FECHA_ORDEN, 'YYYY') AS ANIO,
+        TO_CHAR(FECHA_ORDEN, 'MM') AS MES,
+        SUBSTR(ALMACENCENTRO_ID,6) AS ALMACEN_ID,
+        '' AS SOCIEDAD_ID,
+        P.MATPRICE AS PRECIO_ESTANDAR_MXN,
+        L.MATPRICE AS PRECIO_ESTANDAR_ML,
+        U.MATPRICE AS PRECIO_ESTANDAR_USD,
+        '' AS UEN
 
-        FROM PRE.PFCT_LOG_ABASTECIMIENTOS
+        FROM PRE.PFCT_LOG_ABASTECIMIENTOS A
+
+        ---JOINS PARA SACAR PRECIO ESTANDAR
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='10') L 
+        ON A.MATERIAL_ID=LTRIM(L.MATERIAL, '0') AND A.CENTRO_ID=L.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(L.fiscper,4),'-',RIGHT(L.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='30') P 
+        ON A.MATERIAL_ID=LTRIM(P.MATERIAL, '0') AND A.CENTRO_ID=P.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(P.fiscper,4),'-',RIGHT(P.fiscper,2))
+        LEFT JOIN (SELECT * FROM RAW.SQ1_EXT_0CO_PC_ACT_05 WHERE PRICE_TYPE='P01' AND CURTYPE='40') U 
+        ON A.MATERIAL_ID=LTRIM(U.MATERIAL, '0') AND A.CENTRO_ID=U.PLANT AND TO_CHAR(A.FECHA_ORDEN, 'YYYY-MM') = CONCAT(LEFT(U.fiscper,4),'-',RIGHT(U.fiscper,2))
 
         JOIN RAW.PARAMETROS_EXTRACCION
         ON EXTRACTOR = '2LIS_02_SCL'
@@ -581,7 +665,19 @@ BEGIN
     END;
 
     ---------------------------------------------------------------------------------
-    -- STEP 3: LOG
+    -- STEP 3: CLONNING
+    ---------------------------------------------------------------------------------
+ 
+    --CONDICION EXPEDICION
+        CREATE OR REPLACE TABLE MIRRORING.FCT_LOG_REV_ABASTECIMIENTOS
+        CLONE CON.FCT_LOG_REV_ABASTECIMIENTOS;
+ 
+        CREATE OR REPLACE STREAM MIRRORING.STREAM_FCT_LOG_REV_ABASTECIMIENTOS ON TABLE MIRRORING.FCT_LOG_REV_ABASTECIMIENTOS;
+
+        CALL CON.SP_CON_DIM_CAL_REV_ABASTECIMIENTOS();
+
+    ---------------------------------------------------------------------------------
+    -- STEP 4: LOG
     ---------------------------------------------------------------------------------
     SELECT COALESCE(:TEXTO, 'EJECUCION CORRECTA') INTO :TEXTO;
 
@@ -589,7 +685,7 @@ BEGIN
     VALUES ('SP_CON_FCT_LOG_REV_ABASTECIMIENTOS_DELTA','CON.FCT_LOG_REV_ABASTECIMIENTOS', :F_INICIO, :F_FIN, :T_EJECUCION, :ROWS_INSERTED, :TEXTO );
 
     ---------------------------------------------------------------------------------
-    -- STEP 4: FINALIZACIÓN
+    -- STEP 5: FINALIZACIÓN
     ---------------------------------------------------------------------------------
     RETURN CONCAT('Complete - Filas insertadas: ', ROWS_INSERTED);
 

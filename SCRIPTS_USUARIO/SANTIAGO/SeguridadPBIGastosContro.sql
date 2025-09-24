@@ -2,8 +2,16 @@ SELECT * FROM MIRRORING.SEG_USUARIO_ROLE;
 SELECT * FROM MIRRORING.SEG_ROLE_DIMENSION;
 SELECT * FROM MIRRORING.SEG_USUARIO_DIMENSION;
 
+-- 'alteryx.macros@grupolamosa.com'
+-- 'test.pbi@grupolamosa.com'
 
+SELECT *
+FROM MIRRORING.SEG_USUARIO_ROLE         -- ROLES ASIGNADOS A MI USUARIO
+WHERE USER_MAIL = 'test.pbi@grupolamosa.com';
 
+INSERT INTO MIRRORING.SEG_USUARIO_ROLE
+(USER_MAIL,ROLE_NM) VALUES                -- ASIGNACIÓN DE ROLE A MI USUARIO
+('test.pbi@grupolamosa.com','RLS_FIN_ADH_CARTERA');
 ------------------------------------------------------------------
 ------------------------------------------------------------------
 
@@ -13,14 +21,11 @@ SELECT * FROM MIRRORING.SEG_USUARIO_DIMENSION;
 
 SELECT *
 FROM MIRRORING.SEG_USUARIO_ROLE         -- ROLES ASIGNADOS A MI USUARIO
-WHERE USER_MAIL = 'alteryx.macros@grupolamosa.com';
+WHERE USER_MAIL = 'marco.tenorio@crest.com.mx';
 DELETE FROM MIRRORING.SEG_USUARIO_ROLE
 WHERE USER_MAIL = 'test.pbi@grupolamosa.com';        -- BORRAR ROLES ASIGNADOS A MI USUARIO
 
-SELECT *
-FROM MIRRORING.SEG_USUARIO_ROLE         -- ROLES ASIGNADOS A MI USUARIO
-WHERE USER_MAIL = 'adolfo.castro@lamosa.com';
-
+--RLS_FIN_ADH_CARTERA
 ------------------------------------------------------------------
 ------------------------------------------------------------------
 
@@ -28,12 +33,12 @@ WHERE USER_MAIL = 'adolfo.castro@lamosa.com';
 
 SELECT *
 FROM MIRRORING.SEG_USUARIO_ROLE         -- ROLES ASIGNADOS A MI USUARIO
-WHERE USER_MAIL = 'alteryx.macros@grupolamosa.com';
+WHERE USER_MAIL = 'marco.tenorio@crest.com.mx';
 INSERT INTO MIRRORING.SEG_USUARIO_ROLE
 (USER_MAIL,ROLE_NM) VALUES                -- ASIGNACIÓN DE ROLE A MI USUARIO
-('alteryx.macros@grupolamosa.com','GASTOSCONTROL_ROLE');
+('marco.tenorio@crest.com.mx','RLS_FIN_ADH_CARTERA');
 DELETE FROM MIRRORING.SEG_USUARIO_ROLE  -- ELIMINAR ROLES ASIGNADOS A MI USUARIO
-WHERE USER_MAIL = 'alteryx.macros@grupolamosa.com';
+WHERE USER_MAIL = 'marco.tenorio@crest.com.mx';
 
 
 
@@ -45,11 +50,12 @@ WHERE USER_MAIL = 'alteryx.macros@grupolamosa.com';
 
 SELECT *
 FROM MIRRORING.SEG_ROLE_DIMENSION       -- DIMENSIONES EXISTENTES DEL ROLE
-WHERE ROLE_NM = 'GASTOSCONTROL_ROLE';
+WHERE ROLE_NM = 'RLS_FIN_ADH_CARTERA';
 INSERT INTO MIRRORING.SEG_ROLE_DIMENSION        -- ASIGNAR DIMENSIONES Y VALORES A ROLE
 (ROLE_NM,DIMENSION_NM,VALOR) VALUES
-('GASTOSCONTROL_ROLE','SOCIEDAD_ID','A101'),
-('GASTOSCONTROL_ROLE','CENTROCOSTO_ID','CAGL_A401011146');
+('RLS_FIN_ADH_CARTERA','SOCIEDAD_ID','ALL'),
+('RLS_FIN_ADH_CARTERA','OFICINAVENTAS_ID','ALL'),
+('RLS_FIN_ADH_CARTERA','CANALDISTRIBUCION_ID','ALL');
 DELETE FROM MIRRORING.SEG_ROLE_DIMENSION
 WHERE ROLE_NM = 'GASTOSCONTROL_ROLE';      -- ELIMINAR DIMENSIONES Y VALORES ASIGNADOS A ROLE
 
@@ -76,6 +82,12 @@ WHERE ROLE_NM = 'CARTERA_REV_ROLE';      -- ELIMINAR DIMENSIONES Y VALORES ASIGN
 -- ADH
 -- Un rol asignado con la dimensión y diferentes valores de dimensión
 
+SELECT *
+FROM MIRRORING.SEG_USUARIO_ROLE         -- ROLES ASIGNADOS A MI USUARIO
+WHERE USER_MAIL = 'alteryx.macros@grupolamosa.com';
+INSERT INTO MIRRORING.SEG_USUARIO_ROLE
+(USER_MAIL,ROLE_NM) VALUES                -- ASIGNACIÓN DE ROLE A MI USUARIO
+('test.pbi@grupolamosa.com','GASTOSCONTROL_ROLE');
 SELECT *
 FROM MIRRORING.SEG_ROLE_DIMENSION       -- DIMENSIONES EXISTENTES DEL ROLE
 WHERE ROLE_NM = 'GASTOSCONTROL_ROLE';
@@ -177,10 +189,10 @@ WHERE ROLE_NM = 'CARTERA_REV_ROLE';      -- ELIMINAR DIMENSIONES Y VALORES ASIGN
 
 SELECT *
 FROM MIRRORING.SEG_USUARIO_ROLE         -- ROLES ASIGNADOS A MI USUARIO
-WHERE USER_MAIL = 'alteryx.macros@grupolamosa.com';
+WHERE USER_MAIL = 'test.pbi@grupolamosa.com';
 INSERT INTO MIRRORING.SEG_USUARIO_ROLE
 (USER_MAIL,ROLE_NM) VALUES                -- ASIGNACIÓN DE ROLE A MI USUARIO
-('alteryx.macros@grupolamosa.com','GASTOSCONTROL_ROLE');
+('test.pbi@grupolamosa.com','GASTOSCONTROL_ROLE');
 
 SELECT *
 FROM MIRRORING.SEG_ROLE_DIMENSION       -- DIMENSIONES EXISTENTES DEL ROLE
@@ -244,9 +256,13 @@ FROM MIRRORING.SEG_USUARIO_DIMENSION       -- DIMENSIONES EXISTENTES DEL USUARIO
 WHERE USER_MAIL = 'test.pbi@grupolamosa.com';
 INSERT INTO MIRRORING.SEG_USUARIO_DIMENSION
 (USER_MAIL,DIM,VALOR) VALUES
-('test.pbi@grupolamosa.com','SOCIEDAD_ID','ALL'),
-('test.pbi@grupolamosa.com','CANALDISTRIBUCION_ID','ALL'),
-('test.pbi@grupolamosa.com','OFICINAVENTAS_ID','ALL');
+('test.pbi@grupolamosa.com','SOCIEDAD_ID','A101'),
+('test.pbi@grupolamosa.com','SOCIEDAD_ID','A103'),
+('test.pbi@grupolamosa.com','CENTROCOSTO_ID','CAGL_A401011146'),
+('test.pbi@grupolamosa.com','CENTROCOSTO_ID','CAGL_A402011140'),
+('test.pbi@grupolamosa.com','CENTROCOSTO_ID','CAGL_A433086410'),
+('test.pbi@grupolamosa.com','CENTROCOSTO_ID','CAGL_A433110001');
+
 DELETE FROM MIRRORING.SEG_USUARIO_DIMENSION
 WHERE USER_MAIL = 'test.pbi@grupolamosa.com'; 
 

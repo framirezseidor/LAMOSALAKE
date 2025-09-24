@@ -6,6 +6,9 @@ AS
 $$
 /*
 ---------------------------------------------------------------------------------
+---YA NO ESTA EN USO------------------------
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
  Versión:            1.0
  Fecha de creación:  2025-04-25
  Creador:            Juan Esteban Méndez N
@@ -117,7 +120,8 @@ BEGIN
         SISORIGEN_ID,
         MANDANTE,
         FECHA_CARGA,
-        ZONA_HORARIA
+        ZONA_HORARIA,
+        MODELO
         )
         --------------------------------------------NIVEL DE SERVICIOS--------------------------------------------------
 
@@ -199,7 +203,8 @@ BEGIN
         SISORIGEN_ID,
         MANDANTE,
         FECHA_CARGA,
-        ZONA_HORARIA
+        ZONA_HORARIA,
+        'Abastecimiento' as MODELO
 
         FROM(
 
@@ -565,6 +570,18 @@ BEGIN
     END;
 
     ---------------------------------------------------------------------------------
+    -- STEP 4: CLONNING
+    ---------------------------------------------------------------------------------
+ 
+    --CONDICION EXPEDICION
+        CREATE OR REPLACE TABLE MIRRORING.FCT_LOG_REV_ABASTECIMIENTOS
+        CLONE CON.FCT_LOG_REV_ABASTECIMIENTOS;
+ 
+        CREATE OR REPLACE STREAM MIRRORING.STREAM_FCT_LOG_REV_ABASTECIMIENTOS ON TABLE MIRRORING.FCT_LOG_REV_ABASTECIMIENTOS;
+
+        CALL CON.SP_CON_DIM_CAL_REV_ABASTECIMIENTOS();
+
+    ---------------------------------------------------------------------------------
     -- STEP 3: LOG
     ---------------------------------------------------------------------------------
     SELECT COALESCE(:TEXTO, 'EJECUCION CORRECTA') INTO :TEXTO;
@@ -573,7 +590,7 @@ BEGIN
     VALUES ('SP_CON_FCT_LOG_REV_ABASTECIMIENTOS_HIST','CON.FCT_LOG_REV_ABASTECIMIENTOS_HIST', :F_INICIO, :F_FIN, :T_EJECUCION, :ROWS_INSERTED, :TEXTO );
 
     ---------------------------------------------------------------------------------
-    -- STEP 4: FINALIZACIÓN
+    -- STEP 5: FINALIZACIÓN
     ---------------------------------------------------------------------------------
     RETURN CONCAT('Complete - Filas insertadas: ', ROWS_INSERTED);
 
