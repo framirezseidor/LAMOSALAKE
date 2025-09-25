@@ -1,1 +1,0 @@
-create or replace stream MIRRORING.STREAM_DIM_CAL_ADH_INVENTARIO on table DIM_CAL_ADH_INVENTARIO;

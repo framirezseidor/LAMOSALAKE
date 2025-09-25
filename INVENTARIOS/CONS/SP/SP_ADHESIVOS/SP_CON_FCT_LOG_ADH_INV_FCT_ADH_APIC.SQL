@@ -14,31 +14,13 @@ $$
 */    
 BEGIN
     -- 1. BORRAR registros eliminados
-    DELETE FROM MIRRORING.FCT_ADH_APIC d
-    USING (
-      SELECT * FROM MIRRORING.TR_FCT_LOG_ADH_INVENTARIO
-      WHERE METADATA$ACTION = 'DELETE'
-    ) s
-    WHERE d.ANIOMES = s.ANIOMES
-     AND  d.CENTRO_ID = s.CENTRO_ID
-     AND s.ALMACEN_ID = d.ALMACEN_ID
-     AND s.MATERIAL_ID = d.MATERIAL_ID
-     --AND s.FECHA_FOTO_INVENTARIO = d.FECHA_LOGISTICA
-     AND s.MON_LOC = d.MON_LOC
-     AND s.MON_USD = d.MON_USD
-     AND s.UNI_EST = d.UNI_EST
-     AND s.UNI_UMB = d.UNI_UMB
-     AND s.FECHA_CARGA = d.FECHA_CARGA
-     AND s.MANDANTE = d.MANDANTE
-     AND s.SISORIGEN_ID = d.SISORIGEN_ID 
-     AND s.ZONA_HORARIA = d.ZONA_HORARIA
-     AND s.MODELO = d.MODELO
-        ;
+    DELETE FROM MIRRORING.FCT_ADH_APIC 
+    WHERE
+    MODELO = 'INVENTARIO';
 
 
    -- 2. INSERTAR o ACTUALIZAR registros nuevos o modificados
-    MERGE INTO MIRRORING.FCT_ADH_APIC d
-    USING (
+    INSERT INTO MIRRORING.FCT_ADH_APIC 
             SELECT
                 CONCAT(ANIOMES, ALMACENCENTRO_ID,MATERIAL_ID) AS APIC_ID,
                 ANIO AS ANIO,
@@ -128,9 +110,7 @@ BEGIN
             WHEN 12 THEN 'DIC'
         END AS MES_TEXTO                
             FROM
-                MIRRORING.TR_FCT_LOG_ADH_INVENTARIO
-            WHERE 
-                METADATA$ACTION = 'INSERT'
+                MIRRORING.FCT_LOG_ADH_INVENTARIO
             GROUP BY
                 APIC_ID,
                 ANIO,
@@ -164,164 +144,7 @@ BEGIN
                 MODELO,
                 SISORIGEN_ID,
                 ZONA_HORARIA   
-    ) s
-    ON d.ANIOMES = s.ANIOMES
-     AND  d.CENTRO_ID = s.CENTRO_ID
-     AND s.ALMACEN_ID = d.ALMACEN_ID
-     AND s.MATERIAL_ID = d.MATERIAL_ID
-     AND s.FECHA_LOGISTICA = d.FECHA_LOGISTICA
-     AND s.MON_LOC = d.MON_LOC
-     AND s.MON_USD = d.MON_USD
-     AND s.UNI_EST = d.UNI_EST
-     AND s.UNI_UMB = d.UNI_UMB
-     AND s.FECHA_CARGA = d.FECHA_CARGA
-     AND s.MANDANTE = d.MANDANTE
-     AND s.SISORIGEN_ID = d.SISORIGEN_ID 
-     AND s.ZONA_HORARIA = d.ZONA_HORARIA
-     AND s.MODELO = d.MODELO
-    WHEN NOT MATCHED THEN INSERT (
-            APIC_ID,
-            ANIO,
-            MES,
-            ANIOMES,
-            FECHA_LOGISTICA,
-            ALMACENCENTRO_ID,
-            ALMACEN_ID,
-            CENTRO_ID,
-            SOCIEDAD_ID,
-            GRUPOCOMPRAS_ID,
-            ORGCOMPRAS_ID,
-            PROVEEDOR_ID,
-            MATERIALCENTRO_ID,
-            MATERIAL_ID,
-            CLASEMOVIMIENTO_ID,
-            CLAVEOPERACION,
-            GRUPO_OPERACION,
-            BOR_CLASEPEDIDO_ID,
-            VTA_CLASEFACTURA_ID,
-            VTA_TIPO_TRANSACCION,
-            BOR_IND_BO_TOTAL_TON,
-            VTA_IND_VENTA_PCP_LOC,
-            VTA_IND_VENTA_PCP_TON,
-            VTA_IND_VENTA_REAL_LOC,
-            VTA_IND_VENTA_REAL_TON,
-            INV_IND_BLOQUEADO_TON,
-            INV_IND_BLOQUEADO_UMB,
-            INV_IND_CONTROL_CALIDAD_TON,
-            INV_IND_CONTROL_CALIDAD_UMB,
-            INV_IND_COSTO_INV_LOC,
-            INV_IND_INVENTARIO_FISICO_TON,
-            INV_IND_INVENTARIO_FISICO_UMB,
-            INV_IND_LIBRE_UTILIZACION_TON,
-            INV_IND_LIBRE_UTILIZACION_UMB,
-            INV_IND_LIBRE_VENTA_TON,
-            INV_IND_LIBRE_VENTA_UMB,
-            INV_IND_STOCK_SEGURIDAD_TON,
-            INV_IND_STOCK_SEGURIDAD_UMB,
-            INV_IND_TRANSITO_TON,
-            INV_IND_TRANSITO_UMB,
-            ABS_IND_CANTIDAD_TOTAL,
-            ABS_IND_CANT_DIAS_COLOCACION,
-            ABS_IND_CANT_POSICIONES_PEDIDO,
-            ABS_IND_IMPTE_COMPRA_LOC,
-            ABS_IND_IMPTE_COMPRA_PED,
-            ABS_IND_IMPTE_COMPRA_USD,
-            ABS_IND_IMPTE_COMPRA_SIN_FLETE_LOC,
-            ABS_IND_IMPTE_COMPRA_SIN_FLETE_PED,
-            ABS_IND_IMPTE_COMPRA_SIN_FLETE_USD,
-            ABS_IND_IMPTE_FLETE_LOC,
-            ABS_IND_IMPTE_FLETE_PED,
-            ABS_IND_IMPTE_FLETE_USD,
-            PRD_IND_IMPTE_ML,
-            PRD_IND_IMPTE_COMPRA_ML,
-            PRD_IND_IMPTE_USD,
-            PRD_IND_IMPTE_COMPRA_USD,
-            PRD_IND_CANTIDAD_UMB,
-            PRD_IND_CANTIDAD_UME,
-            MON_LOC,
-            MON_PED,
-            MON_USD,
-            UNI_PED,
-            UNI_EST,
-            UNI_UMB,
-            FECHA_CARGA,
-            MANDANTE,
-            MODELO,
-            SISORIGEN_ID,
-            ZONA_HORARIA,
-            MES_TEXTO
-    ) VALUES (
-            APIC_ID,
-            ANIO,
-            MES,
-            ANIOMES,
-            FECHA_LOGISTICA,
-            ALMACENCENTRO_ID,
-            ALMACEN_ID,
-            CENTRO_ID,
-            SOCIEDAD_ID,
-            GRUPOCOMPRAS_ID,
-            ORGCOMPRAS_ID,
-            PROVEEDOR_ID,
-            MATERIALCENTRO_ID,
-            MATERIAL_ID,
-            CLASEMOVIMIENTO_ID,
-            CLAVEOPERACION,
-            GRUPO_OPERACION,
-            BOR_CLASEPEDIDO_ID,
-            VTA_CLASEFACTURA_ID,
-            VTA_TIPO_TRANSACCION,
-            BOR_IND_BO_TOTAL_TON,
-            VTA_IND_VENTA_PCP_LOC,
-            VTA_IND_VENTA_PCP_TON,
-            VTA_IND_VENTA_REAL_LOC,
-            VTA_IND_VENTA_REAL_TON,
-            INV_IND_BLOQUEADO_TON,
-            INV_IND_BLOQUEADO_UMB,
-            INV_IND_CONTROL_CALIDAD_TON,
-            INV_IND_CONTROL_CALIDAD_UMB,
-            INV_IND_COSTO_INV_LOC,
-            INV_IND_INVENTARIO_FISICO_TON,
-            INV_IND_INVENTARIO_FISICO_UMB,
-            INV_IND_LIBRE_UTILIZACION_TON,
-            INV_IND_LIBRE_UTILIZACION_UMB,
-            INV_IND_LIBRE_VENTA_TON,
-            INV_IND_LIBRE_VENTA_UMB,
-            INV_IND_STOCK_SEGURIDAD_TON,
-            INV_IND_STOCK_SEGURIDAD_UMB,
-            INV_IND_TRANSITO_TON,
-            INV_IND_TRANSITO_UMB,
-            ABS_IND_CANTIDAD_TOTAL,
-            ABS_IND_CANT_DIAS_COLOCACION,
-            ABS_IND_CANT_POSICIONES_PEDIDO,
-            ABS_IND_IMPTE_COMPRA_LOC,
-            ABS_IND_IMPTE_COMPRA_PED,
-            ABS_IND_IMPTE_COMPRA_USD,
-            ABS_IND_IMPTE_COMPRA_SIN_FLETE_LOC,
-            ABS_IND_IMPTE_COMPRA_SIN_FLETE_PED,
-            ABS_IND_IMPTE_COMPRA_SIN_FLETE_USD,
-            ABS_IND_IMPTE_FLETE_LOC,
-            ABS_IND_IMPTE_FLETE_PED,
-            ABS_IND_IMPTE_FLETE_USD,
-            PRD_IND_IMPTE_ML,
-            PRD_IND_IMPTE_COMPRA_ML,
-            PRD_IND_IMPTE_USD,
-            PRD_IND_IMPTE_COMPRA_USD,
-            PRD_IND_CANTIDAD_UMB,
-            PRD_IND_CANTIDAD_UME,
-            MON_LOC,
-            MON_PED,
-            MON_USD,
-            UNI_PED,
-            UNI_EST,
-            UNI_UMB,
-            FECHA_CARGA,
-            MANDANTE,
-            MODELO,
-            SISORIGEN_ID,
-            ZONA_HORARIA,
-            MES_TEXTO            
-);
+;
         RETURN CONCAT('Ejecución correcta');
 END;
 
