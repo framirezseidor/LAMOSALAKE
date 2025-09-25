@@ -84,16 +84,7 @@ jobs:
           snow sql -f "./DIMENSIONES/CLIENTE/RAW/SQ1_EXT_ZSD_GPO_CTES_TEXT.SQL"
           snow sql -f "./DIMENSIONES/CLIENTE/RAW/SQ1_TBL_KNVP.SQL"
 
-      - name: Creando TABLAS DIMENSION TRANSPORTE
-        run: |
-          snow sql -f "./DIMENSIONES/TRANSPORTE/Tablas/DIM_TRA_CLASEEXPEDICION.SQL"
-          snow sql -f "./DIMENSIONES/TRANSPORTE/Tablas/DIM_TRA_CLASETRANSPORTE.SQL"
-          snow sql -f "./DIMENSIONES/TRANSPORTE/Tablas/DIM_TRA_PUESTOPLANTRANSP.SQL"
-          snow sql -f "./DIMENSIONES/TRANSPORTE/Tablas/DIM_TRA_RUTA.SQL"
-          snow sql -f "./DIMENSIONES/TRANSPORTE/Tablas/DIM_TRA_TIPOTRANSPORTE.SQL"
-          snow sql -f "./DIMENSIONES/TRANSPORTE/Tablas/DIM_TRA_TIPOVEHICULO.SQL"
-          snow sql -f "./DIMENSIONES/TRANSPORTE/Tablas/DIM_TRA_TRANSPORTISTA.SQL"
-         
+        
       - name: Creando TABLAS DIMENSION GEOGRAFIA
         run: |
           snow sql -f "./DIMENSIONES/GEOGRAFÍA/RAW/TABLAS/SQ1_EXT_0COUNTRY_TEXT.SQL"
