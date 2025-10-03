@@ -2,7 +2,7 @@ name: Desplegar cambios
 
 on:
   pull_request:
-    types: [closed]  # se ejecuta al cerrar/mergear el PR
+    types: [opened, synchronize, reopened]  # se ejecuta al cerrar/mergear el PR
     branches:
       - main
 
