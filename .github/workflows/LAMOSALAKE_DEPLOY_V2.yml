@@ -35,7 +35,7 @@ jobs:
         uses: tj-actions/changed-files@v47
         with:
           separator: "\n"
-          files: "**/*.sql"
+          files: "./MODELOS/**/*.sql"
           sha: ${{ github.event.pull_request.base.sha }}
           base_sha: ${{ github.event.pull_request.head.sha }}
           since_last_remote_commit: true 
