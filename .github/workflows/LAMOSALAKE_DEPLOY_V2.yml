@@ -24,7 +24,7 @@ jobs:
         with:
           separator: "\n"
           files: |
-            **/*.sql
+            ./DIMENSIONES/TRANSPORTE/TABLES/*.sql
 
       - name: Mostrar archivos modificados
         run: |
