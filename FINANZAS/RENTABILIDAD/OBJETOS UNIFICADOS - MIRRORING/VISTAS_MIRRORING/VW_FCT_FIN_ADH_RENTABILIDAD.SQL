@@ -1,4 +1,4 @@
-create or ALTER view MIRRORING.VW_FCT_FIN_ADH_RENTABILIDAD
+create or REPLACE view MIRRORING.VW_FCT_FIN_ADH_RENTABILIDAD
 as
 
 SELECT 
@@ -6,6 +6,18 @@ SELECT
         ANIO_MES,
         EJERCICIO,
         PERIODO,
+        CASE WHEN   PERIODO = '001' THEN'Ene'
+             WHEN PERIODO = '002' THEN  'Feb'
+             WHEN PERIODO = '003' THEN  'Mar'
+             WHEN PERIODO = '004' THEN 'Abr'
+             WHEN PERIODO = '005' THEN 'May'
+             WHEN PERIODO = '006' THEN 'Jun'
+             WHEN PERIODO = '007' THEN 'Jul'
+             WHEN PERIODO = '008' THEN 'Ago'
+             WHEN PERIODO = '009' THEN 'Sep'
+             WHEN PERIODO = '010' THEN 'Oct'
+             WHEN PERIODO = '011' THEN 'Nov'
+             WHEN PERIODO = '012' THEN 'Dic' END AS PERIODO_NOMBRE,
         FECHA_DOCUMENTO,
         SOCIEDADCO_ID,
         SOCIEDAD_ID,
@@ -34,6 +46,8 @@ SELECT
         CENTROCOSTO_GRUPO_ID,
         CUENTA_GRUPO_ID,
         CONVENIO_OBRA,
+        CENTRO_VENTA, 
+        CENTRO_FABRICACION,
         IND_HSL,
         IND_QUANT2,
         IND_FAB_COSTOVENTAFIJO,
@@ -118,6 +132,18 @@ SELECT
         ANIO_MES,
         EJERCICIO,
         PERIODO,
+        CASE WHEN   PERIODO = '001' THEN'Ene'
+             WHEN PERIODO = '002' THEN  'Feb'
+             WHEN PERIODO = '003' THEN  'Mar'
+             WHEN PERIODO = '004' THEN 'Abr'
+             WHEN PERIODO = '005' THEN 'May'
+             WHEN PERIODO = '006' THEN 'Jun'
+             WHEN PERIODO = '007' THEN 'Jul'
+             WHEN PERIODO = '008' THEN 'Ago'
+             WHEN PERIODO = '009' THEN 'Sep'
+             WHEN PERIODO = '010' THEN 'Oct'
+             WHEN PERIODO = '011' THEN 'Nov'
+             WHEN PERIODO = '012' THEN 'Dic' END AS PERIODO_NOMBRE,
         FECHA_DOCUMENTO,
         SOCIEDADCO_ID,
         SOCIEDAD_ID,
@@ -146,6 +172,8 @@ SELECT
         CENTROCOSTO_GRUPO_ID,
         CUENTA_GRUPO_ID,
         CONVENIO_OBRA,
+        '' AS CENTRO_VENTA,
+        '' AS CENTRO_FABRICACION,
         IND_HSL,
         IND_QUANT2,
         IND_FAB_COSTOVENTAFIJO,

@@ -1,2 +1,0 @@
-
-          snow sql -f "./COMERCIAL/VENTAS/RAW/TABLAS/FILE_XLS_COM_ADH_VENTAS_PCP.SQL"    
