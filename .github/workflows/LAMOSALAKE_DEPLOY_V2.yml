@@ -1,21 +1,21 @@
 name: Desplegar cambios 
-on:
-  workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-      tags:
-        description: 'Test scenario tags'
-        required: false
-
-
 # on:
-#   pull_request:
-#     types: [opened, synchronize, reopened]  # se ejecuta al cerrar/mergear el PR
-#     branches:
-#       - main
+#   workflow_dispatch:
+#     inputs:
+#       logLevel:
+#         description: 'Log level'
+#         required: true
+#         default: 'warning'
+#       tags:
+#         description: 'Test scenario tags'
+#         required: false
+
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]  # se ejecuta al cerrar/mergear el PR
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -32,12 +32,13 @@ jobs:
       # 2️⃣ Detectar archivos SQL modificados en el PR
       - name: Obtener archivos modificados
         id: changed-files
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v47
         with:
           separator: "\n"
           files: "**/*.sql"
           sha: ${{ github.event.pull_request.base.sha }}
           base_sha: ${{ github.event.pull_request.head.sha }}
+          since_last_remote_commit: true 
 
       - name: Mostrar archivos modificados
         run: |
