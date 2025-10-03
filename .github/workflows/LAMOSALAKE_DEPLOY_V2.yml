@@ -1,15 +1,14 @@
 name: Deploy Snowflake (solo cambios)
 
 on:
-  push:
-  # pull_request:
-  #   types: [closed]
+  pull_request:
+    types: [closed]
      branches:
        - main
 
 jobs:
   deploy:
-  #  if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
