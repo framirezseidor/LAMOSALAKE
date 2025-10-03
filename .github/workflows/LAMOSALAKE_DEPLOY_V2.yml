@@ -21,7 +21,7 @@ jobs:
       - name: Obtener hash del merge commit
         run: echo "El hash del merge commit es $GITHUB_SHA"
 
-      - name: mostrar cambios?
+      - name: mostrar cambios
         run: |
           echo "Mostrando cambios entre el commit base y el head del PR"
           git show <hash-del-merge-commit>
