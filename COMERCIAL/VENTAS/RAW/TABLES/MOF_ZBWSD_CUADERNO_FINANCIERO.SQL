@@ -89,3 +89,45 @@ CREATE OR ALTER TABLE RAW.SQ1_MOF_ZBWSD_CUADERNO_FINANCIERO (
 	FECHA_CARGA VARCHAR(20),
 	ZONA_HORARIA VARCHAR(20)
 );
+
+-- 🔎 Busca en TODAS las columnas VARCHAR si contienen: Correctivas / Facturación / Rappeles
+-- Normaliza acentos y mayúsculas para comparar.
+-- Busca en TODAS las columnas VARCHAR si contienen:
+-- 'Correctivas', 'Facturación', 'Rappeles' (insensible a mayúsculas y acentos)
+-- Escanea TODAS las columnas VARCHAR de RAW.SQ1_MOF_ZBWSD_CUADERNO_FINANCIERO
+-- y devuelve en qué columna(s) aparecen 'Correctivas' / 'Facturación' / 'Rappeles'
+-- (insensible a mayúsculas y acentos)
+-- Ajusta este USE si hace falta:
+-- USE DATABASE TU_DB;
+
+-- (Opcional) asegúrate de estar en el DB correcto:
+-- USE DATABASE TU_DB;
+/*
+SELECT 'AUGRU_TEXT' AS column_name, AUGRU_TEXT AS match_value, COUNT(*) AS cnt
+FROM RAW.SQ1_MOF_ZBWSD_CUADERNO_FINANCIERO
+WHERE REGEXP_LIKE(UPPER(TRANSLATE(AUGRU_TEXT,'ÁÉÍÓÚÜÑáéíóúüñ','AEIOUUNAEIOUUN')),
+                  '^(CORRECTIVAS|FACTURACION|RAPPELES)$')
+GROUP BY AUGRU_TEXT
+UNION ALL
+SELECT 'FKTYP', FKTYP, COUNT(*)
+FROM RAW.SQ1_MOF_ZBWSD_CUADERNO_FINANCIERO
+WHERE REGEXP_LIKE(UPPER(TRANSLATE(FKTYP,'ÁÉÍÓÚÜÑáéíóúüñ','AEIOUUNAEIOUUN')),
+                  '^(CORRECTIVAS|FACTURACION|RAPPELES)$')
+GROUP BY FKTYP
+UNION ALL
+SELECT 'ID_TIPO_TRANS', ID_TIPO_TRANS, COUNT(*)
+FROM RAW.SQ1_MOF_ZBWSD_CUADERNO_FINANCIERO
+WHERE REGEXP_LIKE(UPPER(TRANSLATE(ID_TIPO_TRANS,'ÁÉÍÓÚÜÑáéíóúüñ','AEIOUUNAEIOUUN')),
+                  '^(CORRECTIVAS|FACTURACION|RAPPELES)$')
+GROUP BY ID_TIPO_TRANS
+UNION ALL
+SELECT 'FKART', FKART, COUNT(*)
+FROM RAW.SQ1_MOF_ZBWSD_CUADERNO_FINANCIERO
+WHERE REGEXP_LIKE(UPPER(TRANSLATE(FKART,'ÁÉÍÓÚÜÑáéíóúüñ','AEIOUUNAEIOUUN')),
+                  '^(CORRECTIVAS|FACTURACION|RAPPELES)$')
+GROUP BY FKART;
+
+
+select distinct fktyp, count(*) from raw.sq1_mof_zbwsd_cuaderno_financiero
+group by fktyp;
+*/

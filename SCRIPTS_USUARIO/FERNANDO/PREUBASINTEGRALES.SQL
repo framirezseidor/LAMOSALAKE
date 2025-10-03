@@ -108,11 +108,16 @@ ORDER BY FECHA_HORA_INICIO DESC limit 20;
 select count(*) from mirroring.fct_com_adh_comercial
 where modelo = 'VENTAS' and sisorigen_id = 'SQ1';
 
-select sum(vta_ind_venta_real_ton) as total_toneladas, 
-       sum(vta_ind_peso_bruto) as peso_bruto, 
-       sum(vta_ind_peso_neto) as peso_neto
-from mirroring.fct_com_adh_comercial
-where modelo = 'VENTAS' and sisorigen_id = 'SQ1'; --3547.001
+select sum(vta_ind_venta_real_ton) as total_toneladas
+from mirroring.fct_com_adh_comercial COM
+join mirroring.dim_doc_clasefactura CF on COM.vta_clasefactura_id = CF.clasefactura_id
+where UENADHESIVOS_ID in ('AGD2','AMT1','AMX2','ACA1','ACH1')
+and aniomes = '202507'
+and CF.clasefactura_id not in ('ZMUE','ZRB4');
+
+select vta_clasefactura_id from mirroring.fct_com_adh_comercial limit;
+select * from mirroring.dim_doc_clasefactura;
+--where modelo = 'VENTAS' and sisorigen_id = 'SQ1'; --3547.001
 
 
 select * from mirroring.fct_com_adh_comercial
@@ -353,4 +358,78 @@ SELECT * FROM RAW.SQ1_EXT_1CL_OMAT001 AS OMAT;
 
 -- drop table RAW.SQ1_EXT_1CL_OMAT001;
 
-SELECT * FROM MIRRORING.DIM_UNI_EST;
+
+select sum(vta_ind_venta_pcp_ton), anio, aniomes
+from mirroring.fct_com_adh_comercial COM
+join mirroring.dim_doc_clasefactura CF on COM.vta_clasefactura_id = CF.clasefactura_id
+where UENADHESIVOS_ID in ('AGD2','AMT1','AMX2','ACA1','ACH1')
+and CF.clasefactura_id not in ('ZMUE','ZRB4')
+group by anio, aniomes;
+
+select vta_ind_venta_real_ton, *  
+from mirroring.fct_com_adh_comercial COM
+join mirroring.dim_doc_clasefactura CF on COM.vta_clasefactura_id = CF.clasefactura_id
+where anio > '20';
+
+
+SET FEATURE = 'AMT_PERC_ACTIVE_WEEKS';
+--SET MONTHS  = 6;
+ 
+WITH activos AS (
+  SELECT DISTINCT ext_merchant_id
+  FROM PROJECT_FEATURES_DEV.FEATURES_DEV.TABLE_VALIDATION
+),
+ 
+/* Vista Snowflake: calcula el feature desde el stage mensual */
+vista_f AS (
+  SELECT
+    v.ext_merchant_id,
+    IDENTIFIER($FEATURE) AS feature_val
+  FROM (
+    SELECT
+      ext_merchant_id,
+      DIV0((COUNT_IF(COALESCE(TXN_AMOUNT, 0) <> 0))/(FLOOR(DATEDIFF(DAY, MIN(WEEK_END_DATE), MAX(WEEK_END_DATE)) / 7))) AS AMT_PERC_ACTIVE_WEEKS
+    FROM PROJECT_FEATURES_DEV.FEATURES_HAULMER_CL.STG_RESAMPLE_WEEKLY
+    --WHERE MONTHS_WINDOW = $MONTHS
+    GROUP BY ext_merchant_id
+  ) v
+  JOIN activos a ON v.ext_merchant_id = a.ext_merchant_id
+),
+ 
+/* Tabla Python: toma la columna dinámica indicada por $FEATURE */
+tabla_f AS (
+  SELECT
+    t.ext_merchant_id,
+    IDENTIFIER($FEATURE) AS feature_val
+  FROM PROJECT_FEATURES_DEV.FEATURES_DEV.TABLE_VALIDATION_PYTHON t
+  JOIN activos a ON t.ext_merchant_id = a.ext_merchant_id
+)
+ 
+SELECT
+  v.ext_merchant_id,
+  v.feature_val AS vista_snowflake,
+  t.feature_val AS tabla_python,
+ 
+  ABS(v.feature_val - t.feature_val) AS abs_diff,
+ 
+  CASE
+    WHEN v.feature_val = 0 THEN NULL
+    ELSE ABS(v.feature_val - t.feature_val) / ABS(v.feature_val)
+  END AS perc_diff,
+ 
+  CASE
+    WHEN v.feature_val = 0 THEN 'N/A'
+    WHEN ABS(v.feature_val - t.feature_val) / ABS(v.feature_val) <= 0.0001 THEN 'Menor al 0.001%'
+    WHEN ABS(v.feature_val - t.feature_val) / ABS(v.feature_val) <= 0.001  THEN 'Menor al 0.01%'
+    WHEN ABS(v.feature_val - t.feature_val) / ABS(v.feature_val) <= 0.01   THEN 'Menor al 1%'
+    WHEN ABS(v.feature_val - t.feature_val) / ABS(v.feature_val) <= 0.1    THEN 'Menor al 10%'
+    ELSE 'Mayor al 10%'
+  END AS error_size,
+ 
+  IFF(v.feature_val = t.feature_val, 'OK', 'DIFERENTE') AS comparacion
+ 
+FROM vista_f v
+JOIN tabla_f t
+  ON v.ext_merchant_id = t.ext_merchant_id
+WHERE v.feature_val <> t.feature_val
+ORDER BY v.ext_merchant_id;

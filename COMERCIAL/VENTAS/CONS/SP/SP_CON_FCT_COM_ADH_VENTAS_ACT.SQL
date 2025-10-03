@@ -104,6 +104,7 @@ BEGIN
                     PAIS_ID, 
                     REGION_ID, 
                     ZONATRANSPORTE_ID, 
+	                GRUPO_TRANSACCION,
                     TIPO_TRANSACCION, 
                     FACTURA, 
                     FACTURA_POS, 
@@ -250,6 +251,7 @@ BEGIN
             A.PAIS_ID  = P.PAIS_ID ,
             A.REGION_ID  = P.REGION_ID ,
             A.ZONATRANSPORTE_ID  = P.ZONATRANSPORTE_ID ,
+            A.GRUPO_TRANSACCION = P.GRUPO_TRANSACCION,
             A.TIPO_TRANSACCION  = P.TIPO_TRANSACCION ,
             A.CLASEFACTURA_ORIGEN_ID  = P.CLASEFACTURA_ORIGEN_ID ,
             A.CLASEFACTURA_ASOCIADO_ID  = P.CLASEFACTURA_ASOCIADO_ID ,
@@ -376,6 +378,7 @@ BEGIN
             PAIS_ID,
             REGION_ID,
             ZONATRANSPORTE_ID,
+	        GRUPO_TRANSACCION,            
             TIPO_TRANSACCION,
             FACTURA,
             FACTURA_POS,
@@ -508,6 +511,7 @@ BEGIN
             P.PAIS_ID,
             P.REGION_ID,
             P.ZONATRANSPORTE_ID,
+            P.GRUPO_TRANSACCION,
             P.TIPO_TRANSACCION,
             P.FACTURA,
             P.FACTURA_POS,
@@ -655,4 +659,5 @@ BEGIN
 END;
 $$;
  
+
 

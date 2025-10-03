@@ -171,7 +171,7 @@ BEGIN
     ---------------------------------------------------------------------------------
     -- STEP 4: MIRRORING
     ---------------------------------------------------------------------------------    
-    DELETE FROM MIRRORING.FCT_OPE_ADH_PRODUCCION;
+    --DELETE FROM MIRRORING.FCT_OPE_ADH_PRODUCCION;
 
     --INSERT INTO MIRRORING.FCT_OPE_ADH_PROD_ACT
     INSERT INTO MIRRORING.FCT_OPE_ADH_PRODUCCION

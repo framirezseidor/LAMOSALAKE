@@ -202,6 +202,8 @@
                 IMPORTE_IVA_ML,
                 IMPORTE_IVA_USD,
                 --NUEVOS 
+                GRUPO_TRANSACCION,
+                TIPO_TRANSACCION,
                 MANDANTE, 
                 -- SISTEMA_ORIGEN, 
                 SISORIGEN_ID, 
@@ -363,11 +365,14 @@
                 "[CDZB3U1AVKXXZ5S7J08L3IO7G].[CDZB3U1AVKXXZ8LTQFULIBGUD] Correctivas $USD" ,
                 "[CDZB3U1AVKXXZ5S7J08L3IO7G].[CDZB3U1AVKXXZ8LTUW3SWGXZZ] Importe IVA $MXN" ,
                 "[CDZB3U1AVKXXZ5S7J08L3IO7G].[CDZB3U1AVKXXZ8LTUW3SWH4BJ] Importe IVA $ML" ,
-                "[CDZB3U1AVKXXZ5S7J08L3IO7G].[CDZB3U1AVKXXZ8LTUW3SWHAN3] Importe IVA $USD" , 
-                MANDANTE, 
-                -- SISTEMA_ORIGEN, 
-                SISORIGEN_ID, 
-                FECHA_CARGA, 
+                "[CDZB3U1AVKXXZ5S7J08L3IO7G].[CDZB3U1AVKXXZ8LTUW3SWHAN3] Importe IVA $USD" ,
+                '' AS GRUPO_TRANSACCION,
+                '' AS TIPO_TRANSACCION,
+                
+                MANDANTE,
+                -- SISTEMA_ORIGEN,
+                SISORIGEN_ID,
+                FECHA_CARGA,
                 ZONA_HORARIA
             FROM RAW.BW4_VENTAS_HIST_150725 V
             LEFT JOIN RAW.TRADUCTOR_BP_ECC_TO_S4H AS T1 ON T1.CODIGO = "[ZCVBPZV].[2ZCVBPZV] Clave"

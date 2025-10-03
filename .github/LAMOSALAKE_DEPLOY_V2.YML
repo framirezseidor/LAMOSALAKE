@@ -1,0 +1,78 @@
+name: Deploy Snowflake (solo cambios)
+
+on:
+  push:
+  # pull_request:
+  #   types: [closed]
+  #   branches:
+  #     - main
+
+jobs:
+  deploy:
+  #  if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Necesario para que tj-actions pueda comparar commits correctamente
+
+      - name: Obtener lista de archivos modificados
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          separator: "\n"
+          files: |
+            **/*.sql
+
+      - name: Mostrar archivos modificados
+        run: |
+          echo "Archivos modificados detectados:"
+          echo "${{ steps.changed-files.outputs.all_changed_files }}"
+
+      - name: Reemplazar prefijo para producción
+        env:
+          ORIGIN_PREFIX: "SQ1_"
+          PROD_PREFIX: "SP1_"
+        run: |
+          echo "Reemplazando prefijo en archivos modificados..."
+          while IFS= read -r file; do
+            if [[ -f "$file" ]]; then
+              sed -i -E "s/\b${ORIGIN_PREFIX}/${PROD_PREFIX}/g" "$file"
+            fi
+          done <<< "${{ steps.changed-files.outputs.all_changed_files }}"
+
+      - name: Ejecutar scripts modificados por tipo de objeto
+        run: |
+          set -e
+          CHANGED_FILES="${{ steps.changed-files.outputs.all_changed_files }}"
+
+          # 1️⃣ TABLES
+          echo "=== Ejecutando TABLES modificadas ==="
+          echo "$CHANGED_FILES" | grep "/TABLES/" | sort | while read file; do
+            [[ -f "$file" ]] && echo "→ $file" && snow sql -f "$file"
+          done
+
+          # 3️⃣ VIEWS
+          echo "=== Ejecutando VIEWS modificadas ==="
+          echo "$CHANGED_FILES" | grep "/VIEWS/" | sort | while read file; do
+            [[ -f "$file" ]] && echo "→ $file" && snow sql -f "$file"
+          done          
+
+
+        #   # 2️⃣ FUNCTIONS / PROCEDURES
+        #   echo "=== Ejecutando FUNCTIONS/PROCEDURES modificadas ==="
+        #   echo "$CHANGED_FILES" | grep -E "/(FUNCTIONS|PROCEDURES)/" | sort | while read file; do
+        #     [[ -f "$file" ]] && echo "→ $file" && snow sql -f "$file"
+        #   done
+
+# FALTAN TASKS
+
+
+
+        #   # 4️⃣ DATA (DML)
+        #   echo "=== Ejecutando DATA (DML) modificados ==="
+        #   echo "$CHANGED_FILES" | grep "/datos/" | sort | while read file; do
+        #     [[ -f "$file" ]] && echo "→ $file" && snow sql -f "$file"
+        #   done
