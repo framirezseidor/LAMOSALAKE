@@ -1,10 +1,21 @@
 name: Desplegar cambios 
-
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]  # se ejecuta al cerrar/mergear el PR
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Test scenario tags'
+        required: false
+
+
+# on:
+#   pull_request:
+#     types: [opened, synchronize, reopened]  # se ejecuta al cerrar/mergear el PR
+#     branches:
+#       - main
 
 jobs:
   deploy:
