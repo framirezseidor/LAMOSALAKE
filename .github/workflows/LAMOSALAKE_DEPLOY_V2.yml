@@ -1,4 +1,4 @@
-name: Deploy Snowflake changes only
+name: Desplegar cambios 
 
 on:
   pull_request:
