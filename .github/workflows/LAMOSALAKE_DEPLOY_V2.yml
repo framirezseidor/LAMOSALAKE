@@ -18,6 +18,14 @@ jobs:
         with:
           fetch-depth: 0  # necesario para comparar commits
 
+      - name: Obtener hash del merge commit
+        run: echo "El hash del merge commit es $GITHUB_SHA"
+
+      - name: mostrar cambios?
+        run: |
+          echo "Mostrando cambios entre el commit base y el head del PR"
+          git show <hash-del-merge-commit>
+
       # 2️⃣ Detectar archivos SQL modificados en el PR
       - name: Obtener archivos modificados
         id: changed-files
