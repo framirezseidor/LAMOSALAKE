@@ -2,8 +2,7 @@ name: Desplegar cambios
 
 on:
   pull_request:
-    types:
-      - closed
+    types: [closed]
     branches:
       - main
 
@@ -24,7 +23,12 @@ jobs:
         with:
           separator: "\n"
           files: |
-            ./DIMENSIONES/TRANSPORTE/TABLES/*.sql
+            **/*.sql
+
+      - name: Ver commits en el PR
+        run: |
+          echo "Commits en el PR:"
+          git log --oneline origin/main..HEAD
 
       - name: Mostrar archivos modificados
         run: |
