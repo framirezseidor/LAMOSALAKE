@@ -1,11 +1,11 @@
 name: Lamosa lake deploy
 
 on:
-  pull_request:
-    types:
-      - closed
-    branches:
-      - main
+  workflow_dispatch:
+    # types:
+    #   - closed
+    # branches:
+    #   - main
 
 jobs:
   if_merged:
