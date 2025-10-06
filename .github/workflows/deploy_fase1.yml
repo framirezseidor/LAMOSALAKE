@@ -1,0 +1,47 @@
+name: Validar Cambios en MODELOS (PR)
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate-changes:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Obtener lista de archivos modificados en MODELOS/
+        id: cambios
+        run: |
+          git fetch origin main
+          git diff --name-only origin/main...HEAD -- MODELOS/ > changed_files.txt
+          echo "Archivos modificados:"
+          cat changed_files.txt || true
+
+          if [ -s changed_files.txt ]; then
+            echo "modelos_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "modelos_changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Subir lista de cambios como artefacto
+        uses: actions/upload-artifact@v3
+        with:
+          name: modelos-pr-changes
+          path: changed_files.txt
+
+      - name: Validar scripts (ejemplo)
+        if: steps.cambios.outputs.modelos_changed == 'true'
+        run: |
+          echo "✅ Validando sintaxis básica..."
+          while IFS= read -r file; do
+            echo "Validando $file"
+            # Aquí podrías usar: snow sql --dry-run -f "$file"
+            # o validaciones personalizadas con grep/sed
+          done < changed_files.txt
