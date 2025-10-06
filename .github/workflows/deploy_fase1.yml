@@ -35,7 +35,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: modelos-pr-changes
-          path: ./changed_files.txt
+          path: ./deploy-info
 
       - name: Validar scripts (ejemplo)
         if: steps.cambios.outputs.modelos_changed == 'true'
@@ -59,7 +59,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
             name: modelos-pr-changes
-            path: ./changed_files.txt
+            path: ./deploy-info
 
       - name: Verificar contenido de la lista de cambios
         run: |
