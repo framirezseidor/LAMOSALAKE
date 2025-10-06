@@ -1,15 +1,13 @@
 name: Deploy a Producción (MODELOS)
 
 on:
-  pull_request:
-    types:
-      - closed
-    branches:
-      - main
+  workflow_dispatch:    
+    
+
 
 jobs:
   deploy:
-    if: github.event.pull_request.merged == true
+#    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
@@ -20,7 +18,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
             name: modelos-pr-changes
-            path: ./deploy-info
+            path: ./changed_files.txt
 
       - name: Verificar contenido de la lista de cambios
         run: |
