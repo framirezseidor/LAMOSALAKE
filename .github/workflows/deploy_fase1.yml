@@ -1,48 +1,95 @@
-name: Deploy fase 1
+name: 01 - Detectar cambios para deploy
 
 on:
   pull_request:
-    branches:
-      - main
     types: [opened, synchronize, reopened]
 
 jobs:
-  validate-changes:
+  detect_changes:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout PR code
-        uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Obtener lista de archivos modificados en MODELOS/
-        id: cambios
+      - name: Detectar archivos modificados en la carpeta MODELOS
+        id: changed
+        uses: tj-actions/changed-files@v44
+        with:
+          base_sha: ${{ github.event.pull_request.base.sha }}
+          sha: ${{ github.event.pull_request.head.sha }}
+          path: MODELOS
+
+      - name: Mostrar archivos detectados
         run: |
-          git fetch origin main
-          git diff --name-only origin/main...HEAD -- MODELOS/ > changed_files.txt
           echo "Archivos modificados:"
-          cat changed_files.txt || true
+          echo "${{ steps.changed.outputs.all_changed_files }}"
 
-          if [ -s changed_files.txt ]; then
-            echo "modelos_changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "modelos_changed=false" >> $GITHUB_OUTPUT
-          fi
+      - name: Guardar lista en archivo
+        run: |
+          mkdir -p deploy_metadata
+          echo "${{ steps.changed.outputs.all_changed_files }}" | tr ' ' '\n' > deploy_metadata/changed_files.txt
+          cat deploy_metadata/changed_files.txt
 
-      - name: Subir lista de archivos modificados como artefacto
+      - name: Subir artifact con la lista de archivos
         uses: actions/upload-artifact@v4
         with:
           name: modelos-pr-changes
-          path: ./changed_files.txt
+          path: deploy_metadata/changed_files.txt
+          retention-days: 3
 
-      - name: Validar scripts (ejemplo)
-        if: steps.cambios.outputs.modelos_changed == 'true'
-        run: |
-          echo "✅ Validando sintaxis básica..."
-          while IFS= read -r file; do
-            echo "Validando $file"
-            # Aquí podrías usar: snow sql --dry-run -f "$file"
-            # o validaciones personalizadas con grep/sed
-          done < changed_files.txt
+# name: Deploy fase 1
+
+# on:
+#   pull_request:
+#     branches:
+#       - main
+#     types: [opened, synchronize, reopened]
+
+# jobs:
+#   validate-changes:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout PR code
+#         uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0
+
+#       - name: Obtener lista de archivos modificados en MODELOS/
+#         id: cambios
+#         run: |
+#           git fetch origin main
+#           git diff --name-only origin/main...HEAD -- MODELOS/ > changed_files.txt
+#           echo "Archivos modificados:"
+#           cat changed_files.txt || true
+
+#           if [ -s changed_files.txt ]; then
+#             echo "modelos_changed=true" >> $GITHUB_OUTPUT
+#           else
+#             echo "modelos_changed=false" >> $GITHUB_OUTPUT
+#           fi
+
+#       - name: Subir lista de archivos modificados como artefacto
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: modelos-pr-changes
+#           path: ./changed_files.txt
+#           if-no-files-found: warn
+#           compression-level: 6
+#           overwrite: true
+#           include-hidden-files: false
+
+
+#       - name: Validar scripts (ejemplo)
+#         if: steps.cambios.outputs.modelos_changed == 'true'
+#         run: |
+#           echo "✅ Validando sintaxis básica..."
+#           while IFS= read -r file; do
+#             echo "Validando $file"
+#             # Aquí podrías usar: snow sql --dry-run -f "$file"
+#             # o validaciones personalizadas con grep/sed
+#           done < changed_files.txt
 
