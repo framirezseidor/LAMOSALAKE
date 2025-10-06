@@ -38,18 +38,21 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Crear o actualizar rama deploy-metadata
+      - name: Guardar lista de cambios en rama deploy-metadata
         run: |
           # Nos aseguramos de no ensuciar main
           git fetch origin deploy-metadata || true
           git checkout deploy-metadata || git checkout -b deploy-metadata
 
-          # Copiamos el archivo detectado desde la rama del PR
-          cp deploy_metadata/changed_files.txt ./deploy_metadata/changed_files.txt
+          # Si no existe la carpeta, la creamos (por si es la primera vez)
+          mkdir -p deploy_metadata
 
           git add deploy_metadata/changed_files.txt
           git commit -m "Actualizar lista de archivos cambiados para PR #${{ github.event.pull_request.number }}" || echo "No hay cambios para commitear"
           git push origin deploy-metadata
+
+
+
 
 # name: Deploy fase 1
 
