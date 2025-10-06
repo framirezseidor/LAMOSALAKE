@@ -1,0 +1,60 @@
+name: Deploy a Producción (MODELOS)
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  deploy:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Descargar lista de archivos modificados desde el PR
+        uses: actions/download-artifact@v4
+        with:
+            name: modelos-pr-changes
+            path: ./deploy-info
+
+      - name: Verificar contenido de la lista de cambios
+        run: |
+          echo "Contenido de changed_files.txt:"
+          cat ./deploy-info/changed_files.txt || true
+
+      - name: Desplegar archivos modificados
+        run: |
+          if [ ! -s ./deploy-info/changed_files.txt ]; then
+            echo "No hay cambios para desplegar ✅"
+            exit 0
+          fi
+
+      # Reemplazo de prefijo para producción
+      - name: Reemplazar prefijo en archivos SQL
+        env:
+          ORIGIN_PREFIX: "SQ1_"
+          PROD_PREFIX: "SP1_"
+        run: |
+          while IFS= read -r file; do
+            if [[ -f "$file" ]]; then
+              sed -i -E "s/\b${ORIGIN_PREFIX}/${PROD_PREFIX}/g" "$file"
+            fi
+          done
+
+
+          while IFS= read -r file; do
+            echo "🚀 Ejecutando $file..."
+            snow sql -f "$file"
+          done < ./deploy-info/changed_files.txt
+
+      - name: Crear nuevo tag de despliegue
+        run: |
+          NEW_TAG="deploy-$(date +'%Y%m%d-%H%M%S')"
+          git tag $NEW_TAG
+          git push origin $NEW_TAG
+          echo "🏷 Tag creado: $NEW_TAG"
