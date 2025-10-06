@@ -1,13 +1,14 @@
-name: Deploy a Producción (MODELOS)
+name: Deploy fase 2
 
 on:
-  workflow_dispatch:    
-    
-
+  pull_request:
+    branches:
+      - main
+    types: [closed]
 
 jobs:
   deploy:
-#    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
@@ -18,7 +19,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
             name: modelos-pr-changes
-            path: ./changed_files.txt
+            path: ./deploy-info
 
       - name: Verificar contenido de la lista de cambios
         run: |
