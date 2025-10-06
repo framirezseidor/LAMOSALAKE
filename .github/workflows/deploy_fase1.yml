@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: modelos-pr-changes
-          path: ./deploy-info
+          path: ./changed_files.txt
 
       - name: Validar scripts (ejemplo)
         if: steps.cambios.outputs.modelos_changed == 'true'
