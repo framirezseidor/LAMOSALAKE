@@ -17,10 +17,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Descargar lista de archivos modificados desde el PR
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: modelos-pr-changes
-          path: ./deploy-info
+            name: modelos-pr-changes
+            path: ./deploy-info
 
       - name: Verificar contenido de la lista de cambios
         run: |

@@ -30,11 +30,11 @@ jobs:
             echo "modelos_changed=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Subir lista de cambios como artefacto
-        uses: actions/upload-artifact@v3
+      - name: Subir lista de archivos modificados como artefacto
+        uses: actions/upload-artifact@v4
         with:
           name: modelos-pr-changes
-          path: changed_files.txt
+          path: ./changed_files.txt
 
       - name: Validar scripts (ejemplo)
         if: steps.cambios.outputs.modelos_changed == 'true'
