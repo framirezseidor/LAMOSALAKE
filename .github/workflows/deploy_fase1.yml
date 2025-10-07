@@ -1,4 +1,4 @@
-name: Deploy LAMOSA
+name: Deploy Snowflake on Merge
 
 on:
   pull_request:
@@ -13,37 +13,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Clona el repo completo
-      - name: Checkout repo
+      # 1️⃣ Checkout del repositorio
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # necesario para comparar commits
+          fetch-depth: 0
 
-      # 2️⃣ Detecta los archivos SQL modificados en el PR
-      - name: Detectar archivos modificados en el PR
-        id: changed
+      # 2️⃣ Obtener archivos cambiados del PR usando la API de GitHub
+      - name: Obtener archivos .sql modificados
+        id: get-changes
         run: |
-          git fetch origin ${{ github.event.pull_request.base.sha }} --depth=0 || true
-          git fetch origin ${{ github.event.pull_request.head.sha }} --depth=0 || true          
-          git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} -- '*.sql' > changed_files.txt
+          echo "Consultando archivos del PR #${{ github.event.pull_request.number }}..."
+          curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+               -H "Accept: application/vnd.github.v3+json" \
+               "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
+            | jq -r '.[].filename' | grep '\.sql$' > changed_files.txt || true
 
           echo "Archivos detectados:"
-          cat changed_files.txt || echo "No hay archivos SQL modificados."
+          cat changed_files.txt || echo "⚠️ No hay archivos SQL modificados."
 
-      # 3️⃣ Valida si hay algo que ejecutar
+      # 3️⃣ Validar si hay cambios antes de continuar
       - name: Verificar si hay scripts para ejecutar
         id: check
         run: |
           if [ ! -s changed_files.txt ]; then
             echo "no_changes=true" >> $GITHUB_OUTPUT
-            echo "✅ No hay scripts SQL modificados, no se ejecutará deploy."
+            echo "✅ No se detectaron scripts SQL para desplegar."
           else
             echo "no_changes=false" >> $GITHUB_OUTPUT
-            echo "🚀 Hay scripts SQL modificados, se procederá con el deploy."
+            echo "🚀 Se detectaron scripts SQL, procederemos al deploy."
           fi
 
-      # 4️⃣ Aplica cambio de prefijos (opcional)
-      - name: Cambiar prefijos para producción
+      # 4️⃣ (Opcional) Reemplazar prefijos en los scripts
+      - name: Reemplazar prefijos para producción
         if: steps.check.outputs.no_changes == 'false'
         env:
           ORIGIN_PREFIX: "SQ1_"
@@ -51,33 +53,32 @@ jobs:
         run: |
           while read -r file; do
             if [[ -f "$file" ]]; then
+              echo "Cambiando prefijo en: $file"
               sed -i -E "s/\b${ORIGIN_PREFIX}/${PROD_PREFIX}/g" "$file"
             fi
           done < changed_files.txt
 
-      # 5️⃣ Ejecuta los scripts modificados
+      # 5️⃣ Ejecutar los scripts SQL en Snowflake
       - name: Ejecutar scripts SQL modificados
         if: steps.check.outputs.no_changes == 'false'
         run: |
-          echo "Ejecutando scripts..."
           while read -r file; do
             if [[ -f "$file" ]]; then
-              echo "Ejecutando $file"
+              echo "Ejecutando $file..."
               snow sql -f "$file"
+            else
+              echo "⚠️ El archivo $file no existe en el repo."
             fi
           done < changed_files.txt
 
-      # 6️⃣ (Opcional) Crear tag de despliegue
-      - name: Crear nuevo tag de despliegue
+      # 6️⃣ Crear tag de despliegue (opcional)
+      - name: Crear tag de despliegue
         if: steps.check.outputs.no_changes == 'false'
         run: |
           NEW_TAG="deploy-$(date +'%Y%m%d-%H%M%S')"
           git tag $NEW_TAG
           git push origin $NEW_TAG
           echo "🏷 Nuevo tag de despliegue creado: $NEW_TAG"
-
-
-
 
 
 # name: 01 - Detectar cambios y guardar en repo
