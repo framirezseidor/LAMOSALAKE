@@ -1,0 +1,6 @@
+Fecha: Tue Oct  7 16:01:45 UTC 2025
+Archivos ejecutados durante el deploy:
+------------------------------------
+MODELOS/DIMENSIONES/TRANSPORTE/TABLES/DIM_TRA_TIPOVEHICULO.SQL
+------------------------------------
+✅ Despliegue finalizado: Tue Oct  7 16:01:58 UTC 2025
