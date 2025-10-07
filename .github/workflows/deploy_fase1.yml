@@ -44,6 +44,37 @@ jobs:
             echo "🚀 Se detectaron scripts SQL, procederemos al deploy."
           fi
 
+
+      - name: Set Snowflake Credentials
+        run: |
+          mkdir -p .snowflake
+          cat <<EOF > .snowflake/config.toml
+          default_connection_name = "conectionSnowflake"
+          [connections]
+          [connections.conectionSnowflake]
+          account = "${{ secrets.SNOWFLAKE_ACCOUNT }}"
+          user = "${{ secrets.SNOWFLAKE_USER }}"
+          password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
+          database = "${{ secrets.SNOWFLAKE_DATABASE }}"
+          schema = "${{ secrets.SNOWFLAKE_SCHEMA }}" 
+          warehouse = "${{ secrets.SNOWFLAKE_WAREHOUSE }}"
+ 
+      - name: Verify Snowflake config file
+        run: ls -la .snowflake && cat .snowflake/config.toml
+ 
+      - name: Install snowflake-cli
+        uses: Snowflake-Labs/snowflake-cli-action@v1.5
+        with:
+          cli-version: "latest"
+          default-config-file-path: ".snowflake/config.toml"
+     
+      - name: Check Version and Verify Connection
+        run: |
+              snow --version
+              snow connection test
+              echo "Using branch $GITHUB_REF_NAME"
+
+
       # 4️⃣ (Opcional) Reemplazar prefijos en los scripts
       - name: Reemplazar prefijos para producción
         if: steps.check.outputs.no_changes == 'false'
@@ -79,114 +110,4 @@ jobs:
           git tag $NEW_TAG
           git push origin $NEW_TAG
           echo "🏷 Nuevo tag de despliegue creado: $NEW_TAG"
-
-
-# name: 01 - Detectar cambios y guardar en repo
-
-# on:
-#   pull_request:
-#     types: [opened, synchronize, reopened]
-
-# jobs:
-#   detect_changes:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout repo
-#         uses: actions/checkout@v4
-#         with:
-#           fetch-depth: 0
-
-#       - name: Detectar archivos modificados en MODELOS
-#         id: changed
-#         uses: tj-actions/changed-files@v44
-#         with:
-#           base_sha: ${{ github.event.pull_request.base.sha }}
-#           sha: ${{ github.event.pull_request.head.sha }}
-#           path: MODELOS
-
-#       - name: Mostrar archivos detectados
-#         run: |
-#           echo "Archivos modificados:"
-#           echo "${{ steps.changed.outputs.all_changed_files }}"
-
-#       - name: Guardar lista en archivo
-#         run: |
-#           mkdir -p deploy_metadata
-#           echo "${{ steps.changed.outputs.all_changed_files }}" | tr ' ' '\n' > deploy_metadata/changed_files.txt
-#           cat deploy_metadata/changed_files.txt
-
-#       - name: Configurar Git para commit
-#         run: |
-#           git config user.name "github-actions[bot]"
-#           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-#       - name: Guardar lista de cambios en rama deploy-metadata
-#         run: |
-#           # Nos aseguramos de no ensuciar main
-#           git fetch origin deploy-metadata || true
-#           git checkout deploy-metadata || git checkout -b deploy-metadata
-
-#           # Si no existe la carpeta, la creamos (por si es la primera vez)
-#           mkdir -p deploy_metadata
-
-#           git add deploy_metadata/changed_files.txt
-#           git commit -m "Actualizar lista de archivos cambiados para PR #${{ github.event.pull_request.number }}" || echo "No hay cambios para commitear"
-#           git push origin deploy-metadata
-
-
-
-
-# name: Deploy fase 1
-
-# on:
-#   pull_request:
-#     branches:
-#       - main
-#     types: [opened, synchronize, reopened]
-
-# jobs:
-#   validate-changes:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout PR code
-#         uses: actions/checkout@v3
-#         with:
-#           fetch-depth: 0
-
-#       - name: Obtener lista de archivos modificados en MODELOS/
-#         id: cambios
-#         run: |
-#           git fetch origin main
-#           git diff --name-only origin/main...HEAD -- MODELOS/ > changed_files.txt
-#           echo "Archivos modificados:"
-#           cat changed_files.txt || true
-
-#           if [ -s changed_files.txt ]; then
-#             echo "modelos_changed=true" >> $GITHUB_OUTPUT
-#           else
-#             echo "modelos_changed=false" >> $GITHUB_OUTPUT
-#           fi
-
-#       - name: Subir lista de archivos modificados como artefacto
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: modelos-pr-changes
-#           path: ./changed_files.txt
-#           if-no-files-found: warn
-#           compression-level: 6
-#           overwrite: true
-#           include-hidden-files: false
-
-
-#       - name: Validar scripts (ejemplo)
-#         if: steps.cambios.outputs.modelos_changed == 'true'
-#         run: |
-#           echo "✅ Validando sintaxis básica..."
-#           while IFS= read -r file; do
-#             echo "Validando $file"
-#             # Aquí podrías usar: snow sql --dry-run -f "$file"
-#             # o validaciones personalizadas con grep/sed
-#           done < changed_files.txt
 
