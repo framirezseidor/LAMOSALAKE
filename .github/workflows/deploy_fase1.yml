@@ -27,7 +27,7 @@ jobs:
           curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
                -H "Accept: application/vnd.github.v3+json" \
                "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
-            | jq -r '.[].filename' | grep '\.sql$' > changed_files.txt || true
+            | jq -r '.[].filename' | grep -i '\.sql$' > changed_files.txt || true
 
           echo "Archivos detectados:"
           cat changed_files.txt || echo "⚠️ No hay archivos SQL modificados."
