@@ -1,5 +1,10 @@
 name: Deploy Snowflake on Merge
 
+# -----------------------------------------------------------
+# 🔹 Desencadenador:
+# Se ejecuta al cerrar un Pull Request fusionado (merged)
+# hacia la rama main.
+# -----------------------------------------------------------
 on:
   pull_request:
     types:
@@ -7,32 +12,56 @@ on:
     branches:
       - main
 
+# -----------------------------------------------------------
+# 🔹 Permisos necesarios:
+# "contents: write" permite:
+#   - Crear tags (para versionar despliegues)
+#   - Subir archivos al repo (logs u otros metadatos)
+# -----------------------------------------------------------
+permissions:
+  contents: write
+
 jobs:
   deploy:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout del repositorio
+      # -------------------------------------------------------
+      # 1️⃣ Clonar el repositorio completo
+      # -------------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Necesario para tags y commits posteriores
 
-      # 2️⃣ Obtener archivos cambiados del PR usando la API de GitHub
+      # -------------------------------------------------------
+      # 2️⃣ Obtener archivos modificados desde la API de GitHub
+      # -------------------------------------------------------
       - name: Obtener archivos .sql modificados
         id: get-changes
         run: |
           echo "Consultando archivos del PR #${{ github.event.pull_request.number }}..."
+
+          # Llamada a la API de GitHub para obtener archivos del PR
           curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
                -H "Accept: application/vnd.github.v3+json" \
                "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
-            | jq -r '.[].filename' | grep -i '\.sql$' > changed_files.txt || true
+            | jq -r '.[].filename' > all_files.txt
 
-          echo "Archivos detectados:"
-          cat changed_files.txt || echo "⚠️ No hay archivos SQL modificados."
+          echo "🧾 Archivos detectados por la API (sin filtrar):"
+          cat all_files.txt || echo "⚠️ No se encontraron archivos."
 
-      # 3️⃣ Validar si hay cambios antes de continuar
+          # Filtrar archivos .sql (insensible a mayúsculas)
+          grep -E -i '\.sql$' all_files.txt > changed_files.txt || true
+
+          echo ""
+          echo "📄 Archivos SQL modificados:"
+          cat changed_files.txt || echo "⚠️ No se detectaron archivos SQL modificados."
+
+      # -------------------------------------------------------
+      # 3️⃣ Validar si hay archivos SQL a desplegar
+      # -------------------------------------------------------
       - name: Verificar si hay scripts para ejecutar
         id: check
         run: |
@@ -44,7 +73,9 @@ jobs:
             echo "🚀 Se detectaron scripts SQL, procederemos al deploy."
           fi
 
-
+      # -------------------------------------------------------
+      # 4️⃣ Crear archivo de configuración de conexión a Snowflake
+      # -------------------------------------------------------
       - name: Set Snowflake Credentials
         run: |
           mkdir -p .snowflake
@@ -56,26 +87,28 @@ jobs:
           user = "${{ secrets.SNOWFLAKE_USER }}"
           password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
           database = "${{ secrets.SNOWFLAKE_DATABASE }}"
-          schema = "${{ secrets.SNOWFLAKE_SCHEMA }}" 
+          schema = "${{ secrets.SNOWFLAKE_SCHEMA }}"
           warehouse = "${{ secrets.SNOWFLAKE_WAREHOUSE }}"
- 
-      - name: Verify Snowflake config file
-        run: ls -la .snowflake && cat .snowflake/config.toml
- 
+          EOF
+
+      # -------------------------------------------------------
+      # 5️⃣ Instalar y verificar Snowflake CLI
+      # -------------------------------------------------------
       - name: Install snowflake-cli
         uses: Snowflake-Labs/snowflake-cli-action@v1.5
         with:
           cli-version: "latest"
           default-config-file-path: ".snowflake/config.toml"
-     
+
       - name: Check Version and Verify Connection
         run: |
-              snow --version
-              snow connection test
-              echo "Using branch $GITHUB_REF_NAME"
+          snow --version
+          snow connection test
+          echo "✅ Conexión verificada. Rama: $GITHUB_REF_NAME"
 
-
-      # 4️⃣ (Opcional) Reemplazar prefijos en los scripts
+      # -------------------------------------------------------
+      # 6️⃣ (Opcional) Cambiar prefijos de entorno (DEV→PRD)
+      # -------------------------------------------------------
       - name: Reemplazar prefijos para producción
         if: steps.check.outputs.no_changes == 'false'
         env:
@@ -84,25 +117,65 @@ jobs:
         run: |
           while read -r file; do
             if [[ -f "$file" ]]; then
-              echo "Cambiando prefijo en: $file"
+              echo "🔄 Cambiando prefijo en: $file"
               sed -i -E "s/\b${ORIGIN_PREFIX}/${PROD_PREFIX}/g" "$file"
             fi
           done < changed_files.txt
 
-      # 5️⃣ Ejecutar los scripts SQL en Snowflake
+      # -------------------------------------------------------
+      # 7️⃣ Ejecutar los scripts SQL detectados
+      # y registrar los resultados en un log local
+      # -------------------------------------------------------
       - name: Ejecutar scripts SQL modificados
         if: steps.check.outputs.no_changes == 'false'
         run: |
+          mkdir -p deploy_metadata
+          LOG_FILE="deploy_metadata/deploy_log_$(date +'%Y%m%d-%H%M%S').txt"
+
+          echo "Fecha: $(date)" > $LOG_FILE
+          echo "Archivos ejecutados durante el deploy:" >> $LOG_FILE
+          echo "------------------------------------" >> $LOG_FILE
+
           while read -r file; do
             if [[ -f "$file" ]]; then
-              echo "Ejecutando $file..."
+              echo "▶️ Ejecutando $file..."
+              echo "$file" >> $LOG_FILE
               snow sql -f "$file"
             else
-              echo "⚠️ El archivo $file no existe en el repo."
+              echo "⚠️ El archivo $file no existe." | tee -a $LOG_FILE
             fi
           done < changed_files.txt
 
-      # 6️⃣ Crear tag de despliegue (opcional)
+          echo "------------------------------------" >> $LOG_FILE
+          echo "✅ Despliegue finalizado: $(date)" >> $LOG_FILE
+
+      # -------------------------------------------------------
+      # 8️⃣ Subir el log al repositorio
+      # Crea/actualiza la carpeta deploy_metadata con el registro
+      # -------------------------------------------------------
+      - name: Commit deploy log to repository
+        if: steps.check.outputs.no_changes == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add deploy_metadata/
+          git commit -m "📜 Registro de despliegue automático ($(date +'%Y-%m-%d %H:%M'))" || echo "Sin cambios que commitear."
+          git push origin HEAD:main
+
+      # -------------------------------------------------------
+      # 9️⃣ Publicar log también como artifact descargable
+      # -------------------------------------------------------
+      - name: Publicar log del despliegue
+        if: steps.check.outputs.no_changes == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-log
+          path: deploy_metadata/
+          retention-days: 15
+
+      # -------------------------------------------------------
+      # 🔟 Crear un tag de despliegue (versión del release)
+      # -------------------------------------------------------
       - name: Crear tag de despliegue
         if: steps.check.outputs.no_changes == 'false'
         run: |
@@ -110,4 +183,3 @@ jobs:
           git tag $NEW_TAG
           git push origin $NEW_TAG
           echo "🏷 Nuevo tag de despliegue creado: $NEW_TAG"
-
