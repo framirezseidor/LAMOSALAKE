@@ -1,10 +1,19 @@
+# ===============================================================
+# 🚀 WORKFLOW: Deploy Snowflake on Merge
+# ---------------------------------------------------------------
+# Este workflow automatiza el despliegue de objetos SQL en Snowflake
+# cada vez que un Pull Request hacia la rama "main" es cerrado y mergeado.
+# 
+# FUNCIONALIDAD:
+#   - Detecta los archivos .SQL modificados en el PR
+#   - Sustituye prefijos de ambiente (ej. SQ1_ → SP1_)
+#   - Ejecuta los scripts en orden lógico (TABLES → VIEWS → FUNCTIONS → SP → TASKS → MISC)
+#   - Detiene la ejecución si algún script falla
+#   - Crea un tag de despliegue opcional en el repositorio
+# ===============================================================
+
 name: Deploy Snowflake on Merge
 
-# -----------------------------------------------------------
-# 🔹 Desencadenador:
-# Se ejecuta al cerrar un Pull Request fusionado (merged)
-# hacia la rama main.
-# -----------------------------------------------------------
 on:
   pull_request:
     types:
@@ -12,56 +21,56 @@ on:
     branches:
       - main
 
-# -----------------------------------------------------------
-# 🔹 Permisos necesarios:
-# "contents: write" permite:
-#   - Crear tags (para versionar despliegues)
-#   - Subir archivos al repo (logs u otros metadatos)
-# -----------------------------------------------------------
-permissions:
-  contents: write
-
 jobs:
   deploy:
+    # ------------------------------------------------------------
+    # Este job solo se ejecuta si el Pull Request fue mergeado a main
+    # ------------------------------------------------------------
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
+    # ------------------------------------------------------------
+    # Permisos necesarios para crear tags o modificar contenido del repo
+    # ------------------------------------------------------------
+    permissions:
+      contents: write
+
     steps:
-      # -------------------------------------------------------
-      # 1️⃣ Clonar el repositorio completo
-      # -------------------------------------------------------
+      # ==========================================================
+      # 1️⃣ CHECKOUT DEL REPOSITORIO
+      # ----------------------------------------------------------
+      # Clona el repositorio completo (fetch-depth=0)
+      # para garantizar acceso a todo el historial del PR.
+      # ==========================================================
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Necesario para tags y commits posteriores
+          fetch-depth: 0
 
-      # -------------------------------------------------------
-      # 2️⃣ Obtener archivos modificados desde la API de GitHub
-      # -------------------------------------------------------
+      # ==========================================================
+      # 2️⃣ DETECCIÓN DE ARCHIVOS SQL MODIFICADOS
+      # ----------------------------------------------------------
+      # Usa la API de GitHub para listar los archivos del PR
+      # y filtra solo aquellos con extensión .sql (sin importar mayúsculas).
+      # ==========================================================
       - name: Obtener archivos .sql modificados
         id: get-changes
         run: |
-          echo "Consultando archivos del PR #${{ github.event.pull_request.number }}..."
-
-          # Llamada a la API de GitHub para obtener archivos del PR
+          echo "📥 Consultando archivos del PR #${{ github.event.pull_request.number }}..."
           curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
                -H "Accept: application/vnd.github.v3+json" \
                "${{ github.api_url }}/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
-            | jq -r '.[].filename' > all_files.txt
+            | jq -r '.[].filename' | grep -i '\.sql$' > changed_files.txt || true
 
-          echo "🧾 Archivos detectados por la API (sin filtrar):"
-          cat all_files.txt || echo "⚠️ No se encontraron archivos."
-
-          # Filtrar archivos .sql (insensible a mayúsculas)
-          grep -E -i '\.sql$' all_files.txt > changed_files.txt || true
-
-          echo ""
-          echo "📄 Archivos SQL modificados:"
+          echo "📂 Archivos SQL detectados:"
           cat changed_files.txt || echo "⚠️ No se detectaron archivos SQL modificados."
 
-      # -------------------------------------------------------
-      # 3️⃣ Validar si hay archivos SQL a desplegar
-      # -------------------------------------------------------
+      # ==========================================================
+      # 3️⃣ VALIDACIÓN DE CAMBIOS
+      # ----------------------------------------------------------
+      # Revisa si el archivo changed_files.txt está vacío.
+      # Si no hay scripts SQL, el workflow finaliza sin error.
+      # ==========================================================
       - name: Verificar si hay scripts para ejecutar
         id: check
         run: |
@@ -73,109 +82,140 @@ jobs:
             echo "🚀 Se detectaron scripts SQL, procederemos al deploy."
           fi
 
-      # -------------------------------------------------------
-      # 4️⃣ Crear archivo de configuración de conexión a Snowflake
-      # -------------------------------------------------------
-      - name: Set Snowflake Credentials
+      # ==========================================================
+      # 4️⃣ CONFIGURACIÓN DE CONEXIÓN SNOWFLAKE
+      # ----------------------------------------------------------
+      # Crea el archivo .snowflake/config.toml con las credenciales
+      # almacenadas en los GitHub Secrets.
+      # ==========================================================
+      - name: Crear archivo de conexión Snowflake
+        if: steps.check.outputs.no_changes == 'false'
         run: |
           mkdir -p .snowflake
           cat <<EOF > .snowflake/config.toml
-          default_connection_name = "conectionSnowflake"
+          default_connection_name = "connectionSnowflake"
           [connections]
-          [connections.conectionSnowflake]
+          [connections.connectionSnowflake]
           account = "${{ secrets.SNOWFLAKE_ACCOUNT }}"
           user = "${{ secrets.SNOWFLAKE_USER }}"
           password = "${{ secrets.SNOWFLAKE_PASSWORD }}"
+          role = "${{ secrets.SNOWFLAKE_ROLE }}"
+          warehouse = "${{ secrets.SNOWFLAKE_WAREHOUSE }}"
           database = "${{ secrets.SNOWFLAKE_DATABASE }}"
           schema = "${{ secrets.SNOWFLAKE_SCHEMA }}"
-          warehouse = "${{ secrets.SNOWFLAKE_WAREHOUSE }}"
           EOF
+          
+          echo "✅ Archivo de configuración creado correctamente."
 
-      # -------------------------------------------------------
-      # 5️⃣ Instalar y verificar Snowflake CLI
-      # -------------------------------------------------------
-      - name: Install snowflake-cli
+      - name: Verificar archivo de configuración
+        if: steps.check.outputs.no_changes == 'false'
+        run: ls -la .snowflake && cat .snowflake/config.toml
+
+      # ==========================================================
+      # 5️⃣ INSTALACIÓN Y PRUEBA DEL CLIENTE SNOWFLAKE CLI
+      # ----------------------------------------------------------
+      # Instala la versión más reciente del CLI y prueba la conexión.
+      # ==========================================================
+      - name: Instalar Snowflake CLI
+        if: steps.check.outputs.no_changes == 'false'
         uses: Snowflake-Labs/snowflake-cli-action@v1.5
         with:
           cli-version: "latest"
           default-config-file-path: ".snowflake/config.toml"
 
-      - name: Check Version and Verify Connection
+      - name: Verificar conexión a Snowflake
+        if: steps.check.outputs.no_changes == 'false'
         run: |
           snow --version
           snow connection test
-          echo "✅ Conexión verificada. Rama: $GITHUB_REF_NAME"
+          echo "✅ Conexión verificada correctamente."
 
-      # -------------------------------------------------------
-      # 6️⃣ (Opcional) Cambiar prefijos de entorno (DEV→PRD)
-      # -------------------------------------------------------
+      # ==========================================================
+      # 6️⃣ REEMPLAZO DE PREFIJOS DE AMBIENTE
+      # ----------------------------------------------------------
+      # Cambia el prefijo SQ1_ (DEV) por SP1_ (PROD)
+      # antes de ejecutar los scripts.
+      # ==========================================================
       - name: Reemplazar prefijos para producción
         if: steps.check.outputs.no_changes == 'false'
         env:
           ORIGIN_PREFIX: "SQ1_"
           PROD_PREFIX: "SP1_"
         run: |
+          echo "🔄 Reemplazando prefijos de ${ORIGIN_PREFIX} a ${PROD_PREFIX}..."
           while read -r file; do
             if [[ -f "$file" ]]; then
-              echo "🔄 Cambiando prefijo en: $file"
               sed -i -E "s/\b${ORIGIN_PREFIX}/${PROD_PREFIX}/g" "$file"
+              echo "✔️  Prefijo reemplazado en: $file"
             fi
           done < changed_files.txt
 
-      # -------------------------------------------------------
-      # 7️⃣ Ejecutar los scripts SQL detectados
-      # y registrar los resultados en un log local
-      # -------------------------------------------------------
-      - name: Ejecutar scripts SQL modificados
+      # ==========================================================
+      # 7️⃣ EJECUCIÓN ORDENADA DE SCRIPTS
+      # ----------------------------------------------------------
+      # Ejecuta los scripts modificados en orden lógico por tipo:
+      # TABLES → VIEWS → FUNCTIONS → SP → TASKS → MISC
+      # Si un script falla, el workflow se detiene con error.
+      # ==========================================================
+      - name: Ejecutar scripts SQL modificados (por tipo de objeto)
         if: steps.check.outputs.no_changes == 'false'
         run: |
           mkdir -p deploy_metadata
           LOG_FILE="deploy_metadata/deploy_log_$(date +'%Y%m%d-%H%M%S').txt"
 
-          echo "Fecha: $(date)" > $LOG_FILE
-          echo "Archivos ejecutados durante el deploy:" >> $LOG_FILE
-          echo "------------------------------------" >> $LOG_FILE
+          echo "📅 Fecha de ejecución: $(date)" > $LOG_FILE
+          echo "🔽 Orden de ejecución: TABLES → VIEWS → FUNCTIONS → SP → TASKS → MISC" >> $LOG_FILE
+          echo "---------------------------------------------------------------" >> $LOG_FILE
 
-          while read -r file; do
-            if [[ -f "$file" ]]; then
-              echo "▶️ Ejecutando $file..."
-              echo "$file" >> $LOG_FILE
-              snow sql -f "$file"
-            else
-              echo "⚠️ El archivo $file no existe." | tee -a $LOG_FILE
-            fi
-          done < changed_files.txt
+          ORDER=("TABLES" "TABLAS" "VIEWS" "VISTAS" "FUNCTIONS" "SP" "PROCEDURES" "TASKS")
+          touch executed_files.txt
 
-          echo "------------------------------------" >> $LOG_FILE
-          echo "✅ Despliegue finalizado: $(date)" >> $LOG_FILE
+          for DIR in "${ORDER[@]}"; do
+            echo "▶️ Buscando scripts en carpeta $DIR..." | tee -a $LOG_FILE
+            grep -i "/${DIR}/" changed_files.txt | while read -r file; do
+              if [[ -f "$file" ]]; then
+                echo "⚙️ Ejecutando $file..." | tee -a $LOG_FILE
+                if snow sql -f "$file" >> $LOG_FILE 2>&1; then
+                  echo "✅ Éxito: $file" | tee -a $LOG_FILE
+                  echo "$file" >> executed_files.txt
+                else
+                  echo "❌ Error al ejecutar $file. Abortando despliegue." | tee -a $LOG_FILE
+                  exit 1
+                fi
+              fi
+            done
+          done
 
-      # -------------------------------------------------------
-      # 8️⃣ Subir el log al repositorio
-      # Crea/actualiza la carpeta deploy_metadata con el registro
-      # -------------------------------------------------------
-      - name: Commit deploy log to repository
-        if: steps.check.outputs.no_changes == 'false'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add deploy_metadata/
-          git commit -m "📜 Registro de despliegue automático ($(date +'%Y-%m-%d %H:%M'))" || echo "Sin cambios que commitear."
-          git push origin HEAD:main
+          echo "▶️ Buscando scripts fuera de categorías conocidas..." | tee -a $LOG_FILE
+          grep -v -F -f executed_files.txt changed_files.txt > misc_files.txt || true
 
-      # -------------------------------------------------------
-      # 9️⃣ Publicar log también como artifact descargable
-      # -------------------------------------------------------
-      - name: Publicar log del despliegue
-        if: steps.check.outputs.no_changes == 'false'
-        uses: actions/upload-artifact@v4
-        with:
-          name: deploy-log
-          path: deploy_metadata/
-          retention-days: 15
+          if [ -s misc_files.txt ]; then
+            echo "📂 Archivos detectados como MISC:" | tee -a $LOG_FILE
+            cat misc_files.txt | tee -a $LOG_FILE
+            while read -r file; do
+              if [[ -f "$file" ]]; then
+                echo "⚙️ Ejecutando $file (MISC)..." | tee -a $LOG_FILE
+                if snow sql -f "$file" >> $LOG_FILE 2>&1; then
+                  echo "✅ Éxito: $file" | tee -a $LOG_FILE
+                else
+                  echo "❌ Error al ejecutar $file (MISC). Abortando despliegue." | tee -a $LOG_FILE
+                  exit 1
+                fi
+              fi
+            done < misc_files.txt
+          else
+            echo "✅ No se detectaron archivos fuera de las categorías principales." | tee -a $LOG_FILE
+          fi
 
-      # -------------------------------------------------------
-      # 🔟 Crear un tag de despliegue (versión del release)
-      # -------------------------------------------------------
+          echo "---------------------------------------------------------------" >> $LOG_FILE
+          echo "✅ Despliegue completado: $(date)" >> $LOG_FILE
+
+      # ==========================================================
+      # 8️⃣ CREACIÓN DE TAG DE DESPLIEGUE (OPCIONAL)
+      # ----------------------------------------------------------
+      # Crea un tag de versión con timestamp para identificar
+      # el commit desplegado. Requiere permisos de escritura.
+      # ==========================================================
       - name: Crear tag de despliegue
         if: steps.check.outputs.no_changes == 'false'
         run: |
