@@ -1,44 +1,140 @@
-name: 01 - Detectar cambios para deploy
+name: Deploy LAMOSA
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types:
+      - closed
+    branches:
+      - main
 
 jobs:
-  detect_changes:
+  deploy:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Clona el repo completo
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # necesario para comparar commits
 
-      - name: Detectar archivos modificados en la carpeta MODELOS
+      # 2️⃣ Detecta los archivos SQL modificados en el PR
+      - name: Detectar archivos modificados en el PR
         id: changed
-        uses: tj-actions/changed-files@v44
-        with:
-          base_sha: ${{ github.event.pull_request.base.sha }}
-          sha: ${{ github.event.pull_request.head.sha }}
-          path: MODELOS
-
-      - name: Mostrar archivos detectados
         run: |
-          echo "Archivos modificados:"
-          echo "${{ steps.changed.outputs.all_changed_files }}"
+          echo "Base: ${{ github.event.pull_request.base.sha }}"
+          echo "Head: ${{ github.event.pull_request.head.sha }}"
+          git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} -- '*.sql' > changed_files.txt
 
-      - name: Guardar lista en archivo
+          echo "Archivos detectados:"
+          cat changed_files.txt || echo "No hay archivos SQL modificados."
+
+      # 3️⃣ Valida si hay algo que ejecutar
+      - name: Verificar si hay scripts para ejecutar
+        id: check
         run: |
-          mkdir -p deploy_metadata
-          echo "${{ steps.changed.outputs.all_changed_files }}" | tr ' ' '\n' > deploy_metadata/changed_files.txt
-          cat deploy_metadata/changed_files.txt
+          if [ ! -s changed_files.txt ]; then
+            echo "no_changes=true" >> $GITHUB_OUTPUT
+            echo "✅ No hay scripts SQL modificados, no se ejecutará deploy."
+          else
+            echo "no_changes=false" >> $GITHUB_OUTPUT
+            echo "🚀 Hay scripts SQL modificados, se procederá con el deploy."
+          fi
 
-      - name: Subir artifact con la lista de archivos
-        uses: actions/upload-artifact@v4
-        with:
-          name: modelos-pr-changes
-          path: deploy_metadata/changed_files.txt
-          retention-days: 3
+      # 4️⃣ Aplica cambio de prefijos (opcional)
+      - name: Cambiar prefijos para producción
+        if: steps.check.outputs.no_changes == 'false'
+        env:
+          ORIGIN_PREFIX: "SQ1_"
+          PROD_PREFIX: "SP1_"
+        run: |
+          while read -r file; do
+            if [[ -f "$file" ]]; then
+              sed -i -E "s/\b${ORIGIN_PREFIX}/${PROD_PREFIX}/g" "$file"
+            fi
+          done < changed_files.txt
+
+      # 5️⃣ Ejecuta los scripts modificados
+      - name: Ejecutar scripts SQL modificados
+        if: steps.check.outputs.no_changes == 'false'
+        run: |
+          echo "Ejecutando scripts..."
+          while read -r file; do
+            if [[ -f "$file" ]]; then
+              echo "Ejecutando $file"
+              snow sql -f "$file"
+            fi
+          done < changed_files.txt
+
+      # 6️⃣ (Opcional) Crear tag de despliegue
+      - name: Crear nuevo tag de despliegue
+        if: steps.check.outputs.no_changes == 'false'
+        run: |
+          NEW_TAG="deploy-$(date +'%Y%m%d-%H%M%S')"
+          git tag $NEW_TAG
+          git push origin $NEW_TAG
+          echo "🏷 Nuevo tag de despliegue creado: $NEW_TAG"
+
+
+
+
+
+# name: 01 - Detectar cambios y guardar en repo
+
+# on:
+#   pull_request:
+#     types: [opened, synchronize, reopened]
+
+# jobs:
+#   detect_changes:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout repo
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+
+#       - name: Detectar archivos modificados en MODELOS
+#         id: changed
+#         uses: tj-actions/changed-files@v44
+#         with:
+#           base_sha: ${{ github.event.pull_request.base.sha }}
+#           sha: ${{ github.event.pull_request.head.sha }}
+#           path: MODELOS
+
+#       - name: Mostrar archivos detectados
+#         run: |
+#           echo "Archivos modificados:"
+#           echo "${{ steps.changed.outputs.all_changed_files }}"
+
+#       - name: Guardar lista en archivo
+#         run: |
+#           mkdir -p deploy_metadata
+#           echo "${{ steps.changed.outputs.all_changed_files }}" | tr ' ' '\n' > deploy_metadata/changed_files.txt
+#           cat deploy_metadata/changed_files.txt
+
+#       - name: Configurar Git para commit
+#         run: |
+#           git config user.name "github-actions[bot]"
+#           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+#       - name: Guardar lista de cambios en rama deploy-metadata
+#         run: |
+#           # Nos aseguramos de no ensuciar main
+#           git fetch origin deploy-metadata || true
+#           git checkout deploy-metadata || git checkout -b deploy-metadata
+
+#           # Si no existe la carpeta, la creamos (por si es la primera vez)
+#           mkdir -p deploy_metadata
+
+#           git add deploy_metadata/changed_files.txt
+#           git commit -m "Actualizar lista de archivos cambiados para PR #${{ github.event.pull_request.number }}" || echo "No hay cambios para commitear"
+#           git push origin deploy-metadata
+
+
+
 
 # name: Deploy fase 1
 
